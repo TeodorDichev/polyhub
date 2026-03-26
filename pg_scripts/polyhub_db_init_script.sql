@@ -6,8 +6,9 @@ CREATE TABLE user_roles (
 );
 
 INSERT INTO user_roles (name) VALUES
-('USER'),
-('ADMIN');
+('PARTY_ADMIN'),
+('ADMIN'),
+('POLYHUB_SPECIALIST');
 
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
@@ -17,6 +18,7 @@ CREATE TABLE users (
     password_hash TEXT NOT NULL,
     role_id INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	deleted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT fk_user_role
         FOREIGN KEY (role_id)
@@ -31,7 +33,7 @@ CREATE TABLE party_statuses (
 INSERT INTO party_statuses (name) VALUES
 ('PENDING'),
 ('APPROVED'),
-('REJECTED');
+('REJECTED'); -- probably redundant, rejecting parties will probably delete them
 
 CREATE TABLE parties (
     id SERIAL PRIMARY KEY,
@@ -41,13 +43,16 @@ CREATE TABLE parties (
     logo_url TEXT,
     founded_on DATE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP,
+    deleted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
     status_id INT NOT NULL,
     created_by INT NOT NULL,
 
-    economic_axis NUMERIC(3,2), -- -1.00 to 1.00
-    social_axis NUMERIC(3,2),   -- -1.00 to 1.00
+    self_economic_axis NUMERIC(3,2), -- -1.00 to 1.00
+    self_social_axis NUMERIC(3,2),   -- -1.00 to 1.00
+
+	spec_economic_axis NUMERIC(3,2), -- -1.00 to 1.00
+    spec_social_axis NUMERIC(3,2),   -- -1.00 to 1.00
 
     CONSTRAINT fk_party_status
         FOREIGN KEY (status_id)
@@ -112,7 +117,6 @@ CREATE TABLE party_participations (
     id SERIAL PRIMARY KEY,
     party_id INT NOT NULL,
     election_id INT NOT NULL,
-    election_number INT,
 
     CONSTRAINT fk_pp_party
         FOREIGN KEY (party_id)
@@ -134,6 +138,12 @@ CREATE TABLE programs (
     last_edit_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
+	self_economic_axis NUMERIC(3,2), -- -1.00 to 1.00
+    self_social_axis NUMERIC(3,2),   -- -1.00 to 1.00
+
+	spec_economic_axis NUMERIC(3,2), -- -1.00 to 1.00
+    spec_social_axis NUMERIC(3,2),   -- -1.00 to 1.00
+
 	CONSTRAINT fk_program_election
         FOREIGN KEY (election_id)
         REFERENCES elections(id)
@@ -150,8 +160,11 @@ CREATE TABLE policies (
     name TEXT UNIQUE NOT NULL,
     slug TEXT UNIQUE NOT NULL,
 	
-	economic_axis NUMERIC(3,2), -- -1.00 to 1.00
-    social_axis NUMERIC(3,2)   -- -1.00 to 1.00
+	self_economic_axis NUMERIC(3,2), -- -1.00 to 1.00
+    self_social_axis NUMERIC(3,2),   -- -1.00 to 1.00
+
+	spec_economic_axis NUMERIC(3,2), -- -1.00 to 1.00
+    spec_social_axis NUMERIC(3,2)   -- -1.00 to 1.00
 );
 
 CREATE TABLE program_policies (
