@@ -1,7 +1,7 @@
 -- CREATE DATABASE polyhub;
 
 CREATE TABLE user_roles (
-    id SERIAL PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     name TEXT UNIQUE NOT NULL
 );
 
@@ -11,12 +11,12 @@ INSERT INTO user_roles (name) VALUES
 ('POLYHUB_SPECIALIST');
 
 CREATE TABLE users (
-    id SERIAL PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     email TEXT UNIQUE NOT NULL,
     firstname TEXT NOT NULL,
     lastname TEXT NOT NULL,
     password_hash TEXT NOT NULL,
-    role_id INT NOT NULL,
+    role_id BIGINT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	deleted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
@@ -26,7 +26,7 @@ CREATE TABLE users (
 );
 
 CREATE TABLE party_statuses (
-    id SERIAL PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     name TEXT UNIQUE NOT NULL
 );
 
@@ -36,7 +36,7 @@ INSERT INTO party_statuses (name) VALUES
 ('REJECTED'); -- probably redundant, rejecting parties will probably delete them
 
 CREATE TABLE parties (
-    id SERIAL PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     name TEXT UNIQUE NOT NULL,
     motto TEXT,
     description TEXT NOT NULL,
@@ -45,14 +45,14 @@ CREATE TABLE parties (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
-    status_id INT NOT NULL,
-    created_by INT NOT NULL,
+    status_id BIGINT NOT NULL,
+    created_by BIGINT NOT NULL,
 
-    self_economic_axis NUMERIC(3,2), -- -1.00 to 1.00
-    self_social_axis NUMERIC(3,2),   -- -1.00 to 1.00
+    self_economic_axis DOUBLE PRECISION, -- -1.00 to 1.00
+    self_social_axis DOUBLE PRECISION,   -- -1.00 to 1.00
 
-	spec_economic_axis NUMERIC(3,2), -- -1.00 to 1.00
-    spec_social_axis NUMERIC(3,2),   -- -1.00 to 1.00
+	spec_economic_axis DOUBLE PRECISION, -- -1.00 to 1.00
+    spec_social_axis DOUBLE PRECISION,   -- -1.00 to 1.00
 
     CONSTRAINT fk_party_status
         FOREIGN KEY (status_id)
@@ -64,7 +64,7 @@ CREATE TABLE parties (
 );
 
 CREATE TABLE party_member_roles (
-    id SERIAL PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     name TEXT UNIQUE NOT NULL
 );
 
@@ -74,10 +74,10 @@ INSERT INTO party_member_roles (name) VALUES
 ('MEMBER');
 
 CREATE TABLE party_members (
-    id SERIAL PRIMARY KEY,
-    party_id INT NOT NULL,
+    id BIGSERIAL PRIMARY KEY,
+    party_id BIGINT NOT NULL,
     name TEXT NOT NULL,
-    role_id INT NOT NULL,
+    role_id BIGINT NOT NULL,
     bio TEXT,
 
     CONSTRAINT fk_member_party
@@ -91,7 +91,7 @@ CREATE TABLE party_members (
 );
 
 CREATE TABLE election_types (
-    id SERIAL PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     name TEXT UNIQUE NOT NULL
 );
 
@@ -102,8 +102,8 @@ INSERT INTO election_types (name) VALUES
 ('MUNICIPAL_COUNCIL');
 
 CREATE TABLE elections (
-    id SERIAL PRIMARY KEY,
-    type_id INT NOT NULL,
+    id BIGSERIAL PRIMARY KEY,
+    type_id BIGINT NOT NULL,
     name TEXT NOT NULL,
     election_date DATE NOT NULL,
     description TEXT,
@@ -114,9 +114,9 @@ CREATE TABLE elections (
 );
 
 CREATE TABLE party_participations (
-    id SERIAL PRIMARY KEY,
-    party_id INT NOT NULL,
-    election_id INT NOT NULL,
+    id BIGSERIAL PRIMARY KEY,
+    party_id BIGINT NOT NULL,
+    election_id BIGINT NOT NULL,
 
     CONSTRAINT fk_pp_party
         FOREIGN KEY (party_id)
@@ -130,19 +130,19 @@ CREATE TABLE party_participations (
 );
 
 CREATE TABLE programs (
-    id SERIAL PRIMARY KEY,
-    party_id INT NOT NULL,
-	election_id INT NOT NULL,
+    id BIGSERIAL PRIMARY KEY,
+    party_id BIGINT NOT NULL,
+	election_id BIGINT NOT NULL,
     title TEXT NOT NULL,
     content TEXT NOT NULL,
     last_edit_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
-	self_economic_axis NUMERIC(3,2), -- -1.00 to 1.00
-    self_social_axis NUMERIC(3,2),   -- -1.00 to 1.00
+	self_economic_axis DOUBLE PRECISION, -- -1.00 to 1.00
+    self_social_axis DOUBLE PRECISION,   -- -1.00 to 1.00
 
-	spec_economic_axis NUMERIC(3,2), -- -1.00 to 1.00
-    spec_social_axis NUMERIC(3,2),   -- -1.00 to 1.00
+	spec_economic_axis DOUBLE PRECISION, -- -1.00 to 1.00
+    spec_social_axis DOUBLE PRECISION,   -- -1.00 to 1.00
 
 	CONSTRAINT fk_program_election
         FOREIGN KEY (election_id)
@@ -156,20 +156,20 @@ CREATE TABLE programs (
 );
 
 CREATE TABLE policies (
-    id SERIAL PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     name TEXT UNIQUE NOT NULL,
     slug TEXT UNIQUE NOT NULL,
 	
-	self_economic_axis NUMERIC(3,2), -- -1.00 to 1.00
-    self_social_axis NUMERIC(3,2),   -- -1.00 to 1.00
+	self_economic_axis DOUBLE PRECISION, -- -1.00 to 1.00
+    self_social_axis DOUBLE PRECISION,   -- -1.00 to 1.00
 
-	spec_economic_axis NUMERIC(3,2), -- -1.00 to 1.00
-    spec_social_axis NUMERIC(3,2)   -- -1.00 to 1.00
+	spec_economic_axis DOUBLE PRECISION, -- -1.00 to 1.00
+    spec_social_axis DOUBLE PRECISION   -- -1.00 to 1.00
 );
 
 CREATE TABLE program_policies (
-    program_id INT NOT NULL,
-    policy_id INT NOT NULL,
+    program_id BIGINT NOT NULL,
+    policy_id BIGINT NOT NULL,
 
     PRIMARY KEY (program_id, policy_id),
 
