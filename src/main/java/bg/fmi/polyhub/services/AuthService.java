@@ -20,7 +20,7 @@ public class AuthService {
     private final UserMapper userMapper;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    // no need for any other registers, all other roles will be created/seeded from admins, we insert the first admin from the db (hopefully)
+    // no need for any other registers, all other roles will be created/seeded from admins
     public void register(RegisterRequest request) {
 
         if (userRepository.existsByEmail(request.email())) {
