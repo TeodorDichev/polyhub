@@ -1,8 +1,10 @@
 package bg.fmi.polyhub.services;
 
 import bg.fmi.polyhub.dto.auth.RegisterRequest;
+import bg.fmi.polyhub.entities.RoleType;
 import bg.fmi.polyhub.entities.User;
 import bg.fmi.polyhub.entities.UserRole;
+import bg.fmi.polyhub.exceptions.UserAlreadyExistsException;
 import bg.fmi.polyhub.mappers.UserMapper;
 import bg.fmi.polyhub.repositories.UserRepository;
 import bg.fmi.polyhub.repositories.UserRoleRepository;
@@ -22,11 +24,11 @@ public class AuthService {
     public void register(RegisterRequest request) {
 
         if (userRepository.existsByEmail(request.email())) {
-            throw new RuntimeException("Email already exists");
+            throw new UserAlreadyExistsException("Email already exists");
         }
 
         UserRole role = userRoleRepository
-                .findByName("PARTY_ADMIN")
+                .findByName(RoleType.PARTY_ADMIN)
                 .orElseThrow(() -> new RuntimeException("Role not found"));
 
         User user = userMapper.toEntity(request);
