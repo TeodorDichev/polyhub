@@ -1,6 +1,8 @@
 package bg.fmi.polyhub.services;
 
+import bg.fmi.polyhub.dto.auth.LoginRequest;
 import bg.fmi.polyhub.dto.auth.RegisterRequest;
+import bg.fmi.polyhub.dto.partyadmin.LoggedPartyAdmin;
 import bg.fmi.polyhub.entities.RoleType;
 import bg.fmi.polyhub.entities.User;
 import bg.fmi.polyhub.entities.UserRole;
@@ -15,15 +17,14 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class AuthService {
+
     private final UserRepository userRepository;
     private final UserRoleRepository userRoleRepository;
     private final UserMapper userMapper;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    // no need for any other registers, all other roles will be created/seeded from admins
     public void register(RegisterRequest request) {
-
-        if (userRepository.existsByEmail(request.email())) {
+        if (userRepository.existsByEmailAndDeletedAtIsNull(request.email())) {
             throw new UserAlreadyExistsException("Email already exists");
         }
 
@@ -36,5 +37,17 @@ public class AuthService {
         user.setRole(role);
 
         userRepository.save(user);
+    }
+
+    public LoggedPartyAdmin login(LoginRequest request) {
+        User user = userRepository
+                .findByEmailAndDeletedAtIsNull(request.email())
+                .orElseThrow(() -> new RuntimeException("Invalid credentials"));
+
+        if (!passwordEncoder.matches(request.password(), user.getPasswordHash())) {
+            throw new RuntimeException("Invalid credentials");
+        }
+
+        return userMapper.toLoggedPartyAdmin(user);
     }
 }

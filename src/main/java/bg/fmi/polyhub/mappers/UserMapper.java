@@ -1,6 +1,7 @@
 package bg.fmi.polyhub.mappers;
 
 import bg.fmi.polyhub.dto.auth.RegisterRequest;
+import bg.fmi.polyhub.dto.partyadmin.LoggedPartyAdmin;
 import bg.fmi.polyhub.entities.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -13,5 +14,10 @@ public interface UserMapper {
     @Mapping(target = "role", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "deletedAt", ignore = true)
+
     User toEntity(RegisterRequest request);
+
+    @Mapping(target = "role", source = "role.name")
+
+    LoggedPartyAdmin toLoggedPartyAdmin(User user);
 }
