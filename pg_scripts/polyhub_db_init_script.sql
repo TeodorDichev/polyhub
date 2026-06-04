@@ -18,7 +18,7 @@ CREATE TABLE users (
     password_hash TEXT NOT NULL,
     role_id BIGINT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-	deleted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	deleted_at TIMESTAMP DEFAULT NULL,
 
     CONSTRAINT fk_user_role
         FOREIGN KEY (role_id)
@@ -43,7 +43,7 @@ CREATE TABLE parties (
     logo_url TEXT,
     founded_on DATE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP DEFAULT NULL,
 
     status_id BIGINT NOT NULL,
     created_by BIGINT NOT NULL,
