@@ -1,0 +1,74 @@
+<div class="layout">
+
+  @if (sidebarOpen) {
+    <div class="overlay" (click)="closeSidebar()"></div>
+  }
+
+  <aside class="sidebar" [class.open]="sidebarOpen">
+    <div class="sidebar-header">
+      <span class="logo">⚖ PolyHub</span>
+      <button class="close-btn" (click)="closeSidebar()">✕</button>
+    </div>
+
+    <nav class="sidebar-nav">
+      @if (authService.isLoggedIn()) {
+
+        <a routerLink="/dashboard" routerLinkActive="active" (click)="closeSidebar()">
+          Dashboard
+        </a>
+        <a routerLink="/dashboard/submit-party" routerLinkActive="active" (click)="closeSidebar()">
+          Submit Party
+        </a>
+        <a routerLink="/dashboard/my-submission" routerLinkActive="active" (click)="closeSidebar()">
+          My Submission
+        </a>
+        <a routerLink="/dashboard/personal-details" routerLinkActive="active" (click)="closeSidebar()">
+          Personal Details
+        </a>
+
+        <div class="nav-item locked" title="Requires approved party">
+          Party Analytics
+        </div>
+        <div class="nav-item locked" title="Requires approved party">
+          Policies
+        </div>
+      } @else {
+        <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="closeSidebar()">
+          Home
+        </a>
+      }
+    </nav>
+
+    <div class="sidebar-footer">
+      @if (authService.isLoggedIn()) {
+        <button class="footer-btn logout-btn" (click)="logout()">
+            Logout
+        </button>
+      } @else {
+        <a routerLink="/auth/login" class="footer-btn" (click)="closeSidebar()">
+          Login
+        </a>
+        <a routerLink="/auth/register" class="footer-btn register-btn" (click)="closeSidebar()">
+          Register
+        </a>
+      }
+    </div>
+  </aside>
+
+  <div class="content">
+    <header class="topbar">
+      <button class="menu-btn" (click)="toggleSidebar()">☰</button>
+      <span class="topbar-title">PolyHub</span>
+      @if (authService.isLoggedIn()) {
+        <span class="topbar-user">
+          {{ authService.currentUser()?.firstname }} {{ authService.currentUser()?.lastname }}
+        </span>
+      }
+    </header>
+
+    <main class="page">
+      <router-outlet />
+    </main>
+  </div>
+
+</div>
