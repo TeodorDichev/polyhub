@@ -19,6 +19,7 @@ CREATE TABLE users (
     role_id BIGINT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	deleted_at TIMESTAMP DEFAULT NULL,
+	suspended_on TIMESTAMP DEFAULT NULL,
 
     CONSTRAINT fk_user_role
         FOREIGN KEY (role_id)
@@ -40,6 +41,7 @@ CREATE TABLE parties (
     name TEXT UNIQUE NOT NULL,
     motto TEXT,
     description TEXT NOT NULL,
+	rejection_comment TEXT,
     logo_url TEXT,
     founded_on DATE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
