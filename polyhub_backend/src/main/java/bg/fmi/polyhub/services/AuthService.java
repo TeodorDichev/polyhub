@@ -50,4 +50,11 @@ public class AuthService {
 
         return userMapper.toLoggedPartyAdmin(user);
     }
+
+    public LoggedPartyAdmin me(String email) {
+        User user = userRepository
+                .findByEmailAndDeletedAtIsNull(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return userMapper.toLoggedPartyAdmin(user);
+    }
 }

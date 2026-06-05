@@ -1,5 +1,6 @@
 package bg.fmi.polyhub.mappers;
 
+import bg.fmi.polyhub.dto.admin.AdminUserResponse;
 import bg.fmi.polyhub.dto.auth.RegisterRequest;
 import bg.fmi.polyhub.dto.partyadmin.LoggedPartyAdmin;
 import bg.fmi.polyhub.entities.User;
@@ -18,6 +19,8 @@ public interface UserMapper {
     User toEntity(RegisterRequest request);
 
     @Mapping(target = "role", source = "role.name")
-
     LoggedPartyAdmin toLoggedPartyAdmin(User user);
+
+    @Mapping(target = "role", source = "role.name")
+    AdminUserResponse toAdminUserResponse(User user);
 }

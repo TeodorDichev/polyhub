@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -56,5 +57,11 @@ public class AuthController {
         cookie.setPath("/");
         cookie.setMaxAge(0); // delete immediately
         response.addCookie(cookie);
+    }
+
+    @GetMapping("/me")
+    @ResponseStatus(HttpStatus.OK)
+    public LoggedPartyAdmin me(@AuthenticationPrincipal String email) {
+        return authService.me(email);
     }
 }
