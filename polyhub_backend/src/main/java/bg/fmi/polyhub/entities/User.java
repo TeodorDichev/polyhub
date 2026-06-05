@@ -44,6 +44,9 @@ public class User {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
+    @Column(name = "suspended_on")
+    private LocalDateTime suspendedOn;
+
     @ManyToOne(optional = false)
     @JoinColumn(name = "role_id", nullable = false)
     private UserRole role;

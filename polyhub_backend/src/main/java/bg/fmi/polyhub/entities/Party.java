@@ -35,6 +35,9 @@ public class Party {
     @Column(nullable = false)
     private String description;
 
+    @Column(name = "rejection_comment")
+    private String rejectionComment;
+
     @Column(name = "logo_url")
     private String logoUrl;
 
