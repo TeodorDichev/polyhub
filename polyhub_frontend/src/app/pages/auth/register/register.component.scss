@@ -43,6 +43,7 @@
   flex-direction: column;
   gap: 0.4rem;
   margin-bottom: 1.2rem;
+  width: 100%;
 
   label {
     font-size: 0.85rem;
@@ -79,7 +80,7 @@
   border-radius: 6px;
   padding: 0.7rem 1rem;
   font-size: 0.9rem;
-  margin-bottom: 1.2rem;
+  margin-bottom: 1rem;
 }
 
 .submit-btn {
@@ -119,7 +120,15 @@
 }
 
 .field-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+  width: 100%;
+}
+
+.field {
+  width: 100%;
+}
+
+.field input {
+  width: 100%;
+  display: block;
+  box-sizing: border-box;
 }

@@ -12,11 +12,12 @@
 
     <nav class="sidebar-nav">
       @if (authService.isLoggedIn()) {
-
-        <a routerLink="/dashboard" routerLinkActive="active" (click)="closeSidebar()">
+        <a routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="closeSidebar()">
           Dashboard
         </a>
-        <a routerLink="/dashboard/submit-party" routerLinkActive="active" (click)="closeSidebar()">
+        <a routerLink="/dashboard/submit-party" routerLinkActive="active"
+          [class.locked]="authService.partyStatus() === 'PENDING' || authService.partyStatus() === 'APPROVED'"
+          (click)="closeSidebar()">
           Submit Party
         </a>
         <a routerLink="/dashboard/my-submission" routerLinkActive="active" (click)="closeSidebar()">
@@ -25,13 +26,12 @@
         <a routerLink="/dashboard/personal-details" routerLinkActive="active" (click)="closeSidebar()">
           Personal Details
         </a>
-
-        <div class="nav-item locked" title="Requires approved party">
+        <a class="locked" title="Requires approved party">
           Party Analytics
-        </div>
-        <div class="nav-item locked" title="Requires approved party">
+        </a>
+        <a class="locked" title="Requires approved party">
           Policies
-        </div>
+        </a>
       } @else {
         <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="closeSidebar()">
           Home

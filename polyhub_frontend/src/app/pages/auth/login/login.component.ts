@@ -29,14 +29,25 @@ export class LoginComponent {
     this.loading = true;
 
     this.api.login({ email: this.email, password: this.password }).subscribe({
-      next: (user) => {
+        next: (user) => {
         this.authService.setUser(user);
-        this.router.navigate(['/dashboard']);
-      },
-      error: (err) => {
+        // fetch party status after login
+        this.api.getMyParty().subscribe({
+            next: (party) => {
+            this.authService.setPartyStatus(party.status);
+            this.router.navigate(['/dashboard']);
+            },
+            error: () => {
+            // 404 means no party yet — that's fine
+            this.authService.setPartyStatus(null);
+            this.router.navigate(['/dashboard']);
+            }
+    });
+        },
+    error: (err) => {
         this.loading = false;
         this.error = err.error?.message || 'Invalid credentials';
-      }
+        }
     });
   }
 }

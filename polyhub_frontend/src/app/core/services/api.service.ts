@@ -22,6 +22,27 @@ export interface LoggedPartyAdmin {
   role: string;
 }
 
+export interface SubmitPartyRequest {
+  name: string;
+  description: string;
+  motto?: string;
+  logoUrl?: string;
+  foundedOn?: string;
+}
+
+export interface PartyResponse {
+  id: number;
+  name: string;
+  description: string;
+  motto?: string;
+  logoUrl?: string;
+  foundedOn?: string;
+  status: string;
+  rejectionComment?: string;
+  createdAt: string;
+  createdByEmail: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class ApiService {
   private base = 'http://localhost:8080';
@@ -42,6 +63,36 @@ export class ApiService {
 
   logout(): Observable<void> {
     return this.http.post<void>(`${this.base}/auth/logout`, {}, {
+      withCredentials: true
+    });
+  }
+
+  submitParty(data: SubmitPartyRequest): Observable<PartyResponse> {
+    return this.http.post<PartyResponse>(`${this.base}/parties/submit`, data, {
+        withCredentials: true
+    });
+  }
+
+  getMyParty(): Observable<PartyResponse> {
+    return this.http.get<PartyResponse>(`${this.base}/parties/my`, {
+        withCredentials: true
+    });
+  }
+
+  getMe(): Observable<LoggedPartyAdmin> {
+    return this.http.get<LoggedPartyAdmin>(`${this.base}/party-admin/me`, {
+      withCredentials: true
+    });
+  }
+
+  me(): Observable<LoggedPartyAdmin> {
+    return this.http.get<LoggedPartyAdmin>(`${this.base}/auth/me`, {
+      withCredentials: true
+    });
+  }
+
+  resubmitParty(data: SubmitPartyRequest): Observable<PartyResponse> {
+    return this.http.put<PartyResponse>(`${this.base}/parties/resubmit`, data, {
       withCredentials: true
     });
   }

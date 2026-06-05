@@ -1,8 +1,14 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
-  selector: 'app-submit-party', // change per component
+  selector: 'app-personal-details',
   standalone: true,
-  template: `<p style="color: var(--grey)">Coming soon...</p>`
+  imports: [CommonModule],
+  templateUrl: './personal-details.component.html',
+  styleUrl: './personal-details.component.scss'
 })
-export class PersonalDetailsComponent {}
+export class PersonalDetailsComponent {
+  constructor(public authService: AuthService) {}
+}

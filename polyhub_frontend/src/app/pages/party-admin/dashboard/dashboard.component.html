@@ -1,0 +1,16 @@
+@if (showModal) {
+  <app-submit-party-modal
+    (closed)="onModalClosed()"
+    (submitted)="onPartySubmitted()"
+  />
+}
+
+<div class="dashboard">
+  @if (authService.hasNoParty()) {
+    <div class="notice">
+      You have no party request yet. Submit one to get started.
+    </div>
+  }
+</div>
+
+<router-outlet />

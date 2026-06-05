@@ -1,0 +1,77 @@
+.submission {
+  h2 { color: var(--navy); margin-bottom: 1.5rem; }
+}
+
+.card {
+  background: white;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  padding: 1.5rem;
+  max-width: 560px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  border-top: 3px solid var(--gold);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.3rem 0.9rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+
+  &.pending { background: #fff8e1; color: #b8860b; }
+  &.approved { background: #e8f5e9; color: #2e7d32; }
+  &.rejected { background: #ffebee; color: var(--danger); }
+}
+
+.resubmit-btn {
+  padding: 0.4rem 1rem;
+  border-radius: 6px;
+  background: var(--gold);
+  color: var(--navy);
+  font-weight: 600;
+  font-size: 0.9rem;
+  &:hover { background: var(--gold-light); }
+}
+
+.rejection-note {
+  background: #ffebee;
+  border: 1px solid #ffcdd2;
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  color: var(--danger);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.label {
+  font-size: 0.8rem;
+  color: var(--grey);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.value {
+  font-size: 0.95rem;
+  color: var(--navy);
+}
+
+.error-msg {
+  color: var(--grey);
+  font-size: 0.95rem;
+}

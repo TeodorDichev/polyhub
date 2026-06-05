@@ -1,0 +1,44 @@
+.details {
+  h2 { color: var(--navy); margin-bottom: 1.5rem; }
+}
+
+.card {
+  background: white;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  padding: 1.5rem;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  border-top: 3px solid var(--gold);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.label {
+  font-size: 0.8rem;
+  color: var(--grey);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.value {
+  font-size: 1rem;
+  color: var(--navy);
+  font-weight: 500;
+
+  &.role {
+    color: var(--gold);
+    font-weight: 600;
+  }
+}
+
+.error-msg {
+  color: var(--danger);
+  font-size: 0.9rem;
+}

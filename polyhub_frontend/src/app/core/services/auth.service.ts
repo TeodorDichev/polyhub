@@ -10,9 +10,8 @@ export interface LoggedUser {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  // signal() is Angular's reactive state - components automatically
-  // re-render when this value changes
   currentUser = signal<LoggedUser | null>(null);
+  partyStatus = signal<string | null>(null); // null = no party yet
 
   isLoggedIn() {
     return this.currentUser() !== null;
@@ -24,5 +23,18 @@ export class AuthService {
 
   clearUser() {
     this.currentUser.set(null);
+    this.partyStatus.set(null);
+  }
+
+  setPartyStatus(status: string | null) {
+    this.partyStatus.set(status);
+  }
+
+  hasNoParty() {
+    return this.partyStatus() === null;
+  }
+
+  hasApprovedParty() {
+    return this.partyStatus() === 'APPROVED';
   }
 }
