@@ -1,3 +1,3 @@
 package bg.fmi.polyhub.dto.admin;
 
-public record RejectPartyRequest(String comment) {}
+public record RejectPartyRequest(String comment) { }

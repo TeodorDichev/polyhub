@@ -46,7 +46,7 @@ export class LoginComponent {
         },
     error: (err) => {
         this.loading = false;
-        this.error = err.error?.message || 'Invalid credentials';
+        this.error = err.error?.message || 'The server did not respond';
         }
     });
   }
