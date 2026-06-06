@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../core/services/auth.service';
@@ -11,22 +11,20 @@ import { SubmitPartyModalComponent } from '../sumbit-party-modal/submit-party-mo
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })
-export class DashboardComponent implements OnInit {
-  showModal = false;
+export class DashboardComponent {
+  dismissed = false;
 
   constructor(public authService: AuthService) {}
 
-  ngOnInit() {
-    if (this.authService.hasNoParty()) {
-      this.showModal = true;
-    }
+  get showModal(): boolean {
+    return !this.authService.loading() && this.authService.hasNoParty() && !this.dismissed;
   }
 
   onModalClosed() {
-    this.showModal = false;
+    this.dismissed = true;
   }
 
   onPartySubmitted() {
-    this.showModal = false;
+    this.dismissed = true;
   }
 }

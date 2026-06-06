@@ -7,6 +7,7 @@ import { DashboardComponent } from './pages/party-admin/dashboard/dashboard.comp
 import { SubmitPartyComponent } from './pages/party-admin/submit-party/submit-party.component';
 import { MySubmissionComponent } from './pages/party-admin/my-submission/my-submission.component';
 import { PersonalDetailsComponent } from './pages/party-admin/personal-details/personal-details.component';
+import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
   {
@@ -18,6 +19,7 @@ export const routes: Routes = [
       { path: 'auth/register', component: RegisterComponent },
       {
         path: 'dashboard',
+        canActivate: [authGuard],
         component: DashboardComponent,
         children: [
           { path: 'submit-party', component: SubmitPartyComponent },

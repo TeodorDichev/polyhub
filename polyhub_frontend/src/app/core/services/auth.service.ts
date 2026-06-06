@@ -12,6 +12,7 @@ export interface LoggedUser {
 export class AuthService {
   currentUser = signal<LoggedUser | null>(null);
   partyStatus = signal<string | null>(null); // null = no party yet
+  loading = signal<boolean>(true);
 
   isLoggedIn() {
     return this.currentUser() !== null;
