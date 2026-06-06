@@ -10,6 +10,8 @@ import bg.fmi.polyhub.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+
 @Service
 @RequiredArgsConstructor
 public class PartyService {
@@ -37,6 +39,10 @@ public class PartyService {
             throw new RuntimeException("Party name already exists");
         }
 
+        if (request.foundedOn().isAfter(LocalDate.now())) {
+            throw new RuntimeException("Party cannot be created on this date");
+        }
+
         PartyStatus pendingStatus = partyStatusRepository
                 .findByName(PartyStatusType.PENDING)
                 .orElseThrow(() -> new RuntimeException("Status PENDING not found"));
@@ -61,6 +67,10 @@ public class PartyService {
 
         if (existing.getStatus().getName() != PartyStatusType.REJECTED) {
             throw new RuntimeException("Only rejected parties can be resubmitted");
+        }
+
+        if (request.foundedOn().isAfter(LocalDate.now())) {
+            throw new RuntimeException("Party cannot be created on this date");
         }
 
         PartyStatus pendingStatus = partyStatusRepository

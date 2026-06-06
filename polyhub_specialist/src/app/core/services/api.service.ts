@@ -4,6 +4,20 @@ import { Observable } from 'rxjs';
 
 export interface LoginRequest { email: string; password: string; }
 export interface SpecialistUser { id: number; email: string; firstname: string; lastname: string; role: string; }
+export interface ElectionResponse {
+  id: number;
+  name: string;
+  electionDate: string;
+  description?: string;
+  type: string;
+}
+
+export interface CreateElectionRequest {
+  name: string;
+  electionDate: string;
+  type: string;
+  description?: string;
+}
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
@@ -21,5 +35,21 @@ export class ApiService {
 
   me(): Observable<SpecialistUser> {
     return this.http.get<SpecialistUser>(`${this.base}/auth/me`, { withCredentials: true });
+  }
+
+  getElections(): Observable<ElectionResponse[]> {
+    return this.http.get<ElectionResponse[]>(`${this.base}/elections`, { withCredentials: true });
+  }
+
+  createElection(data: CreateElectionRequest): Observable<ElectionResponse> {
+    return this.http.post<ElectionResponse>(`${this.base}/elections`, data, { withCredentials: true });
+  }
+
+  updateElection(id: number, data: CreateElectionRequest): Observable<ElectionResponse> {
+    return this.http.put<ElectionResponse>(`${this.base}/elections/${id}`, data, { withCredentials: true });
+  }
+
+  deleteElection(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.base}/elections/${id}`, { withCredentials: true });
   }
 }

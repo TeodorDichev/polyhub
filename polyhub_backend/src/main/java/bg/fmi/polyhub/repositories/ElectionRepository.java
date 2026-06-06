@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface ElectionRepository extends JpaRepository<Election, Long> {
+    List<Election> findAllByOrderByElectionDateDesc();
 
     List<Election> findByTypeName(String type);
 

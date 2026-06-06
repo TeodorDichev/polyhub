@@ -25,9 +25,9 @@ export class LoginComponent {
     this.loading = true;
     this.api.login({ email: this.email, password: this.password }).subscribe({
       next: (user) => {
-        if (user.role !== 'ADMIN') {
+        if (user.role !== 'POLYHUB_SPECIALIST') {
           this.loading = false;
-          this.error = 'Access denied. Admin accounts only.';
+          this.error = 'Access denied. Specialist accounts only.';
           return;
         }
         this.authService.setUser(user);
