@@ -11,7 +11,6 @@
         <div class="error-msg">{{ error }}</div>
       }
 
-      <div class="field-row">
         <div class="field">
           <label>First Name</label>
           <input
@@ -22,9 +21,7 @@
             required
           />
         </div>
-      </div>
 
-      <div class="field-row">
         <div class="field">
           <label>Last Name</label>
           <input
@@ -35,9 +32,7 @@
             required
           />
         </div>
-      </div>
 
-      <div class="field-row">
         <div class="field">
           <label>Email</label>
           <input
@@ -48,9 +43,7 @@
             required
           />  
         </div>
-      </div>
       
-      <div class="field-row">
         <div class="field">
           <label>Password</label>
           <input
@@ -61,7 +54,6 @@
             required
           />
         </div>
-      </div>
       
       <button type="submit" class="submit-btn" [disabled]="loading">
         {{ loading ? 'Creating account...' : 'Create Account' }}

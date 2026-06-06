@@ -58,7 +58,7 @@ export class SpecialistsComponent implements OnInit {
       },
       error: (err) => {
         this.creating = false;
-        this.createError = err.error?.message || 'Failed to create specialist';
+        this.createError = err.error?.message || 'The server did not respond';
       }
     });
   }

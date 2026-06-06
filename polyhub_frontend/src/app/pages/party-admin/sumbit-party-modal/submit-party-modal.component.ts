@@ -66,7 +66,7 @@ export class SubmitPartyModalComponent implements OnInit {
       },
       error: (err) => {
         this.loading = false;
-        this.error = err.error?.message || 'Submission failed';
+        this.error = err.error?.message || 'The server did not respond';
       }
     });
   }

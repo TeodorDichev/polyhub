@@ -75,8 +75,6 @@ table {
   h3 { color: var(--text); }
 }
 
-.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-
 .field {
   display: flex;
   flex-direction: column;

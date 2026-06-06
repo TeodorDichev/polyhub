@@ -36,7 +36,7 @@ export class RegisterComponent {
       },
       error: (err) => {
         this.loading = false;
-        this.error = err.error?.message || 'Registration failed';
+        this.error = err.error?.message || 'The server did not respond';
       }
     });
   }

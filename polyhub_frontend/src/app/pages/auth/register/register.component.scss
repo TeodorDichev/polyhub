@@ -119,16 +119,35 @@
   }
 }
 
-.field-row {
-  width: 100%;
-}
-
 .field {
-  width: 100%;
-}
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
 
-.field input {
-  width: 100%;
-  display: block;
-  box-sizing: border-box;
+  label {
+    font-size: 0.8rem;
+    color: var(--gold-light);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  input {
+    background: var(--navy);
+    border: 1px solid var(--navy-lighter);
+    border-radius: 6px;
+    padding: 0.7rem 1rem;
+    font-size: 0.95rem;
+    color: var(--white);
+
+    &:focus {
+      outline: none;
+      border-color: var(--gold);
+    }
+
+    &::placeholder {
+      color: var(--grey);
+      opacity: 0.5;
+    }
+  }
 }
