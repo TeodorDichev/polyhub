@@ -48,6 +48,10 @@ public class AuthService {
             throw new RuntimeException("Invalid credentials");
         }
 
+        if (user.getSuspendedOn() != null) {
+            throw new RuntimeException("Your account has been suspended");
+        }
+
         return userMapper.toLoggedPartyAdmin(user);
     }
 
