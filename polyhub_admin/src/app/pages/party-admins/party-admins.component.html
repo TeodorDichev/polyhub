@@ -1,0 +1,75 @@
+<div class="page-header">
+  <h2>Party Admins</h2>
+</div>
+
+@if (error) {
+  <div class="error-msg">{{ error }}</div>
+}
+
+<div class="table-wrapper">
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (user of users; track user.id) {
+        <tr>
+          <td>{{ user.firstname }} {{ user.lastname }}</td>
+          <td>{{ user.email }}</td>
+          <td>
+            @if (user.suspendedOn) {
+              <span class="badge suspended">Suspended</span>
+            } @else {
+              <span class="badge active">Active</span>
+            }
+          </td>
+          <td class="actions">
+            @if (user.suspendedOn) {
+              <button class="btn-success" (click)="unsuspend(user.id)">Unsuspend</button>
+            } @else {
+              <button class="btn-warning" (click)="suspend(user.id)">Suspend</button>
+            }
+            
+            <button class="btn-info" (click)="openInfo(user)">Info</button>
+
+            <button class="btn-danger" (click)="delete(user.id)">Delete</button>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
+
+@if (selectedUser) {
+  <div class="modal-backdrop" (click)="closeInfo()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>{{ selectedUser.firstname }} {{ selectedUser.lastname }}</h3>
+        <button class="close-btn" (click)="closeInfo()">✕</button>
+      </div>
+      <div class="info-grid">
+        <div class="info-field">
+          <span class="label">Email</span>
+          <span>{{ selectedUser.email }}</span>
+        </div>
+        <div class="info-field">
+          <span class="label">Role</span>
+          <span>{{ selectedUser.role }}</span>
+        </div>
+        <div class="info-field">
+          <span class="label">Created At</span>
+          <span>{{ selectedUser.createdAt }}</span>
+        </div>
+        <div class="info-field">
+          <span class="label">Suspended On</span>
+          <span>{{ selectedUser.suspendedOn ?? '—' }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+}
