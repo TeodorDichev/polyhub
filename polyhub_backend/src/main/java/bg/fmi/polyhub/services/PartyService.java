@@ -2,7 +2,10 @@ package bg.fmi.polyhub.services;
 
 import bg.fmi.polyhub.dto.party.PartyResponse;
 import bg.fmi.polyhub.dto.party.SubmitPartyRequest;
-import bg.fmi.polyhub.entities.*;
+import bg.fmi.polyhub.entities.Party;
+import bg.fmi.polyhub.entities.PartyStatus;
+import bg.fmi.polyhub.entities.PartyStatusType;
+import bg.fmi.polyhub.entities.User;
 import bg.fmi.polyhub.mappers.PartyMapper;
 import bg.fmi.polyhub.repositories.PartyRepository;
 import bg.fmi.polyhub.repositories.PartyStatusRepository;

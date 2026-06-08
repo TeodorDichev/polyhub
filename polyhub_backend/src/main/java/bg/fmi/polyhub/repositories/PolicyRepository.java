@@ -1,6 +1,7 @@
 package bg.fmi.polyhub.repositories;
 
 import bg.fmi.polyhub.entities.Policy;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -11,4 +12,8 @@ public interface PolicyRepository extends JpaRepository<Policy, Long> {
     Optional<Policy> findBySlug(String slug);
 
     List<Policy> findByNameContainingIgnoreCase(String keyword);
+
+    List<Policy> findAllByIdIn(List<Long> ids);
+
+    boolean existsByNameOrSlug(String name, String slug);
 }

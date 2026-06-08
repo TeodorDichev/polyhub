@@ -27,12 +27,6 @@ public class Policy {
     @Column(nullable = false, unique = true)
     private String slug;
 
-    @Column(name = "self_economic_axis")
-    private Double selfEconomicAxis;
-
-    @Column(name = "self_social_axis")
-    private Double selfSocialAxis;
-
     @Column(name = "spec_economic_axis")
     private Double specEconomicAxis;
 
