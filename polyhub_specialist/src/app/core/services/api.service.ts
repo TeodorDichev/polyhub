@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 
 export interface LoginRequest { email: string; password: string; }
 export interface SpecialistUser { id: number; email: string; firstname: string; lastname: string; role: string; }
+
 export interface ElectionResponse {
   id: number;
   name: string;
@@ -17,6 +18,20 @@ export interface CreateElectionRequest {
   electionDate: string;
   type: string;
   description?: string;
+}
+
+export interface PolicySummary {
+  id: number;
+  name: string;
+  slug: string;
+  politicalPosition: string;
+}
+
+export interface CreatePolicyRequest {
+  name: string;
+  slug: string;
+  specEconomicAxis: number;
+  specSocialAxis: number;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -51,5 +66,17 @@ export class ApiService {
 
   deleteElection(id: number): Observable<void> {
     return this.http.delete<void>(`${this.base}/elections/${id}`, { withCredentials: true });
+  }
+
+  getPolicies(): Observable<PolicySummary[]> {
+    return this.http.get<PolicySummary[]>(`${this.base}/policies`, { withCredentials: true });
+  }
+
+  createPolicy(data: CreatePolicyRequest): Observable<PolicySummary> {
+    return this.http.post<PolicySummary>(`${this.base}/policies`, data, { withCredentials: true });
+  }
+
+  deletePolicy(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.base}/policies/${id}`, { withCredentials: true });
   }
 }

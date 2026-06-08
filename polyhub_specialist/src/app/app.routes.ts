@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { MainLayoutComponent } from './layouts/main-layout/main-layout.component';
 import { LoginComponent } from './pages/login/login.component';
 import { ElectionsComponent } from './pages/elections/elections.component';
+import { PoliciesComponent } from './pages/policies/policies.component';
 import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
@@ -13,6 +14,7 @@ export const routes: Routes = [
     children: [
       { path: '', redirectTo: 'elections', pathMatch: 'full' },
       { path: 'elections', component: ElectionsComponent },
+      { path: 'policies', component: PoliciesComponent },
     ]
   }
 ];
