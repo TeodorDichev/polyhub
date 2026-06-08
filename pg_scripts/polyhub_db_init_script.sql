@@ -58,11 +58,15 @@ CREATE TABLE parties (
 
     CONSTRAINT fk_party_status
         FOREIGN KEY (status_id)
-        REFERENCES party_statuses(id),
+        REFERENCES party_statuses(id)
+		ON UPDATE NO ACTION
+		ON DELETE CASCADE,
 
     CONSTRAINT fk_party_user
         FOREIGN KEY (created_by)
         REFERENCES users(id)
+		ON UPDATE NO ACTION
+		ON DELETE NO ACTION
 );
 
 CREATE TABLE party_member_roles (
@@ -85,11 +89,14 @@ CREATE TABLE party_members (
     CONSTRAINT fk_member_party
         FOREIGN KEY (party_id)
         REFERENCES parties(id)
+		ON UPDATE NO ACTION
         ON DELETE CASCADE,
 
     CONSTRAINT fk_member_role
         FOREIGN KEY (role_id)
         REFERENCES party_member_roles(id)
+		ON UPDATE NO ACTION
+		ON DELETE NO ACTION
 );
 
 CREATE TABLE election_types (
@@ -113,6 +120,8 @@ CREATE TABLE elections (
     CONSTRAINT fk_election_type
         FOREIGN KEY (type_id)
         REFERENCES election_types(id)
+		ON UPDATE NO ACTION
+		ON DELETE NO ACTION
 );
 
 CREATE TABLE party_participations (
@@ -123,11 +132,13 @@ CREATE TABLE party_participations (
     CONSTRAINT fk_pp_party
         FOREIGN KEY (party_id)
         REFERENCES parties(id)
+		ON UPDATE NO ACTION
         ON DELETE CASCADE,
 
     CONSTRAINT fk_pp_election
         FOREIGN KEY (election_id)
         REFERENCES elections(id)
+		ON UPDATE NO ACTION
         ON DELETE CASCADE
 );
 
@@ -149,11 +160,13 @@ CREATE TABLE programs (
 	CONSTRAINT fk_program_election
         FOREIGN KEY (election_id)
         REFERENCES elections(id)
+		ON UPDATE NO ACTION
         ON DELETE CASCADE,
 		
     CONSTRAINT fk_program_party
         FOREIGN KEY (party_id)
         REFERENCES parties(id)
+		ON UPDATE NO ACTION
         ON DELETE CASCADE
 );
 
@@ -162,9 +175,6 @@ CREATE TABLE policies (
     name TEXT UNIQUE NOT NULL,
     slug TEXT UNIQUE NOT NULL,
 	
-	self_economic_axis DOUBLE PRECISION, -- -1.00 to 1.00
-    self_social_axis DOUBLE PRECISION,   -- -1.00 to 1.00
-
 	spec_economic_axis DOUBLE PRECISION, -- -1.00 to 1.00
     spec_social_axis DOUBLE PRECISION   -- -1.00 to 1.00
 );
@@ -178,10 +188,12 @@ CREATE TABLE program_policies (
     CONSTRAINT fk_pt_program
         FOREIGN KEY (program_id)
         REFERENCES programs(id)
+		ON UPDATE NO ACTION
         ON DELETE CASCADE,
 
     CONSTRAINT fk_pt_policies
         FOREIGN KEY (policy_id)
         REFERENCES policies(id)
+		ON UPDATE NO ACTION
         ON DELETE CASCADE
 );
