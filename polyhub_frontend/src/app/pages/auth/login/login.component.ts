@@ -29,25 +29,39 @@ export class LoginComponent {
     this.loading = true;
 
     this.api.login({ email: this.email, password: this.password }).subscribe({
-        next: (user) => {
+      next: (user) => {
+        if (user.role !== 'PARTY_ADMIN') {
+          this.api.logout().subscribe({
+            next: () => this.handleAccessDenied(),
+            error: () => this.handleAccessDenied()
+          });
+          return;
+        }
+
         this.authService.setUser(user);
         // fetch party status after login
         this.api.getMyParty().subscribe({
-            next: (party) => {
+          next: (party) => {
             this.authService.setPartyStatus(party.status);
             this.router.navigate(['/dashboard']);
-            },
-            error: () => {
+          },
+          error: () => {
             // 404 means no party yet — that's fine
             this.authService.setPartyStatus(null);
             this.router.navigate(['/dashboard']);
-            }
-    });
-        },
-    error: (err) => {
+          }
+        });
+      },
+      error: (err) => {
         this.loading = false;
         this.error = err.error?.message || 'The server did not respond';
-        }
+      }
     });
+  }
+
+  private handleAccessDenied() {
+    this.loading = false;
+    this.error = 'Access denied. Party admin accounts only.';
+    this.authService.clearUser();
   }
 }
