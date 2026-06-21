@@ -54,6 +54,29 @@ export interface PartyResponse {
   createdByEmail: string;
 }
 
+export interface ElectionPartyResultResponse {
+  partyId: number;
+  partyName: string;
+  partyDescription: string;
+  partyMotto?: string | null;
+  votesCount?: number | null;
+  votePercentage?: number | null;
+  programId?: number | null;
+  programTitle?: string | null;
+}
+
+export interface ElectionDetailsResponse {
+  id: number;
+  name: string;
+  electionDate: string;
+  description: string;
+  type: string;
+  status: 'FINISHED' | 'RUNNING' | 'UPCOMING';
+  winnerPartyName?: string | null;
+  winnerVotePercentage?: number | null;
+  parties: ElectionPartyResultResponse[];
+}
+
 @Injectable({ providedIn: 'root' })
 export class ApiService {
   private base = 'http://localhost:8080';
@@ -110,6 +133,12 @@ export class ApiService {
 
   getElections(): Observable<ElectionResponse[]> {
     return this.http.get<ElectionResponse[]>(`${this.base}/elections`, {
+      withCredentials: true
+    });
+  }
+
+  getElectionById(id: number): Observable<ElectionDetailsResponse> {
+    return this.http.get<ElectionDetailsResponse>(`${this.base}/elections/${id}`, {
       withCredentials: true
     });
   }
