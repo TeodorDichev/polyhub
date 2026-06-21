@@ -8,7 +8,8 @@ import {
 
 import {
   ControlValueAccessor,
-  NG_VALUE_ACCESSOR
+  NG_VALUE_ACCESSOR,
+  FormsModule
 } from '@angular/forms';
 
 export interface PoliticalPoint {
@@ -19,6 +20,7 @@ export interface PoliticalPoint {
 @Component({
   selector: 'app-political-plane',
   standalone: true,
+  imports: [FormsModule],
   templateUrl: './political-plane.component.html',
   styleUrl: './political-plane.component.scss',
   providers: [
@@ -101,6 +103,19 @@ export class PoliticalPlaneComponent implements ControlValueAccessor, AfterViewI
 
   onMouseLeave(): void {
     this.hoverPoint = null;
+    this.draw();
+  }
+
+  onInputChange(): void {
+    if (this.disabled) return;
+
+    this.value = {
+      x: this.clamp(this.value.x),
+      y: this.clamp(this.value.y)
+    };
+
+    this.onChange(this.value);
+    this.onTouched();
     this.draw();
   }
 

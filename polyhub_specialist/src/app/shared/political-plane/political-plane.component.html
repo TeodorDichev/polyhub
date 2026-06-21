@@ -6,3 +6,30 @@
   (mousemove)="onMouseMove($event)"
   (mouseleave)="onMouseLeave()">
 </canvas>
+
+<div class="manual-inputs">
+  <div class="field">
+    <label>Economic (X)</label>
+    <input
+      type="number"
+      step="0.01"
+      min="-1"
+      max="1"
+      [(ngModel)]="value.x"
+      (ngModelChange)="onInputChange()"
+      [disabled]="disabled"
+    />
+  </div>
+  <div class="field">
+    <label>Social (Y)</label>
+    <input
+      type="number"
+      step="0.01"
+      min="-1"
+      max="1"
+      [(ngModel)]="value.y"
+      (ngModelChange)="onInputChange()"
+      [disabled]="disabled"
+    />
+  </div>
+</div>

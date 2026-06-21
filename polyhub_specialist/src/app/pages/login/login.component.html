@@ -1,7 +1,7 @@
 <div class="login-wrapper">
   <div class="login-card">
     <h1>PolyHub</h1>
-    <p>Admin Portal</p>
+    <p>Specialist Portal</p>
 
     <form (ngSubmit)="onSubmit()">
       @if (error) {
@@ -9,7 +9,7 @@
       }
       <div class="field">
         <label>Email</label>
-        <input type="email" [(ngModel)]="email" name="email" required placeholder="admin@polyhub.com" />
+        <input type="email" [(ngModel)]="email" name="email" required placeholder="specialist@polyhub.com" />
       </div>
       <div class="field">
         <label>Password</label>
