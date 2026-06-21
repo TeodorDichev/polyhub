@@ -1,4 +1,4 @@
-package bg.fmi.polyhub.dto.policy;
+package bg.fmi.polyhub.dto.specialist;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

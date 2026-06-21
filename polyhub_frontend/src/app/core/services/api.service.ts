@@ -78,38 +78,26 @@ export class ApiService {
     });
   }
 
-  submitParty(data: SubmitPartyRequest): Observable<PartyResponse> {
-    return this.http.post<PartyResponse>(`${this.base}/parties/submit`, data, {
-        withCredentials: true
-    });
-  }
-
-  getMyParty(): Observable<PartyResponse> {
-    return this.http.get<PartyResponse>(`${this.base}/parties/my`, {
-        withCredentials: true
-    });
-  }
-
-  getMe(): Observable<LoggedPartyAdmin> {
-    return this.http.get<LoggedPartyAdmin>(`${this.base}/party-admin/me`, {
-      withCredentials: true
-    });
-  }
-
   me(): Observable<LoggedPartyAdmin> {
     return this.http.get<LoggedPartyAdmin>(`${this.base}/auth/me`, {
       withCredentials: true
     });
   }
 
-  resubmitParty(data: SubmitPartyRequest): Observable<PartyResponse> {
-    return this.http.put<PartyResponse>(`${this.base}/parties/resubmit`, data, {
-      withCredentials: true
+  submitParty(data: SubmitPartyRequest): Observable<PartyResponse> {
+    return this.http.post<PartyResponse>(`${this.base}/party-admin/parties/submit`, data, {
+        withCredentials: true
     });
   }
 
-  getElections(): Observable<ElectionResponse[]> {
-    return this.http.get<ElectionResponse[]>(`${this.base}/elections`, {
+  getMyParty(): Observable<PartyResponse> {
+    return this.http.get<PartyResponse>(`${this.base}/party-admin/parties/my`, {
+        withCredentials: true
+    });
+  }
+
+  resubmitParty(data: SubmitPartyRequest): Observable<PartyResponse> {
+    return this.http.put<PartyResponse>(`${this.base}/party-admin/parties/resubmit`, data, {
       withCredentials: true
     });
   }

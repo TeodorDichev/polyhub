@@ -1,9 +1,9 @@
 package bg.fmi.polyhub.mappers;
 
-import bg.fmi.polyhub.dto.policy.CreatePolicyRequest;
+import bg.fmi.polyhub.dto.specialist.CreatePolicyRequest;
 import bg.fmi.polyhub.dto.policy.PolicySummary;
 import bg.fmi.polyhub.entities.Policy;
-import bg.fmi.polyhub.dto.policy.PoliticalPositionType;
+import bg.fmi.polyhub.dto.PoliticalPositionType;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;

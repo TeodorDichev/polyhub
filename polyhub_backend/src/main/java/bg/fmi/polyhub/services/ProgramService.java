@@ -1,8 +1,12 @@
 package bg.fmi.polyhub.services;
 
+import bg.fmi.polyhub.dto.PoliticalPositionType;
+import bg.fmi.polyhub.dto.policy.PolicySummary;
 import bg.fmi.polyhub.dto.program.CreateProgramRequest;
 import bg.fmi.polyhub.dto.program.ProgramResponse;
 import bg.fmi.polyhub.dto.program.ProgramSuggestion;
+import bg.fmi.polyhub.dto.specialist.ProgramForRatingResponse;
+import bg.fmi.polyhub.dto.specialist.ProgramRatingRequest;
 import bg.fmi.polyhub.entities.Election;
 import bg.fmi.polyhub.entities.Party;
 import bg.fmi.polyhub.entities.PartyStatusType;
@@ -21,6 +25,7 @@ import bg.fmi.polyhub.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -121,9 +126,57 @@ public class ProgramService {
         return programMapper.toResponse(program, policies);
     }
 
-    private User getActiveUser(String email) {
-        return userRepository.findByEmailAndDeletedAtIsNull(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    public List<ProgramForRatingResponse> getAllPrograms() {
+        return programRepository.findAll()
+                .stream()
+                .map(this::toRatingResponse)
+                .toList();
+    }
+
+    public ProgramForRatingResponse getProgram(Long id) {
+        Program program = programRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Program not found"));
+        return toRatingResponse(program);
+    }
+
+    public ProgramForRatingResponse rateProgram(Long id, ProgramRatingRequest request) {
+        Program program = programRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Program not found"));
+
+        if (program.getElection().getElectionDate().isBefore(LocalDate.now())) {
+            throw new RuntimeException("Cannot rate a program for a past election");
+        }
+
+        program.setSpecEconomicAxis(request.specEconomicAxis());
+        program.setSpecSocialAxis(request.specSocialAxis());
+
+        return toRatingResponse(programRepository.save(program));
+    }
+
+    private ProgramForRatingResponse toRatingResponse(Program program) {
+        List<PolicySummary> policies = programPolicyRepository.findAllByProgram(program)
+                .stream()
+                .map(pp -> {
+                    Policy policy = pp.getPolicy();
+                    PoliticalPositionType position = PoliticalPositionType.from(
+                            policy.getSpecEconomicAxis(),
+                            policy.getSpecSocialAxis()
+                    );
+                    return new PolicySummary(
+                            policy.getId(),
+                            policy.getName(),
+                            policy.getSlug(),
+                            position != null ? position.name() : null
+                    );
+                })
+                .toList();
+
+        return programMapper.toRatingResponseBase(program)
+                .toBuilder()
+                .policies(policies)
+                .rated(program.getSpecEconomicAxis() != null && program.getSpecSocialAxis() != null)
+                .electionPassed(program.getElection().getElectionDate().isBefore(LocalDate.now()))
+                .build();
     }
 
     private Party getApprovedParty(User user) {
@@ -135,5 +188,10 @@ public class ProgramService {
         }
 
         return party;
+    }
+
+    private User getActiveUser(String email) {
+        return userRepository.findByEmailAndDeletedAtIsNull(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 }

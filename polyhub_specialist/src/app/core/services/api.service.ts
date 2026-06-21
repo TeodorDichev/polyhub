@@ -53,30 +53,30 @@ export class ApiService {
   }
 
   getElections(): Observable<ElectionResponse[]> {
-    return this.http.get<ElectionResponse[]>(`${this.base}/elections`, { withCredentials: true });
+    return this.http.get<ElectionResponse[]>(`${this.base}/specialist/elections`, { withCredentials: true });
   }
 
   createElection(data: CreateElectionRequest): Observable<ElectionResponse> {
-    return this.http.post<ElectionResponse>(`${this.base}/elections`, data, { withCredentials: true });
+    return this.http.post<ElectionResponse>(`${this.base}/specialist/elections`, data, { withCredentials: true });
   }
 
   updateElection(id: number, data: CreateElectionRequest): Observable<ElectionResponse> {
-    return this.http.put<ElectionResponse>(`${this.base}/elections/${id}`, data, { withCredentials: true });
+    return this.http.put<ElectionResponse>(`${this.base}/specialist/elections/${id}`, data, { withCredentials: true });
   }
 
   deleteElection(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.base}/elections/${id}`, { withCredentials: true });
+    return this.http.delete<void>(`${this.base}/specialist/elections/${id}`, { withCredentials: true });
   }
 
   getPolicies(): Observable<PolicySummary[]> {
-    return this.http.get<PolicySummary[]>(`${this.base}/policies`, { withCredentials: true });
+    return this.http.get<PolicySummary[]>(`${this.base}/specialist/policies`, { withCredentials: true });
   }
 
   createPolicy(data: CreatePolicyRequest): Observable<PolicySummary> {
-    return this.http.post<PolicySummary>(`${this.base}/policies`, data, { withCredentials: true });
+    return this.http.post<PolicySummary>(`${this.base}/specialist/policies`, data, { withCredentials: true });
   }
 
   deletePolicy(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.base}/policies/${id}`, { withCredentials: true });
+    return this.http.delete<void>(`${this.base}/specialist/policies/${id}`, { withCredentials: true });
   }
 }

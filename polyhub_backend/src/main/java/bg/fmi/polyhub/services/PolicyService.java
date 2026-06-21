@@ -1,6 +1,6 @@
 package bg.fmi.polyhub.services;
 
-import bg.fmi.polyhub.dto.policy.CreatePolicyRequest;
+import bg.fmi.polyhub.dto.specialist.CreatePolicyRequest;
 import bg.fmi.polyhub.dto.policy.PolicySummary;
 import bg.fmi.polyhub.entities.Policy;
 import bg.fmi.polyhub.mappers.PolicyMapper;
