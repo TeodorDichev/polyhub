@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import bg.fmi.polyhub.dto.election.ElectionDetailsResponse;
 
 import java.util.List;
 
@@ -50,5 +51,10 @@ public class ElectionController {
     @GetMapping
     public List<ElectionResponse> getAll() {
         return electionService.getAll();
+    }
+
+    @GetMapping("/{id}")
+    public ElectionDetailsResponse getById(@PathVariable Long id) {
+        return electionService.getById(id);
     }
 }
