@@ -1,37 +1,56 @@
-import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { ApiService, ElectionResponse } from '../../core/services/api.service';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  template: `
-    <div class="hero">
-      <h1>Welcome to <span>PolyHub</span></h1>
-      <p>The political platform for transparent democratic participation.</p>
-    </div>
-  `,
-  styles: [`
-    .hero {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      height: 60vh;
-      text-align: center;
-      gap: 1rem;
-
-      h1 {
-        font-size: 2.5rem;
-        font-weight: 700;
-        color: var(--navy-lighter);
-
-        span { color: var(--gold); }
-      }
-
-      p {
-        color: var(--grey);
-        font-size: 1.1rem;
-      }
-    }
-  `]
+  imports: [CommonModule, RouterLink],
+  templateUrl: './home.component.html',
+  styleUrl: './home.component.scss'
 })
-export class HomeComponent {}
+export class HomeComponent implements OnInit {
+  elections: ElectionResponse[] = [];
+  loading = false;
+  error = '';
+
+  constructor(private api: ApiService) {}
+
+  ngOnInit() {
+    this.loadElections();
+  }
+
+  loadElections() {
+    this.loading = true;
+    this.error = '';
+
+    this.api.getElections().subscribe({
+      next: (elections) => {
+        this.elections = elections;
+        this.loading = false;
+      },
+      error: () => {
+        this.error = 'Could not load elections.';
+        this.loading = false;
+      }
+    });
+  }
+
+  getStatusLabel(status: string): string {
+    switch (status) {
+      case 'FINISHED':
+        return 'Finished';
+      case 'RUNNING':
+        return 'Running';
+      case 'UPCOMING':
+        return 'Upcoming';
+      default:
+        return status;
+    }
+  }
+
+  getTypeLabel(type: string): string {
+    return type.replaceAll('_', ' ');
+  }
+}

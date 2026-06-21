@@ -2,6 +2,17 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
+export interface ElectionResponse {
+  id: number;
+  name: string;
+  electionDate: string;
+  description: string;
+  type: string;
+  status: 'FINISHED' | 'RUNNING' | 'UPCOMING';
+  winnerPartyName?: string | null;
+  winnerVotePercentage?: number | null;
+}
+
 export interface RegisterRequest {
   email: string;
   password: string;
@@ -93,6 +104,12 @@ export class ApiService {
 
   resubmitParty(data: SubmitPartyRequest): Observable<PartyResponse> {
     return this.http.put<PartyResponse>(`${this.base}/parties/resubmit`, data, {
+      withCredentials: true
+    });
+  }
+
+  getElections(): Observable<ElectionResponse[]> {
+    return this.http.get<ElectionResponse[]>(`${this.base}/elections`, {
       withCredentials: true
     });
   }

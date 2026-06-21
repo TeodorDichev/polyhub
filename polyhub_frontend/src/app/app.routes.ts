@@ -7,6 +7,7 @@ import { DashboardComponent } from './pages/party-admin/dashboard/dashboard.comp
 import { SubmitPartyComponent } from './pages/party-admin/submit-party/submit-party.component';
 import { MySubmissionComponent } from './pages/party-admin/my-submission/my-submission.component';
 import { PersonalDetailsComponent } from './pages/party-admin/personal-details/personal-details.component';
+import { ElectionDetailsComponent } from './pages/election-details/election-details.component';
 import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
@@ -17,6 +18,7 @@ export const routes: Routes = [
       { path: '', component: HomeComponent },
       { path: 'auth/login', component: LoginComponent },
       { path: 'auth/register', component: RegisterComponent },
+      { path: 'elections/:id', component: ElectionDetailsComponent },
       {
         path: 'dashboard',
         canActivate: [authGuard],
