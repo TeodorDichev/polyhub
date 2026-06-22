@@ -154,10 +154,22 @@ public class ElectionService {
                 participation.getParty().getName(),
                 participation.getParty().getDescription(),
                 participation.getParty().getMotto(),
+
+                participation.getParty().getSelfEconomicAxis(),
+                participation.getParty().getSelfSocialAxis(),
+                participation.getParty().getSpecEconomicAxis(),
+                participation.getParty().getSpecSocialAxis(),
+
                 participation.getVotesCount(),
                 participation.getVotePercentage(),
+
                 program != null ? program.getId() : null,
-                program != null ? program.getTitle() : null
+                program != null ? program.getTitle() : null,
+
+                program != null ? program.getSelfEconomicAxis() : null,
+                program != null ? program.getSelfSocialAxis() : null,
+                program != null ? program.getSpecEconomicAxis() : null,
+                program != null ? program.getSpecSocialAxis() : null
         );
     }
 

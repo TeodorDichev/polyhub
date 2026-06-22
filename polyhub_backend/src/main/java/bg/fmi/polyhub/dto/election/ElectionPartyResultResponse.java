@@ -7,8 +7,20 @@ public record ElectionPartyResultResponse(
         String partyName,
         String partyDescription,
         String partyMotto,
+
+        Double partySelfEconomicAxis,
+        Double partySelfSocialAxis,
+        Double partySpecEconomicAxis,
+        Double partySpecSocialAxis,
+
         Long votesCount,
         BigDecimal votePercentage,
+
         Long programId,
-        String programTitle
+        String programTitle,
+
+        Double programSelfEconomicAxis,
+        Double programSelfSocialAxis,
+        Double programSpecEconomicAxis,
+        Double programSpecSocialAxis
 ) {}
