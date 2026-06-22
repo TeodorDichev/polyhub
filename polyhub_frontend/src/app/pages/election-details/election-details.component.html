@@ -51,6 +51,28 @@
     </div>
   </section>
 
+  <section class="compass-section">
+    <div class="section-header">
+      <div>
+        <h2>Political compass overview</h2>
+        <p>
+          Specialist assessment of the participating parties in this election.
+        </p>
+      </div>
+    </div>
+
+    @if (partyMarkers.length === 0) {
+      <div class="state-box">
+        No political compass coordinates have been added for these parties yet.
+      </div>
+    } @else {
+      <app-political-plane
+        title="Participating parties"
+        [markers]="partyMarkers">
+      </app-political-plane>
+    }
+  </section>
+
   <section class="parties-section">
     <div class="section-header">
       <div>

@@ -59,10 +59,22 @@ export interface ElectionPartyResultResponse {
   partyName: string;
   partyDescription: string;
   partyMotto?: string | null;
+
+  partySelfEconomicAxis?: number | null;
+  partySelfSocialAxis?: number | null;
+  partySpecEconomicAxis?: number | null;
+  partySpecSocialAxis?: number | null;
+
   votesCount?: number | null;
   votePercentage?: number | null;
+
   programId?: number | null;
   programTitle?: string | null;
+
+  programSelfEconomicAxis?: number | null;
+  programSelfSocialAxis?: number | null;
+  programSpecEconomicAxis?: number | null;
+  programSpecSocialAxis?: number | null;
 }
 
 export interface ElectionDetailsResponse {
