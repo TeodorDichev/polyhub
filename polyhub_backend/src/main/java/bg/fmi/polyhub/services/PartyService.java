@@ -20,7 +20,7 @@ import bg.fmi.polyhub.entities.PartyParticipation;
 import bg.fmi.polyhub.entities.Program;
 import bg.fmi.polyhub.repositories.PartyParticipationRepository;
 import bg.fmi.polyhub.repositories.ProgramRepository;
-
+import static bg.fmi.polyhub.utils.ElectionStatusUtils.getStatus;
 import java.util.List;
 
 import java.time.LocalDate;
@@ -187,7 +187,7 @@ public class PartyService {
                 election.getName(),
                 election.getElectionDate(),
                 election.getType().getName().name(),
-                getElectionStatus(election),
+                getStatus(election),
 
                 participation.getVotesCount(),
                 participation.getVotePercentage(),
@@ -203,20 +203,6 @@ public class PartyService {
     ) {
         return second.getElection().getElectionDate()
                 .compareTo(first.getElection().getElectionDate());
-    }
-
-    private String getElectionStatus(Election election) {
-        LocalDate today = LocalDate.now();
-
-        if (election.getElectionDate().isBefore(today)) {
-            return "FINISHED";
-        }
-
-        if (election.getElectionDate().isEqual(today)) {
-            return "RUNNING";
-        }
-
-        return "UPCOMING";
     }
 
     private User getActiveUser(String email) {

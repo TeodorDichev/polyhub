@@ -15,9 +15,10 @@ import bg.fmi.polyhub.dto.election.ElectionDetailsResponse;
 import bg.fmi.polyhub.dto.election.ElectionPartyResultResponse;
 import bg.fmi.polyhub.entities.Program;
 import bg.fmi.polyhub.repositories.ProgramRepository;
-
-import java.time.LocalDate;
 import java.util.List;
+
+import static bg.fmi.polyhub.utils.ElectionStatusUtils.getStatus;
+import static bg.fmi.polyhub.utils.ElectionStatusUtils.isFinished;
 
 @Service
 @RequiredArgsConstructor
@@ -85,24 +86,6 @@ public class ElectionService {
                 winner != null ? winner.getParty().getName() : null,
                 winner != null ? winner.getVotePercentage() : null
         );
-    }
-
-    private String getStatus(Election election) {
-        LocalDate today = LocalDate.now();
-
-        if (election.getElectionDate().isBefore(today)) {
-            return "FINISHED";
-        }
-
-        if (election.getElectionDate().isEqual(today)) {
-            return "RUNNING";
-        }
-
-        return "UPCOMING";
-    }
-
-    private boolean isFinished(Election election) {
-        return election.getElectionDate().isBefore(LocalDate.now());
     }
 
     public ElectionDetailsResponse getById(Long id) {
