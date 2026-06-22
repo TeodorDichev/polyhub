@@ -1,0 +1,38 @@
+:host {
+  display: block;
+}
+
+.plane-card {
+  background: var(--white);
+  border: 1px solid #e6e8ef;
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.plane-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.85rem;
+
+  h3 {
+    color: var(--navy);
+    font-size: 1rem;
+  }
+
+  span {
+    color: var(--grey);
+    font-size: 0.85rem;
+  }
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  max-width: 420px;
+  height: auto;
+  border: 1px solid #edf0f5;
+  border-radius: 10px;
+  background: #ffffff;
+}

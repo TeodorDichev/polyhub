@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormControl, FormGroup } from '@angular/forms';
 
 import { ApiService, PolicySummary, CreatePolicyRequest } from '../../core/services/api.service';
-import { PoliticalPlaneComponent } from '../../shared/political-plane/political-plane.component'
+import { PoliticalPlaneComponent } from '../../../../../polyhub_frontend/src/app/shared/political-pane/political-plane.component'
 
 @Component({
   selector: 'app-policies',
