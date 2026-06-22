@@ -186,42 +186,12 @@ export class ApiService {
 
   login(data: LoginRequest): Observable<LoggedPartyAdmin> {
     return this.http.post<LoggedPartyAdmin>(`${this.base}/auth/login`, data, {
-      withCredentials: true  // critical — tells browser to send/receive cookies
+      withCredentials: true
     });
   }
 
   logout(): Observable<void> {
     return this.http.post<void>(`${this.base}/auth/logout`, {}, {
-      withCredentials: true
-    });
-  }
-
-  getPartyDetails(id: number): Observable<PartyDetailsResponse> {
-    return this.http.get<PartyDetailsResponse>(`${this.base}/parties/details/${id}`, {
-      withCredentials: true
-    });
-  }
-
-  submitParty(data: SubmitPartyRequest): Observable<PartyResponse> {
-    return this.http.post<PartyResponse>(`${this.base}/parties/submit`, data, {
-        withCredentials: true
-    });
-  }
-
-  getMyParty(): Observable<PartyResponse> {
-    return this.http.get<PartyResponse>(`${this.base}/parties/my`, {
-        withCredentials: true
-    });
-  }
-
-  getProgramDetails(id: number): Observable<ProgramDetailsResponse> {
-    return this.http.get<ProgramDetailsResponse>(`${this.base}/programs/details/${id}`, {
-      withCredentials: true
-    });
-  }
-
-  getMe(): Observable<LoggedPartyAdmin> {
-    return this.http.get<LoggedPartyAdmin>(`${this.base}/party-admin/me`, {
       withCredentials: true
     });
   }
@@ -232,8 +202,24 @@ export class ApiService {
     });
   }
 
+  getMe(): Observable<LoggedPartyAdmin> {
+    return this.me();
+  }
+
+  submitParty(data: SubmitPartyRequest): Observable<PartyResponse> {
+    return this.http.post<PartyResponse>(`${this.base}/party-admin/parties/submit`, data, {
+      withCredentials: true
+    });
+  }
+
+  getMyParty(): Observable<PartyResponse> {
+    return this.http.get<PartyResponse>(`${this.base}/party-admin/parties/my`, {
+      withCredentials: true
+    });
+  }
+
   resubmitParty(data: SubmitPartyRequest): Observable<PartyResponse> {
-    return this.http.put<PartyResponse>(`${this.base}/parties/resubmit`, data, {
+    return this.http.put<PartyResponse>(`${this.base}/party-admin/parties/resubmit`, data, {
       withCredentials: true
     });
   }
@@ -246,6 +232,18 @@ export class ApiService {
 
   getElectionById(id: number): Observable<ElectionDetailsResponse> {
     return this.http.get<ElectionDetailsResponse>(`${this.base}/elections/${id}`, {
+      withCredentials: true
+    });
+  }
+
+  getProgramDetails(id: number): Observable<ProgramDetailsResponse> {
+    return this.http.get<ProgramDetailsResponse>(`${this.base}/programs/details/${id}`, {
+      withCredentials: true
+    });
+  }
+
+  getPartyDetails(id: number): Observable<PartyDetailsResponse> {
+    return this.http.get<PartyDetailsResponse>(`${this.base}/parties/details/${id}`, {
       withCredentials: true
     });
   }

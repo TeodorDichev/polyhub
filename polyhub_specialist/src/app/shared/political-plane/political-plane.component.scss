@@ -1,0 +1,44 @@
+:host {
+  display: block;
+}
+
+canvas {
+  width: 300px;
+  height: 300px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #fff;
+  cursor: crosshair;
+}
+
+.manual-inputs {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.75rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+
+  label {
+    font-size: 0.75rem;
+    color: var(--text-muted, #6b7280);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  input {
+    width: 90px;
+    border: 1px solid var(--border, #e1e4e8);
+    border-radius: 6px;
+    padding: 0.4rem 0.6rem;
+    font-size: 0.9rem;
+
+    &:disabled {
+      background: #f3f4f6;
+      color: #9ca3af;
+    }
+  }
+}

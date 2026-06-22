@@ -6,6 +6,7 @@ import bg.fmi.polyhub.dto.party.PartyResponse;
 import bg.fmi.polyhub.entities.Party;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import bg.fmi.polyhub.dto.specialist.PartyForRatingResponse;
 
 @Mapper(componentModel = "spring")
 public interface PartyMapper {
@@ -29,4 +30,6 @@ public interface PartyMapper {
     @Mapping(target = "status", source = "status.name")
     @Mapping(target = "createdByEmail", source = "createdBy.email")
     AdminPartyResponse toAdminPartyResponse(Party party);
+    @Mapping(target = "rated", ignore = true)
+    PartyForRatingResponse toRatingResponseBase(Party party);
 }

@@ -15,6 +15,7 @@ import bg.fmi.polyhub.dto.election.ElectionDetailsResponse;
 import bg.fmi.polyhub.dto.election.ElectionPartyResultResponse;
 import bg.fmi.polyhub.entities.Program;
 import bg.fmi.polyhub.repositories.ProgramRepository;
+import java.time.LocalDate;
 import java.util.List;
 
 import static bg.fmi.polyhub.utils.ElectionStatusUtils.getStatus;
@@ -34,6 +35,10 @@ public class ElectionService {
         ElectionType type = electionTypeRepository
                 .findByName(request.type())
                 .orElseThrow(() -> new RuntimeException("Election type not found"));
+
+        if (request.electionDate().isBefore(LocalDate.now()) || request.electionDate().isEqual(LocalDate.now())) {
+            throw new RuntimeException("Election cannot be scheduled for past dates/today");
+        }
 
         Election election = electionMapper.toEntity(request);
         election.setType(type);
@@ -55,6 +60,10 @@ public class ElectionService {
         ElectionType type = electionTypeRepository
                 .findByName(request.type())
                 .orElseThrow(() -> new RuntimeException("Election type not found"));
+
+        if (request.electionDate().isBefore(LocalDate.now()) || request.electionDate().isEqual(LocalDate.now())) {
+            throw new RuntimeException("Election cannot be scheduled for past dates/today");
+        }
 
         election.setName(request.name());
         election.setElectionDate(request.electionDate());
