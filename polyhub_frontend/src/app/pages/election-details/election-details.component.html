@@ -120,14 +120,16 @@
             </div>
 
             <div class="party-footer">
-              @if (party.programId) {
-                <span class="program-label">
-                  Program: {{ party.programTitle || 'View program' }}
-                </span>
+              @if (party.programId && party.programTitle) {
+                <a
+                  class="program-link"
+                  [routerLink]="['/programs', party.programId]">
+                  Program: {{ party.programTitle }}
+                </a>
               } @else {
-                <span class="program-label muted">
+                <div class="program-label muted">
                   No program added yet
-                </span>
+                </div>
               }
             </div>
           </article>

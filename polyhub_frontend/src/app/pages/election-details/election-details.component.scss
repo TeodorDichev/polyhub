@@ -236,3 +236,26 @@
     text-align: left;
   }
 }
+
+.program-link {
+  display: inline-block;
+  margin-top: 0.85rem;
+  color: var(--gold);
+  font-weight: 600;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.program-label {
+  display: inline-block;
+  margin-top: 0.85rem;
+  color: var(--grey);
+  font-size: 0.9rem;
+
+  &.muted {
+    color: var(--grey);
+  }
+}

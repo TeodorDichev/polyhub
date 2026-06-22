@@ -21,6 +21,9 @@ import bg.fmi.polyhub.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import bg.fmi.polyhub.dto.policy.PoliticalPositionType;
+import bg.fmi.polyhub.dto.program.ProgramDetailsResponse;
+import bg.fmi.polyhub.dto.program.ProgramPolicyDetailsResponse;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -119,6 +122,58 @@ public class ProgramService {
 
         List<ProgramPolicy> policies = programPolicyRepository.findAllByProgram(program);
         return programMapper.toResponse(program, policies);
+    }
+
+    public ProgramDetailsResponse getDetails(Long id) {
+        Program program = programRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Program not found"));
+
+        List<ProgramPolicy> policies = programPolicyRepository.findAllByProgram(program);
+
+        return new ProgramDetailsResponse(
+                program.getId(),
+                program.getTitle(),
+                program.getContent(),
+
+                program.getSelfEconomicAxis(),
+                program.getSelfSocialAxis(),
+                program.getSpecEconomicAxis(),
+                program.getSpecSocialAxis(),
+
+                program.getCreatedAt(),
+                program.getLastEditAt(),
+
+                program.getElection().getId(),
+                program.getElection().getName(),
+                program.getElection().getElectionDate(),
+
+                program.getParty().getId(),
+                program.getParty().getName(),
+                program.getParty().getDescription(),
+                program.getParty().getMotto(),
+
+                policies.stream()
+                        .map(this::toPolicyDetails)
+                        .toList()
+        );
+    }
+
+    private ProgramPolicyDetailsResponse toPolicyDetails(ProgramPolicy programPolicy) {
+        Policy policy = programPolicy.getPolicy();
+
+        PoliticalPositionType positionType = PoliticalPositionType.from(
+                policy.getSpecEconomicAxis(),
+                policy.getSpecSocialAxis()
+        );
+
+        return new ProgramPolicyDetailsResponse(
+                policy.getId(),
+                policy.getName(),
+                policy.getSlug(),
+                positionType != null ? positionType.name() : null,
+                policy.getSpecEconomicAxis(),
+                policy.getSpecSocialAxis()
+        );
     }
 
     private User getActiveUser(String email) {

@@ -89,6 +89,40 @@ export interface ElectionDetailsResponse {
   parties: ElectionPartyResultResponse[];
 }
 
+export interface ProgramPolicyDetailsResponse {
+  id: number;
+  name: string;
+  slug: string;
+  politicalPosition?: string | null;
+  specEconomicAxis?: number | null;
+  specSocialAxis?: number | null;
+}
+
+export interface ProgramDetailsResponse {
+  id: number;
+  title: string;
+  content: string;
+
+  selfEconomicAxis?: number | null;
+  selfSocialAxis?: number | null;
+  specEconomicAxis?: number | null;
+  specSocialAxis?: number | null;
+
+  createdAt?: string | null;
+  lastEditAt?: string | null;
+
+  electionId: number;
+  electionName: string;
+  electionDate: string;
+
+  partyId: number;
+  partyName: string;
+  partyDescription: string;
+  partyMotto?: string | null;
+
+  policies: ProgramPolicyDetailsResponse[];
+}
+
 @Injectable({ providedIn: 'root' })
 export class ApiService {
   private base = 'http://localhost:8080';
@@ -122,6 +156,12 @@ export class ApiService {
   getMyParty(): Observable<PartyResponse> {
     return this.http.get<PartyResponse>(`${this.base}/parties/my`, {
         withCredentials: true
+    });
+  }
+
+  getProgramDetails(id: number): Observable<ProgramDetailsResponse> {
+    return this.http.get<ProgramDetailsResponse>(`${this.base}/programs/details/${id}`, {
+      withCredentials: true
     });
   }
 

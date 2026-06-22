@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import bg.fmi.polyhub.dto.program.ProgramDetailsResponse;
 
 import java.util.Optional;
 
@@ -40,6 +41,11 @@ public class ProgramController {
             @Valid @RequestBody CreateProgramRequest request,
             @AuthenticationPrincipal String email) {
         return programService.createOrUpdate(electionId, request, email);
+    }
+
+    @GetMapping("/details/{id}")
+    public ProgramDetailsResponse getDetails(@PathVariable Long id) {
+        return programService.getDetails(id);
     }
 
     @GetMapping("/{electionId}")
