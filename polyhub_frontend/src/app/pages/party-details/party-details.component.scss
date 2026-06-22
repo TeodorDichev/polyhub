@@ -246,3 +246,43 @@ h3 {
     color: var(--danger);
   }
 }
+
+.state-box {
+  background: var(--white);
+  border: 1px solid #e6e8ef;
+  border-radius: 12px;
+  padding: 1.2rem;
+  color: var(--grey);
+
+  h3 {
+    color: var(--navy);
+    font-size: 1.05rem;
+    margin-bottom: 0.35rem;
+  }
+
+  p {
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  &.error {
+    border-color: rgba(192, 57, 43, 0.22);
+    background: rgba(192, 57, 43, 0.04);
+
+    h3 {
+      color: var(--danger);
+    }
+  }
+}
+
+.state-action {
+  display: inline-block;
+  margin-top: 0.9rem;
+  color: var(--gold);
+  font-weight: 600;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

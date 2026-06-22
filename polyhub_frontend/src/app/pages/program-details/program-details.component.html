@@ -1,7 +1,17 @@
 @if (loading) {
-  <div class="state-box">Loading program details...</div>
+  <div class="state-box">
+    <h3>Loading program details...</h3>
+    <p>Please wait while we fetch the program information.</p>
+  </div>
 } @else if (error) {
-  <div class="state-box error">{{ error }}</div>
+  <div class="state-box error">
+    <h3>Could not load program</h3>
+    <p>{{ error }}</p>
+
+    <a class="state-action" routerLink="/">
+      Back to home
+    </a>
+  </div>
 } @else if (program) {
   <section class="details-hero">
     <a class="back-link" [routerLink]="['/elections', program.electionId]">
@@ -78,7 +88,8 @@
 
     @if (program.policies.length === 0) {
       <div class="state-box">
-        No policies have been connected to this program yet.
+        <h3>No policies yet</h3>
+        <p>No policies have been connected to this program yet.</p>
       </div>
     } @else {
       <div class="policy-grid">

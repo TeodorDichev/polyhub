@@ -1,7 +1,17 @@
 @if (loading) {
-  <div class="state-box">Loading party details...</div>
+  <div class="state-box">
+    <h3>Loading party details...</h3>
+    <p>Please wait while we fetch the party information.</p>
+  </div>
 } @else if (error) {
-  <div class="state-box error">{{ error }}</div>
+  <div class="state-box error">
+    <h3>Could not load party</h3>
+    <p>{{ error }}</p>
+
+    <a class="state-action" routerLink="/">
+      Back to home
+    </a>
+  </div>
 } @else if (party) {
   <section class="details-hero">
     <a class="back-link" routerLink="/">
@@ -78,9 +88,10 @@
 
     @if (party.programs.length === 0) {
       <div class="state-box">
-        No programs have been added for this party yet.
+        <h3>No programs yet</h3>
+        <p>No programs have been added for this party yet.</p>
       </div>
-    } @else {
+    }@else {
       <div class="program-grid">
         @for (program of party.programs; track program.id) {
           <a
@@ -144,7 +155,8 @@
 
     @if (party.participations.length === 0) {
       <div class="state-box">
-        This party has no election participations yet.
+        <h3>No election participations yet</h3>
+        <p>This party has no election participations yet.</p>
       </div>
     } @else {
       <div class="participation-grid">
