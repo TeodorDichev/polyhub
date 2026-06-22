@@ -101,4 +101,10 @@ export class ApiService {
       withCredentials: true
     });
   }
+
+  getElections(): Observable<ElectionResponse[]> {
+    return this.http.get<ElectionResponse[]>(`${this.base}/elections`, {
+      withCredentials: true
+    });
+  }
 }

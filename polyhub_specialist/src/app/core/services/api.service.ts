@@ -34,6 +34,61 @@ export interface CreatePolicyRequest {
   specSocialAxis: number;
 }
 
+export interface PartyForRatingResponse {
+  id: number;
+  name: string;
+  motto?: string;
+  description: string;
+  logoUrl?: string;
+  foundedOn?: string;
+  selfEconomicAxis?: number;
+  selfSocialAxis?: number;
+  specEconomicAxis?: number;
+  specSocialAxis?: number;
+  rated: boolean;
+}
+
+export interface PartyRatingRequest {
+  specEconomicAxis: number;
+  specSocialAxis: number;
+}
+
+export interface PolicySummary2 {
+  id: number;
+  name: string;
+  slug: string;
+  politicalPosition: string;
+}
+
+export interface ProgramForRatingResponse {
+  programId: number;
+  title: string;
+  content: string;
+  selfEconomicAxis?: number;
+  selfSocialAxis?: number;
+  specEconomicAxis?: number;
+  specSocialAxis?: number;
+  createdAt: string;
+  lastEditAt?: string;
+  policies: PolicySummary[];
+  electionId: number;
+  electionName: string;
+  electionDate: string;
+  partyId: number;
+  partyName: string;
+  partyMotto?: string;
+  partyDescription: string;
+  partyLogoUrl?: string;
+  rated: boolean;
+  electionPassed: boolean;
+}
+
+export interface ProgramRatingRequest {
+  specEconomicAxis: number;
+  specSocialAxis: number;
+}
+
+
 @Injectable({ providedIn: 'root' })
 export class ApiService {
   private base = 'http://localhost:8080';
@@ -78,5 +133,25 @@ export class ApiService {
 
   deletePolicy(id: number): Observable<void> {
     return this.http.delete<void>(`${this.base}/specialist/policies/${id}`, { withCredentials: true });
+  }
+
+  getPartiesForRating(): Observable<PartyForRatingResponse[]> {
+    return this.http.get<PartyForRatingResponse[]>(`${this.base}/specialist/parties`, { withCredentials: true });
+  }
+
+  rateParty(id: number, data: PartyRatingRequest): Observable<PartyForRatingResponse> {
+    return this.http.put<PartyForRatingResponse>(`${this.base}/specialist/parties/${id}/rate`, data, { withCredentials: true });
+  }
+
+  getProgramsForRating(): Observable<ProgramForRatingResponse[]> {
+    return this.http.get<ProgramForRatingResponse[]>(`${this.base}/specialist/programs`, { withCredentials: true });
+  }
+
+  getProgramForRating(id: number): Observable<ProgramForRatingResponse> {
+    return this.http.get<ProgramForRatingResponse>(`${this.base}/specialist/programs/${id}`, { withCredentials: true });
+  }
+
+  rateProgram(id: number, data: ProgramRatingRequest): Observable<ProgramForRatingResponse> {
+    return this.http.put<ProgramForRatingResponse>(`${this.base}/specialist/programs/${id}/rate`, data, { withCredentials: true });
   }
 }

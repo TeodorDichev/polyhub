@@ -39,6 +39,11 @@ public class SpecialistController {
     private final PartyService partyService;
     private final ProgramService programService;
 
+    @GetMapping("/elections")
+    public List<ElectionResponse> getAllElections() {
+        return electionService.getAll();
+    }
+
     @PostMapping("/elections")
     @ResponseStatus(HttpStatus.CREATED)
     public ElectionResponse createElection(@Valid @RequestBody CreateElectionRequest request) {
@@ -57,8 +62,7 @@ public class SpecialistController {
         electionService.delete(id);
     }
 
-    @GetMapping()
-    @PreAuthorize("hasAnyRole('PARTY_ADMIN', 'POLYHUB_SPECIALIST')")
+    @GetMapping("/policies")
     public List<PolicySummary> getAllPolicies() {
         return policyService.getAllPolicies();
     }
@@ -79,7 +83,7 @@ public class SpecialistController {
         return partyService.getAllApprovedParties();
     }
 
-    @PutMapping("parties/{id}/rate")
+    @PutMapping("/parties/{id}/rate")
     public PartyForRatingResponse rateParty(@PathVariable Long id, @Valid @RequestBody PartyRatingRequest request) {
         return partyService.rateParty(id, request);
     }
