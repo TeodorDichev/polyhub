@@ -1,7 +1,7 @@
 <div class="plane-card">
   <div class="plane-header">
     <h3>{{ title }}</h3>
-    <span>{{ markers.length }} markers</span>
+    <span>{{ validMarkers.length }} markers</span>
   </div>
 
   <canvas
@@ -9,4 +9,23 @@
     width="420"
     height="420">
   </canvas>
+
+  @if (showLegend && validMarkers.length > 0) {
+    <div class="legend">
+      @for (marker of validMarkers; track marker.label; let index = $index) {
+        <div class="legend-item">
+          <span
+            class="legend-dot"
+            [style.background]="getMarkerColor(index)">
+          </span>
+
+          <span class="legend-label">{{ marker.label }}</span>
+
+          <span class="legend-coordinates">
+            ({{ marker.x }}, {{ marker.y }})
+          </span>
+        </div>
+      }
+    </div>
+  }
 </div>

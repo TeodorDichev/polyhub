@@ -6,6 +6,11 @@ import {
   PoliticalMarker,
   PoliticalPlaneComponent
 } from '../../shared/political-plane/political-plane.component';
+import {
+  getElectionStatusLabel,
+  getElectionTypeLabel
+} from '../../shared/utils/display-labels';
+
 
 @Component({
   selector: 'app-party-details',
@@ -22,6 +27,8 @@ export class PartyDetailsComponent implements OnInit {
 
   loading = false;
   error = '';
+  readonly getStatusLabel = getElectionStatusLabel;
+  readonly getTypeLabel = getElectionTypeLabel;
 
   constructor(
     private route: ActivatedRoute,
@@ -55,23 +62,6 @@ export class PartyDetailsComponent implements OnInit {
         this.loading = false;
       }
     });
-  }
-
-  getStatusLabel(status: string): string {
-    switch (status) {
-      case 'FINISHED':
-        return 'Finished';
-      case 'RUNNING':
-        return 'Running';
-      case 'UPCOMING':
-        return 'Upcoming';
-      default:
-        return status;
-    }
-  }
-
-  getTypeLabel(type: string): string {
-    return type.replaceAll('_', ' ');
   }
 
   private buildPartyMarkers(party: PartyDetailsResponse): PoliticalMarker[] {

@@ -36,3 +36,39 @@ canvas {
   border-radius: 10px;
   background: #ffffff;
 }
+
+.legend {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid #edf0f5;
+}
+
+.legend-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--navy);
+  font-size: 0.9rem;
+}
+
+.legend-dot {
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 999px;
+  border: 2px solid var(--white);
+  box-shadow: 0 0 0 1px #d9dee8;
+}
+
+.legend-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.legend-coordinates {
+  color: var(--grey);
+  font-size: 0.82rem;
+}

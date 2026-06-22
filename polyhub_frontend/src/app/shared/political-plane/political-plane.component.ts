@@ -27,18 +27,43 @@ export class PoliticalPlaneComponent implements AfterViewInit, OnChanges {
 
   @Input() markers: PoliticalMarker[] = [];
   @Input() title = 'Political compass';
+  @Input() showLegend = true;
+  @Input() showMarkerLabels = false;
+
+  validMarkers: PoliticalMarker[] = [];
 
   private viewReady = false;
 
   ngAfterViewInit(): void {
     this.viewReady = true;
+    this.updateValidMarkers();
     this.draw();
   }
 
   ngOnChanges(_: SimpleChanges): void {
+    this.updateValidMarkers();
+
     if (this.viewReady) {
       this.draw();
     }
+  }
+
+  getMarkerColor(index: number): string {
+    const colors = [
+      '#c9a84c',
+      '#0a1628',
+      '#2e7d32',
+      '#8e44ad',
+      '#c0392b',
+      '#1e88e5',
+      '#ef6c00'
+    ];
+
+    return colors[index % colors.length];
+  }
+
+  private updateValidMarkers(): void {
+    this.validMarkers = this.markers.filter(marker => this.isValidMarker(marker));
   }
 
   private draw(): void {
@@ -151,9 +176,7 @@ export class PoliticalPlaneComponent implements AfterViewInit, OnChanges {
     width: number,
     height: number
   ): void {
-    const validMarkers = this.markers.filter(marker => this.isValidMarker(marker));
-
-    validMarkers.forEach((marker, index) => {
+    this.validMarkers.forEach((marker, index) => {
       const point = this.toCanvasPoint(marker.x, marker.y, width, height);
 
       ctx.fillStyle = this.getMarkerColor(index);
@@ -165,7 +188,9 @@ export class PoliticalPlaneComponent implements AfterViewInit, OnChanges {
       ctx.lineWidth = 2;
       ctx.stroke();
 
-      this.drawMarkerLabel(ctx, marker.label, point.x, point.y, width);
+      if (this.showMarkerLabels) {
+        this.drawMarkerLabel(ctx, marker.label, point.x, point.y, width);
+      }
     });
   }
 
@@ -231,19 +256,5 @@ export class PoliticalPlaneComponent implements AfterViewInit, OnChanges {
     }
 
     return `${label.slice(0, 16)}…`;
-  }
-
-  private getMarkerColor(index: number): string {
-    const colors = [
-      '#c9a84c',
-      '#0a1628',
-      '#2e7d32',
-      '#8e44ad',
-      '#c0392b',
-      '#1e88e5',
-      '#ef6c00'
-    ];
-
-    return colors[index % colors.length];
   }
 }

@@ -6,6 +6,7 @@ import {
   PoliticalMarker,
   PoliticalPlaneComponent
 } from '../../shared/political-plane/political-plane.component';
+import { getPoliticalPositionLabel } from '../../shared/utils/display-labels';
 
 @Component({
   selector: 'app-program-details',
@@ -22,6 +23,7 @@ export class ProgramDetailsComponent implements OnInit {
 
   loading = false;
   error = '';
+  readonly getPositionLabel = getPoliticalPositionLabel;
 
   constructor(
     private route: ActivatedRoute,
@@ -55,14 +57,6 @@ export class ProgramDetailsComponent implements OnInit {
         this.loading = false;
       }
     });
-  }
-
-  getPositionLabel(position?: string | null): string {
-    if (!position) {
-      return 'Not classified';
-    }
-
-    return position.replaceAll('_', ' ');
   }
 
   private buildProgramMarkers(program: ProgramDetailsResponse): PoliticalMarker[] {
