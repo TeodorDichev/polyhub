@@ -91,7 +91,13 @@
           <article class="party-card">
             <div class="party-main">
               <div>
-                <h3>{{ party.partyName }}</h3>
+                <h3>
+                  <a
+                    class="party-link"
+                    [routerLink]="['/parties', party.partyId]">
+                    {{ party.partyName }}
+                  </a>
+                </h3>
 
                 @if (party.partyMotto) {
                   <p class="motto">“{{ party.partyMotto }}”</p>

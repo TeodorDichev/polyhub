@@ -15,7 +15,13 @@
     <div class="meta-grid">
       <div>
         <span>Party</span>
-        <strong>{{ program.partyName }}</strong>
+        <strong>
+          <a
+            class="party-link"
+            [routerLink]="['/parties', program.partyId]">
+            {{ program.partyName }}
+          </a>
+        </strong>
       </div>
 
       <div>

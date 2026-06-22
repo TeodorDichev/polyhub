@@ -2,6 +2,55 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
+export interface PartyProgramSummaryResponse {
+  id: number;
+  title: string;
+
+  selfEconomicAxis?: number | null;
+  selfSocialAxis?: number | null;
+  specEconomicAxis?: number | null;
+  specSocialAxis?: number | null;
+
+  createdAt?: string | null;
+  lastEditAt?: string | null;
+
+  electionId: number;
+  electionName: string;
+  electionDate: string;
+}
+
+export interface PartyElectionParticipationResponse {
+  electionId: number;
+  electionName: string;
+  electionDate: string;
+  electionType: string;
+  electionStatus: 'FINISHED' | 'RUNNING' | 'UPCOMING';
+
+  votesCount?: number | null;
+  votePercentage?: number | null;
+
+  programId?: number | null;
+  programTitle?: string | null;
+}
+
+export interface PartyDetailsResponse {
+  id: number;
+  name: string;
+  description: string;
+  motto?: string | null;
+  logoUrl?: string | null;
+  foundedOn?: string | null;
+  createdAt?: string | null;
+
+  selfEconomicAxis?: number | null;
+  selfSocialAxis?: number | null;
+  specEconomicAxis?: number | null;
+  specSocialAxis?: number | null;
+
+  programs: PartyProgramSummaryResponse[];
+  participations: PartyElectionParticipationResponse[];
+}
+
 export interface ElectionResponse {
   id: number;
   name: string;
@@ -143,6 +192,12 @@ export class ApiService {
 
   logout(): Observable<void> {
     return this.http.post<void>(`${this.base}/auth/logout`, {}, {
+      withCredentials: true
+    });
+  }
+
+  getPartyDetails(id: number): Observable<PartyDetailsResponse> {
+    return this.http.get<PartyDetailsResponse>(`${this.base}/parties/details/${id}`, {
       withCredentials: true
     });
   }
