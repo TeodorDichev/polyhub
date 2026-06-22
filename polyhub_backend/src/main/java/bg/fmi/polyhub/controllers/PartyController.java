@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import bg.fmi.polyhub.dto.party.PartyDetailsResponse;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
 @RequestMapping("/parties")
@@ -34,6 +36,11 @@ public class PartyController {
     public PartyResponse resubmit(@Valid @RequestBody SubmitPartyRequest request,
                                   @AuthenticationPrincipal String email) {
         return partyService.resubmit(request, email);
+    }
+
+    @GetMapping("/details/{id}")
+    public PartyDetailsResponse getDetails(@PathVariable Long id) {
+        return partyService.getDetails(id);
     }
 
     @GetMapping("/my")

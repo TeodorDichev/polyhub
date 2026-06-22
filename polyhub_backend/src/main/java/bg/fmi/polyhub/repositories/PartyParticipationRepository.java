@@ -10,6 +10,7 @@ public interface PartyParticipationRepository extends JpaRepository<PartyPartici
 
     Optional<PartyParticipation> findFirstByElection_IdAndVotePercentageIsNotNullOrderByVotePercentageDesc(Long electionId);
     List<PartyParticipation> findAllByElection_Id(Long electionId);
+    List<PartyParticipation> findAllByParty_Id(Long partyId);
 
     default Optional<PartyParticipation> findWinnerByElectionId(Long electionId) {
         return findFirstByElection_IdAndVotePercentageIsNotNullOrderByVotePercentageDesc(electionId);
