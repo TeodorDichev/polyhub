@@ -1,6 +1,6 @@
 package bg.fmi.polyhub.services;
 
-import bg.fmi.polyhub.dto.policy.PoliticalPositionType;
+import bg.fmi.polyhub.dto.PoliticalPositionType;
 import bg.fmi.polyhub.dto.policy.PolicySummary;
 import bg.fmi.polyhub.dto.program.CreateProgramRequest;
 import bg.fmi.polyhub.dto.program.ProgramDetailsResponse;

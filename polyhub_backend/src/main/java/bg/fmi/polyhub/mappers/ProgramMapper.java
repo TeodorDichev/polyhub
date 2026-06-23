@@ -45,20 +45,6 @@ public interface ProgramMapper {
     @Mapping(target = "electionPassed", ignore = true)
     ProgramForRatingResponse toRatingResponseBase(Program program);
 
-    @Mapping(target = "programId", source = "id")
-    @Mapping(target = "electionId", source = "election.id")
-    @Mapping(target = "electionName", source = "election.name")
-    @Mapping(target = "electionDate", source = "election.electionDate")
-    @Mapping(target = "partyId", source = "party.id")
-    @Mapping(target = "partyName", source = "party.name")
-    @Mapping(target = "partyMotto", source = "party.motto")
-    @Mapping(target = "partyDescription", source = "party.description")
-    @Mapping(target = "partyLogoUrl", source = "party.logoUrl")
-    @Mapping(target = "policies", ignore = true)
-    @Mapping(target = "rated", ignore = true)
-    @Mapping(target = "electionPassed", ignore = true)
-    ProgramForRatingResponse toRatingResponseBase(Program program);
-
     default Policy toPolicy(ProgramPolicy pp) {
         return pp.getPolicy();
     }
