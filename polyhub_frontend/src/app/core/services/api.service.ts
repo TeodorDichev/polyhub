@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 export interface PartyProgramSummaryResponse {
@@ -227,6 +227,38 @@ export interface ProgramResponse {
   policies: PolicySummary[];
 }
 
+export interface PartyListItemResponse {
+  id: number;
+  name: string;
+  description: string;
+  motto?: string | null;
+  logoUrl?: string | null;
+  foundedOn?: string | null;
+  specEconomicAxis?: number | null;
+  specSocialAxis?: number | null;
+  politicalLabel?: string | null;
+}
+
+export interface PartyPageResponse {
+  parties: PartyListItemResponse[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+  first: boolean;
+  last: boolean;
+}
+
+export interface ElectionPageResponse {
+  elections: ElectionResponse[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+  first: boolean;
+  last: boolean;
+}
+
 @Injectable({ providedIn: 'root' })
 export class ApiService {
   private base = 'http://localhost:8080';
@@ -275,6 +307,22 @@ export class ApiService {
     });
   }
 
+  getParties(
+    page: number,
+    size: number,
+    search: string
+  ): Observable<PartyPageResponse> {
+    const params = new HttpParams()
+      .set('page', page)
+      .set('size', size)
+      .set('search', search);
+
+    return this.http.get<PartyPageResponse>(`${this.base}/parties`, {
+      params,
+      withCredentials: true
+    });
+  }
+
   getPartyDetails(id: number): Observable<PartyDetailsResponse> {
     return this.http.get<PartyDetailsResponse>(`${this.base}/parties/details/${id}`, {
       withCredentials: true
@@ -319,6 +367,22 @@ export class ApiService {
         withCredentials: true
       }
     );
+  }
+
+  getElectionsPage(
+    page: number,
+    size: number,
+    search: string
+  ): Observable<ElectionPageResponse> {
+    const params = new HttpParams()
+      .set('page', page)
+      .set('size', size)
+      .set('search', search);
+
+    return this.http.get<ElectionPageResponse>(`${this.base}/elections/page`, {
+      params,
+      withCredentials: true
+    });
   }
 
   getProgramSuggestion(): Observable<ProgramSuggestion> {

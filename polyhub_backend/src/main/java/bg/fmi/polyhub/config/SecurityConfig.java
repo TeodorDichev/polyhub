@@ -38,6 +38,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/elections/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/programs/details/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/parties/details/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/parties").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)

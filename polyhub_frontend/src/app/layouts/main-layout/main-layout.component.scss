@@ -23,11 +23,11 @@
   display: flex;
   flex-direction: column;
   z-index: 100;
-  transform: translateX(-100%);   // hidden by default
+  transform: translateX(-100%);
   transition: transform 0.3s ease;
 
   &.open {
-    transform: translateX(0);     // slides in when open
+    transform: translateX(0);
   }
 }
 
@@ -43,6 +43,12 @@
     font-size: 1.2rem;
     font-weight: 700;
     letter-spacing: 1px;
+    text-decoration: none;
+    cursor: pointer;
+
+    &:hover {
+      color: var(--gold-light);
+    }
   }
 
   .close-btn {
@@ -66,13 +72,15 @@
   padding: 1rem 0;
   gap: 0.25rem;
 
-  a, .nav-item {
+  a,
+  .nav-item {
     display: flex;
     align-items: center;
     gap: 0.75rem;
     padding: 0.75rem 1.25rem;
     color: var(--grey);
     font-size: 0.95rem;
+    text-decoration: none;
     transition: all 0.2s;
     border-left: 3px solid transparent;
 
@@ -115,6 +123,7 @@
     color: var(--grey);
     background: none;
     border: 1px solid var(--navy-lighter);
+    text-decoration: none;
     transition: all 0.2s;
 
     &:hover {
@@ -182,6 +191,12 @@
     font-size: 1.1rem;
     letter-spacing: 1px;
     flex: 1;
+    text-decoration: none;
+    cursor: pointer;
+
+    &:hover {
+      color: var(--gold-light);
+    }
   }
 
   .topbar-user {

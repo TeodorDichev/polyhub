@@ -25,6 +25,10 @@ import java.util.List;
 
 import static bg.fmi.polyhub.utils.ElectionStatusUtils.getStatus;
 import static bg.fmi.polyhub.utils.ElectionStatusUtils.isFinished;
+import bg.fmi.polyhub.dto.election.ElectionPageResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 @Service
 @RequiredArgsConstructor
@@ -58,6 +62,43 @@ public class ElectionService {
                 .stream()
                 .map(this::toResponse)
                 .toList();
+    }
+
+    public ElectionPageResponse getPublicElectionsPage(
+            String search,
+            int page,
+            int size
+    ) {
+        int safePage = Math.max(page, 0);
+        int safeSize = normalizePageSize(size);
+
+        Pageable pageable = PageRequest.of(safePage, safeSize);
+
+        String normalizedSearch = search == null ? "" : search.trim();
+
+        Page<Election> electionsPage;
+
+        if (normalizedSearch.isBlank()) {
+            electionsPage = electionRepository.findAllByOrderByElectionDateDesc(pageable);
+        } else {
+            electionsPage = electionRepository.findAllByNameContainingIgnoreCaseOrderByElectionDateDesc(
+                    normalizedSearch,
+                    pageable
+            );
+        }
+
+        return new ElectionPageResponse(
+                electionsPage.getContent()
+                        .stream()
+                        .map(this::toResponse)
+                        .toList(),
+                electionsPage.getNumber(),
+                electionsPage.getSize(),
+                electionsPage.getTotalElements(),
+                electionsPage.getTotalPages(),
+                electionsPage.isFirst(),
+                electionsPage.isLast()
+        );
     }
 
     public ElectionResponse update(Long id, CreateElectionRequest request) {
@@ -171,6 +212,14 @@ public class ElectionService {
                 winner != null ? winner.getParty().getName() : null,
                 winner != null ? winner.getVotePercentage() : null
         );
+    }
+
+    private int normalizePageSize(int size) {
+        if (size == 10 || size == 15) {
+            return size;
+        }
+
+        return 5;
     }
 
     private PartyResponse toPartyResponse(Party party) {
