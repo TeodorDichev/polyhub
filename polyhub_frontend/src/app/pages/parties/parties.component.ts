@@ -3,11 +3,11 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
-import {
-  ApiService,
+import { ApiService } from '../../core/services/api.service';
+import type {
   PartyListItemResponse,
   PartyPageResponse
-} from '../../core/services/api.service';
+} from '../../core/models';
 
 @Component({
   selector: 'app-parties',

@@ -1,6 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ApiService, PartyResponse, SubmitPartyRequest } from '../../../core/services/api.service';
+import { ApiService } from '../../../core/services/api.service';
+import type {
+  PartyResponse,
+  SubmitPartyRequest
+} from '../../../core/models';
 import { AuthService } from '../../../core/services/auth.service';
 import { SubmitPartyModalComponent } from '../sumbit-party-modal/submit-party-modal.component';
 

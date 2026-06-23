@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { ApiService, ElectionResponse } from '../../core/services/api.service';
+import { ApiService } from '../../core/services/api.service';
+import type { ElectionResponse } from '../../core/models';
 import {
   getElectionStatusLabel,
   getElectionTypeLabel

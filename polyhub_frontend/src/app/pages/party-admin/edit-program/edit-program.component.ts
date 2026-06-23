@@ -2,11 +2,11 @@ import { CommonModule, Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import {
-  ApiService,
+import { ApiService } from '../../../core/services/api.service';
+import type {
   PolicySummary,
   ProgramResponse
-} from '../../../core/services/api.service';
+} from '../../../core/models';
 import {
   PoliticalPlaneComponent,
   PoliticalPoint

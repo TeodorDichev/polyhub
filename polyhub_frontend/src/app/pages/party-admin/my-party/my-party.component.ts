@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import {
-  ApiService,
+import { ApiService } from '../../../core/services/api.service';
+import type {
   PartyResponse,
   PartyDetailsResponse
-} from '../../../core/services/api.service';
+} from '../../../core/models';
 import { AuthService } from '../../../core/services/auth.service';
 import {
   PoliticalPlaneComponent,

@@ -1,7 +1,11 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { ApiService, PartyResponse, SubmitPartyRequest } from '../../../core/services/api.service';
+import { ApiService } from '../../../core/services/api.service';
+import type {
+  PartyResponse,
+  SubmitPartyRequest
+} from '../../../core/models';
 import { AuthService } from '../../../core/services/auth.service';
 
 @Component({

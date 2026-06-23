@@ -1,7 +1,8 @@
 import { CommonModule, Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { ApiService, ElectionDetailsResponse } from '../../core/services/api.service';
+import { ApiService } from '../../core/services/api.service';
+import type { ElectionDetailsResponse } from '../../core/models';
 import { PoliticalPlaneComponent, PoliticalMarker } from '../../shared/political-plane/political-plane.component';
 import {
   getElectionStatusLabel,

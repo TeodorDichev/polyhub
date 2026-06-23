@@ -3,7 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { ApiService, ElectionWithProgramResponse } from '../../core/services/api.service';
+import { ApiService } from '../../core/services/api.service';
+import type { ElectionWithProgramResponse } from '../../core/models';
 
 @Component({
   selector: 'app-elections',
