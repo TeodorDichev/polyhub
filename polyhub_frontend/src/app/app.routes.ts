@@ -14,6 +14,7 @@ import { PartyDetailsComponent } from './pages/party-details/party-details.compo
 import { authGuard } from './core/guards/auth.guard';
 import { PartiesComponent } from './pages/parties/parties.component';
 import { ElectionsComponent } from './pages/elections/elections.component';
+import { PublicElectionsComponent } from './pages/public-elections/public-elections.component';
 
 export const routes: Routes = [
   {
@@ -24,6 +25,7 @@ export const routes: Routes = [
       { path: 'auth/login', component: LoginComponent },
       { path: 'auth/register', component: RegisterComponent },
       { path: 'elections/:id', component: ElectionDetailsComponent },
+      { path: 'elections', component: PublicElectionsComponent },
       { path: 'programs/:id', component: ProgramDetailsComponent },
       { path: 'parties/:id', component: PartyDetailsComponent },
       { path: 'parties', component: PartiesComponent },

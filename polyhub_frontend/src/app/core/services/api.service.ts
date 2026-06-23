@@ -249,6 +249,16 @@ export interface PartyPageResponse {
   last: boolean;
 }
 
+export interface ElectionPageResponse {
+  elections: ElectionResponse[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+  first: boolean;
+  last: boolean;
+}
+
 @Injectable({ providedIn: 'root' })
 export class ApiService {
   private base = 'http://localhost:8080';
@@ -357,6 +367,22 @@ export class ApiService {
         withCredentials: true
       }
     );
+  }
+
+  getElectionsPage(
+    page: number,
+    size: number,
+    search: string
+  ): Observable<ElectionPageResponse> {
+    const params = new HttpParams()
+      .set('page', page)
+      .set('size', size)
+      .set('search', search);
+
+    return this.http.get<ElectionPageResponse>(`${this.base}/elections/page`, {
+      params,
+      withCredentials: true
+    });
   }
 
   getProgramSuggestion(): Observable<ProgramSuggestion> {

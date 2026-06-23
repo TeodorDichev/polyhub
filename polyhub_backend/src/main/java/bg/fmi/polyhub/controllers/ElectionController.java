@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import bg.fmi.polyhub.dto.election.ElectionPageResponse;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/elections")
@@ -22,6 +24,15 @@ public class ElectionController {
     @GetMapping
     public List<ElectionResponse> getAll() {
         return electionService.getAll();
+    }
+
+    @GetMapping("/page")
+    public ElectionPageResponse getPage(
+            @RequestParam(defaultValue = "") String search,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+        return electionService.getPublicElectionsPage(search, page, size);
     }
 
     @GetMapping("/{id}")

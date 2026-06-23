@@ -31,9 +31,9 @@ export class HomeComponent implements OnInit {
     this.loading = true;
     this.error = '';
 
-    this.api.getElections().subscribe({
-      next: (elections) => {
-        this.elections = elections;
+    this.api.getElectionsPage(0, 5, '').subscribe({
+      next: (response) => {
+        this.elections = response.elections;
         this.loading = false;
       },
       error: () => {
