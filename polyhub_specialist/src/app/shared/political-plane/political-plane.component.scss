@@ -2,13 +2,45 @@
   display: block;
 }
 
+.plane-card {
+  background: var(--white);
+  border: 1px solid #e6e8ef;
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.plane-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.85rem;
+
+  h3 {
+    color: var(--navy);
+    font-size: 1rem;
+    margin: 0;
+  }
+
+  span {
+    color: var(--grey);
+    font-size: 0.85rem;
+  }
+}
+
 canvas {
-  width: 300px;
-  height: 300px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  background: #fff;
-  cursor: crosshair;
+  display: block;
+  width: 100%;
+  max-width: 420px;
+  height: auto;
+  border: 1px solid #edf0f5;
+  border-radius: 10px;
+  background: #ffffff;
+
+  &.interactive {
+    cursor: crosshair;
+    max-width: 300px;
+  }
 }
 
 .manual-inputs {
@@ -24,7 +56,7 @@ canvas {
 
   label {
     font-size: 0.75rem;
-    color: var(--text-muted, #6b7280);
+    color: var(--grey, #6b7280);
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
@@ -41,4 +73,40 @@ canvas {
       color: #9ca3af;
     }
   }
+}
+
+.legend {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid #edf0f5;
+}
+
+.legend-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--navy);
+  font-size: 0.9rem;
+}
+
+.legend-dot {
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 999px;
+  border: 2px solid var(--white);
+  box-shadow: 0 0 0 1px #d9dee8;
+}
+
+.legend-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.legend-coordinates {
+  color: var(--grey);
+  font-size: 0.82rem;
 }

@@ -1,7 +1,10 @@
 package bg.fmi.polyhub.dto.election;
 
+import lombok.Builder;
+
 import java.math.BigDecimal;
 
+@Builder(toBuilder = true)
 public record ElectionPartyResultResponse(
         Long partyId,
         String partyName,

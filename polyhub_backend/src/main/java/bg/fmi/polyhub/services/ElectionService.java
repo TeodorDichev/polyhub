@@ -2,13 +2,18 @@ package bg.fmi.polyhub.services;
 
 import bg.fmi.polyhub.dto.election.CreateElectionRequest;
 import bg.fmi.polyhub.dto.election.ElectionResponse;
+import bg.fmi.polyhub.dto.party.PartyResponse;
 import bg.fmi.polyhub.entities.Election;
 import bg.fmi.polyhub.entities.ElectionType;
+import bg.fmi.polyhub.entities.Party;
 import bg.fmi.polyhub.entities.PartyParticipation;
+import bg.fmi.polyhub.entities.User;
 import bg.fmi.polyhub.mappers.ElectionMapper;
+import bg.fmi.polyhub.mappers.PartyMapper;
 import bg.fmi.polyhub.repositories.ElectionRepository;
 import bg.fmi.polyhub.repositories.ElectionTypeRepository;
 import bg.fmi.polyhub.repositories.PartyParticipationRepository;
+import bg.fmi.polyhub.repositories.PartyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import bg.fmi.polyhub.dto.election.ElectionDetailsResponse;
@@ -30,6 +35,8 @@ public class ElectionService {
     private final PartyParticipationRepository partyParticipationRepository;
     private final ElectionMapper electionMapper;
     private final ProgramRepository programRepository;
+    private final PartyRepository partyRepository;
+    private final PartyMapper partyMapper;
 
     public ElectionResponse create(CreateElectionRequest request) {
         ElectionType type = electionTypeRepository
@@ -80,6 +87,14 @@ public class ElectionService {
         electionRepository.delete(election);
     }
 
+    public List<PartyResponse> getPartiesForElection(Long id) {
+        List<PartyParticipation> pp = partyParticipationRepository.findAllByElection_Id(id);
+
+        return pp.stream().map(partyParticipation ->
+            toPartyResponse(partyRepository.findById(partyParticipation.getId())
+                    .orElseThrow())
+        ).toList();
+    }
 
     public ElectionDetailsResponse getById(Long id) {
         Election election = electionRepository.findById(id)
@@ -88,7 +103,6 @@ public class ElectionService {
         return toDetailsResponse(election);
     }
 
-    // try to replace with a mapper or add builder annotation to record
     private ElectionDetailsResponse toDetailsResponse(Election election) {
         PartyParticipation winner = null;
 
@@ -101,16 +115,16 @@ public class ElectionService {
         List<ElectionPartyResultResponse> parties = partyParticipationRepository
                 .findAllByElection_Id(election.getId())
                 .stream()
+                .filter(p -> {
+                    User owner = p.getParty().getCreatedBy();
+                    return owner.getDeletedAt() == null && owner.getSuspendedOn() == null;
+                })
                 .sorted(this::compareByVotePercentageDesc)
                 .map(participation -> toPartyResultResponse(participation, election))
                 .toList();
 
-        return new ElectionDetailsResponse(
-                election.getId(),
-                election.getName(),
-                election.getElectionDate(),
-                election.getDescription(),
-                election.getType().getName(),
+        return electionMapper.toDetailsResponse(
+                election,
                 getStatus(election),
                 winner != null ? winner.getParty().getName() : null,
                 winner != null ? winner.getVotePercentage() : null,
@@ -118,34 +132,12 @@ public class ElectionService {
         );
     }
 
-    // try to replace with a mapper or add builder annotation to record
     private ElectionPartyResultResponse toPartyResultResponse(PartyParticipation participation, Election election) {
         Program program = programRepository
                 .findByPartyAndElection(participation.getParty(), election)
                 .orElse(null);
 
-        return new ElectionPartyResultResponse(
-                participation.getParty().getId(),
-                participation.getParty().getName(),
-                participation.getParty().getDescription(),
-                participation.getParty().getMotto(),
-
-                participation.getParty().getSelfEconomicAxis(),
-                participation.getParty().getSelfSocialAxis(),
-                participation.getParty().getSpecEconomicAxis(),
-                participation.getParty().getSpecSocialAxis(),
-
-                participation.getVotesCount(),
-                participation.getVotePercentage(),
-
-                program != null ? program.getId() : null,
-                program != null ? program.getTitle() : null,
-
-                program != null ? program.getSelfEconomicAxis() : null,
-                program != null ? program.getSelfSocialAxis() : null,
-                program != null ? program.getSpecEconomicAxis() : null,
-                program != null ? program.getSpecSocialAxis() : null
-        );
+        return electionMapper.toPartyResultResponse(participation, program);
     }
 
     private int compareByVotePercentageDesc(PartyParticipation first, PartyParticipation second) {
@@ -179,5 +171,10 @@ public class ElectionService {
                 winner != null ? winner.getParty().getName() : null,
                 winner != null ? winner.getVotePercentage() : null
         );
+    }
+
+    private PartyResponse toPartyResponse(Party party) {
+        PartyResponse dto;
+        return partyMapper.toResponse(party);
     }
 }

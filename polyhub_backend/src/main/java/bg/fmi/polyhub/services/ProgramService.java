@@ -102,6 +102,12 @@ public class ProgramService {
         program.setLastEditAt(LocalDateTime.now());
 
         Program saved = programRepository.save(program);
+        if (!partyParticipationRepository.existsByPartyAndElection(party, election)) {
+            PartyParticipation pp = new PartyParticipation();
+            pp.setParty(party);
+            pp.setElection(election);
+            partyParticipationRepository.save(pp);
+        }
 
         programPolicyRepository.deleteAllByProgram(saved);
 
@@ -162,44 +168,25 @@ public class ProgramService {
                 .toList();
     }
 
-    // try to replace with a mapper or add a builder annotation
     public ProgramDetailsResponse getDetails(Long id) {
         Program program = programRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Program not found"));
 
-        List<ProgramPolicy> policies = programPolicyRepository.findAllByProgram(program);
+        List<ProgramPolicy> rawPolicies = programPolicyRepository.findAllByProgram(program);
+        List<ProgramPolicyDetailsResponse> policies = rawPolicies.stream()
+                .map(this::toPolicyDetails)
+                .toList();
 
-        return new ProgramDetailsResponse(
-                program.getId(),
-                program.getTitle(),
-                program.getContent(),
-
-                program.getSelfEconomicAxis(),
-                program.getSelfSocialAxis(),
-                program.getSpecEconomicAxis(),
-                program.getSpecSocialAxis(),
-
-                program.getCreatedAt(),
-                program.getLastEditAt(),
-
-                program.getElection().getId(),
-                program.getElection().getName(),
-                program.getElection().getElectionDate(),
-
-                program.getParty().getId(),
-                program.getParty().getName(),
-                program.getParty().getDescription(),
-                program.getParty().getMotto(),
-
-                policies.stream()
-                        .map(this::toPolicyDetails)
-                        .toList()
-        );
+        return programMapper.toDetailsResponse(program, policies);
     }
 
     public List<ProgramForRatingResponse> getAllPrograms() {
         return programRepository.findAll()
                 .stream()
+                .filter(p -> {
+                    User owner = p.getParty().getCreatedBy();
+                    return owner.getDeletedAt() == null && owner.getSuspendedOn() == null;
+                })
                 .map(this::toRatingResponse)
                 .toList();
     }
@@ -225,23 +212,18 @@ public class ProgramService {
         return toRatingResponse(programRepository.save(program));
     }
 
-    // try to replace with a mapper or add a builder annotation
     private ProgramPolicyDetailsResponse toPolicyDetails(ProgramPolicy programPolicy) {
         Policy policy = programPolicy.getPolicy();
-
         PoliticalPositionType positionType = PoliticalPositionType.from(
                 policy.getSpecEconomicAxis(),
                 policy.getSpecSocialAxis()
         );
+        String position = positionType != null ? positionType.name() : null;
 
-        return new ProgramPolicyDetailsResponse(
-                policy.getId(),
-                policy.getName(),
-                policy.getSlug(),
-                positionType != null ? positionType.name() : null,
-                policy.getSpecEconomicAxis(),
-                policy.getSpecSocialAxis()
-        );
+        return programMapper.toPolicyDetails(programPolicy)
+                .toBuilder()
+                .politicalPosition(position)
+                .build();
     }
 
     private ProgramForRatingResponse toRatingResponse(Program program) {

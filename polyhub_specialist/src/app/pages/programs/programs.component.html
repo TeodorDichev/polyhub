@@ -6,25 +6,34 @@
   <div class="error-msg">{{ error }}</div>
 }
 
+<div class="table-controls">
+  <input class="search-input" type="text" [(ngModel)]="search" (ngModelChange)="applyFilters()" placeholder="Search by title, party or election..." />
+  <select [(ngModel)]="filterRated" (ngModelChange)="applyFilters()">
+    <option value="">All</option>
+    <option value="rated">Rated</option>
+    <option value="unrated">Not Rated</option>
+  </select>
+</div>
+
 <div class="table-wrapper">
   <table>
     <thead>
       <tr>
         <th>Party</th>
+        <th>Title</th>
         <th>Election</th>
         <th>Election Date</th>
-        <th>Created At</th>
         <th>Rated</th>
         <th>Actions</th>
       </tr>
     </thead>
     <tbody>
-      @for (program of programs; track program.programId) {
+      @for (program of pagedPrograms; track program.programId) {
         <tr>
           <td>{{ program.partyName }}</td>
+          <td>{{ program.title }}</td>
           <td>{{ program.electionName }}</td>
           <td>{{ program.electionDate }}</td>
-          <td>{{ program.createdAt }}</td>
           <td>
             @if (program.rated) {
               <span class="badge rated">Rated</span>
@@ -33,15 +42,22 @@
             }
           </td>
           <td class="actions">
-            <button class="btn-primary" (click)="openDetail(program)">
-              View / Rate
-            </button>
+            <button class="btn-secondary" (click)="viewDetails(program.programId)">Details</button>
+            <button class="btn-primary" (click)="openDetail(program)">View / Rate</button>
           </td>
         </tr>
       }
     </tbody>
   </table>
 </div>
+
+@if (totalPages > 1) {
+  <div class="pagination">
+    <button (click)="prevPage()" [disabled]="page === 0">← Prev</button>
+    <span>{{ page + 1 }} / {{ totalPages }}</span>
+    <button (click)="nextPage()" [disabled]="page >= totalPages - 1">Next →</button>
+  </div>
+}
 
 @if (selectedProgram) {
   <div class="modal-backdrop" (click)="closeDetail()">
@@ -66,42 +82,33 @@
         </div>
       }
       <div class="info-section">
-        <span class="label">Party Description</span>
-        <span class="value">{{ selectedProgram.partyDescription }}</span>
-      </div>
-      <div class="info-section">
         <span class="label">Election</span>
         <span class="value">{{ selectedProgram.electionName }} ({{ selectedProgram.electionDate }})</span>
       </div>
-
-      <hr />
-
       <div class="info-section">
         <span class="label">Program Content</span>
         <p class="content">{{ selectedProgram.content }}</p>
       </div>
-
       @if (selectedProgram.selfEconomicAxis != null) {
         <div class="info-section">
           <span class="label">Self-Reported Position</span>
-          <span class="value">({{ selectedProgram.selfEconomicAxis }}, {{ selectedProgram.selfSocialAxis }})</span>
+          <span class="value">({{ selectedProgram.selfEconomicAxis | number:'1.0-2' }}, {{ selectedProgram.selfSocialAxis | number:'1.0-2' }})</span>
         </div>
       }
-
       @if (selectedProgram.policies.length > 0) {
         <div class="info-section">
           <span class="label">Policies</span>
           <div class="policy-list">
             @for (policy of selectedProgram.policies; track policy.id) {
-              <span class="policy-chip">{{ policy.name }}</span>
+              <span class="policy-chip" [title]="policy.politicalPosition">
+                {{ policy.name }}
+              </span>
             }
           </div>
         </div>
       }
 
-      @if (ratingError) {
-        <div class="error-msg">{{ ratingError }}</div>
-      }
+      @if (ratingError) { <div class="error-msg">{{ ratingError }}</div> }
 
       @if (!hasReadProgram) {
         <button class="btn-primary read-btn" (click)="confirmRead()" [disabled]="selectedProgram.electionPassed">
@@ -110,13 +117,10 @@
       } @else {
         <div class="rating-section">
           <h4>Rate this program</h4>
-          <app-political-plane [(ngModel)]="ratingPoint" name="rating" />
-
+          <app-political-plane [(ngModel)]="ratingPoint" name="rating" mode="interactive" [size]="300" />
           <div class="modal-actions">
             <button class="btn-secondary" (click)="closeDetail()">Cancel</button>
-            <button class="btn-primary" (click)="saveRating()" [disabled]="saving">
-              {{ saving ? 'Saving...' : 'Save Rating' }}
-            </button>
+            <button class="btn-primary" (click)="saveRating()" [disabled]="saving">{{ saving ? 'Saving...' : 'Save Rating' }}</button>
           </div>
         </div>
       }

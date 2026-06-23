@@ -1,9 +1,12 @@
 package bg.fmi.polyhub.dto.program;
 
+import lombok.Builder;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Builder(toBuilder = true)
 public record ProgramDetailsResponse(
         Long id,
         String title,

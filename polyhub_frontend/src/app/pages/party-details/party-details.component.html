@@ -114,12 +114,12 @@
               <div class="axis-list">
                 <div>
                   <span>Specialist economic</span>
-                  <strong>{{ program.specEconomicAxis }}</strong>
+                  <strong>{{ program.specEconomicAxis | number:'1.0-2' }}</strong>
                 </div>
 
                 <div>
                   <span>Specialist social</span>
-                  <strong>{{ program.specSocialAxis }}</strong>
+                  <strong>{{ program.specSocialAxis | number:'1.0-2' }}</strong>
                 </div>
               </div>
             }

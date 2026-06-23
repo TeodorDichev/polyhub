@@ -1,29 +1,53 @@
 <div class="plane-card">
-  <div class="plane-header">
-    <h3>{{ title }}</h3>
-    <span>{{ validMarkers.length }} markers</span>
-  </div>
+  @if (title || mode === 'display') {
+    <div class="plane-header">
+      <h3>{{ title }}</h3>
+      @if (mode === 'display') {
+        <span>{{ validMarkers.length }} marker{{ validMarkers.length === 1 ? '' : 's' }}</span>
+      }
+    </div>
+  }
 
   <canvas
     #canvas
-    width="420"
-    height="420">
+    [width]="size"
+    [height]="size"
+    [class.interactive]="mode === 'interactive' && !disabled"
+    (click)="onClick($event)"
+    (mousemove)="onMouseMove($event)"
+    (mouseleave)="onMouseLeave()">
   </canvas>
 
-  @if (showLegend && validMarkers.length > 0) {
+  @if (mode === 'interactive') {
+    <div class="manual-inputs">
+      <div class="field">
+        <label>Economic (X)</label>
+        <input
+          type="number" step="0.01" min="-1" max="1"
+          [(ngModel)]="value.x"
+          (ngModelChange)="onInputChange()"
+          [disabled]="disabled"
+        />
+      </div>
+      <div class="field">
+        <label>Social (Y)</label>
+        <input
+          type="number" step="0.01" min="-1" max="1"
+          [(ngModel)]="value.y"
+          (ngModelChange)="onInputChange()"
+          [disabled]="disabled"
+        />
+      </div>
+    </div>
+  }
+
+  @if (mode === 'display' && showLegend && validMarkers.length > 0) {
     <div class="legend">
       @for (marker of validMarkers; track marker.label; let index = $index) {
         <div class="legend-item">
-          <span
-            class="legend-dot"
-            [style.background]="getMarkerColor(index)">
-          </span>
-
+          <span class="legend-dot" [style.background]="getMarkerColor(index)"></span>
           <span class="legend-label">{{ marker.label }}</span>
-
-          <span class="legend-coordinates">
-            ({{ marker.x }}, {{ marker.y }})
-          </span>
+          <span class="legend-coordinates">({{ marker.x | number:'1.2-2' }}, {{ marker.y | number:'1.2-2' }})</span>
         </div>
       }
     </div>

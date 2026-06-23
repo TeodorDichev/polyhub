@@ -6,6 +6,14 @@
   <div class="error-msg">{{ error }}</div>
 }
 
+<div class="table-controls">
+  <input class="search-input" type="text" [(ngModel)]="search" (ngModelChange)="applyFilters()" placeholder="Search by name or email..." />
+  <select [(ngModel)]="filterStatus" (ngModelChange)="applyFilters()">
+    <option value="">All statuses</option>
+    @for (s of statuses; track s) { <option [value]="s">{{ s }}</option> }
+  </select>
+</div>
+
 @if (rejectingId !== null) {
   <div class="modal-backdrop">
     <div class="modal">
@@ -32,14 +40,12 @@
       </tr>
     </thead>
     <tbody>
-      @for (party of parties; track party.id) {
+      @for (party of pagedParties; track party.id) {
         <tr>
           <td>{{ party.name }}</td>
           <td>{{ party.createdByEmail }}</td>
           <td>
-            <span class="badge" [class]="party.status.toLowerCase()">
-              {{ party.status }}
-            </span>
+            <span class="badge" [class]="party.status.toLowerCase()">{{ party.status }}</span>
           </td>
           <td class="description">{{ party.description }}</td>
           <td class="actions">
@@ -47,17 +53,22 @@
               <button class="btn-success" (click)="approve(party.id)">Approve</button>
               <button class="btn-danger" (click)="startReject(party.id)">Reject</button>
             }
-            
             <button class="btn-info" (click)="openInfo(party)">Info</button>
-
             <button class="btn-secondary" (click)="delete(party.id)">Delete</button>
-            
           </td>
         </tr>
       }
     </tbody>
   </table>
 </div>
+
+@if (totalPages > 1) {
+  <div class="pagination">
+    <button (click)="prevPage()" [disabled]="page === 0">← Prev</button>
+    <span>{{ page + 1 }} / {{ totalPages }}</span>
+    <button (click)="nextPage()" [disabled]="page >= totalPages - 1">Next →</button>
+  </div>
+}
 
 @if (selectedParty) {
   <div class="modal-backdrop" (click)="closeInfo()">

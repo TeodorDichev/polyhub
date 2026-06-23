@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ApiService, ProgramDetailsResponse } from '../../core/services/api.service';
@@ -27,8 +27,11 @@ export class ProgramDetailsComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private api: ApiService
+    private api: ApiService,
+    private location: Location
   ) {}
+
+  goBack(): void { this.location.back(); }
 
   ngOnInit() {
     this.loadProgram();

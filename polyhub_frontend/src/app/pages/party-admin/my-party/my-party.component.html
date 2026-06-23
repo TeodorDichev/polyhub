@@ -1,0 +1,179 @@
+<div class="page-header">
+  <h2>My Party</h2>
+</div>
+
+@if (loading) {
+  <div class="state-box">
+    <p>Loading your party...</p>
+  </div>
+} @else if (showForm) {
+
+  <!-- Submit / Resubmit Form -->
+  <div class="form-card">
+    <p class="eyebrow">{{ party ? 'Resubmit Party' : 'New Party Request' }}</p>
+    <h3>{{ party ? party.name : 'Register your party' }}</h3>
+
+    @if (!party) {
+      <p class="cta-hint">You don't have a registered party yet. Fill in the form below to submit a request.</p>
+    }
+
+    @if (party?.status === 'REJECTED' && party?.rejectionComment) {
+      <div class="rejection-notice">
+        <strong>Rejection reason:</strong> {{ party!.rejectionComment }}
+      </div>
+    }
+
+    @if (submitSuccess) {
+      <div class="success-msg">Submitted successfully! Awaiting approval.</div>
+    } @else {
+      @if (formError) { <div class="error-msg">{{ formError }}</div> }
+
+      <div class="field">
+        <label>Party Name *</label>
+        <input type="text" [(ngModel)]="name" placeholder="e.g. Democratic Alliance" />
+      </div>
+      <div class="field">
+        <label>Description *</label>
+        <textarea [(ngModel)]="description" rows="3" placeholder="What does your party stand for?"></textarea>
+      </div>
+      <div class="field">
+        <label>Motto</label>
+        <input type="text" [(ngModel)]="motto" placeholder="Optional" />
+      </div>
+      <div class="field">
+        <label>Logo URL</label>
+        <input type="text" [(ngModel)]="logoUrl" placeholder="https://..." />
+      </div>
+      <div class="field">
+        <label>Founded On</label>
+        <input type="date" [(ngModel)]="foundedOn" />
+      </div>
+
+      <div class="form-actions">
+        @if (party) {
+          <button class="btn-secondary" (click)="cancelForm()">Cancel</button>
+        }
+        <button class="btn-primary" (click)="submitForm()" [disabled]="submitting">
+          {{ submitting ? 'Submitting...' : (party ? 'Resubmit' : 'Submit Request') }}
+        </button>
+      </div>
+    }
+  </div>
+
+} @else if (party) {
+
+  <!-- Party view -->
+  <section class="party-hero">
+    <div class="hero-top">
+      @if (party.logoUrl) {
+        <img class="party-logo" [src]="party.logoUrl" [alt]="party.name" />
+      }
+      <div class="hero-info">
+        <p class="eyebrow">My Party</p>
+        <h1>{{ party.name }}</h1>
+        @if (party.motto) { <p class="motto">"{{ party.motto }}"</p> }
+      </div>
+    </div>
+
+    <div class="status-row">
+      <span class="status-badge badge" [class]="party.status.toLowerCase()">{{ party.status }}</span>
+      @if (party.status === 'PENDING') {
+        <span class="status-hint">Your party request is under review.</span>
+      }
+      @if (party.status === 'REJECTED') {
+        <button class="btn-primary" (click)="openForm()">Resubmit</button>
+      }
+    </div>
+
+    @if (party.status === 'REJECTED' && party.rejectionComment) {
+      <div class="rejection-notice">
+        <strong>Rejection reason:</strong> {{ party.rejectionComment }}
+      </div>
+    }
+
+    <p class="description">{{ party.description }}</p>
+
+    <div class="meta-grid">
+      @if (party.foundedOn) {
+        <div>
+          <span>Founded</span>
+          <strong>{{ party.foundedOn | date:'dd MMM yyyy' }}</strong>
+        </div>
+      }
+      <div>
+        <span>Submitted</span>
+        <strong>{{ party.createdAt | date:'dd MMM yyyy' }}</strong>
+      </div>
+    </div>
+  </section>
+
+  @if (party.status === 'APPROVED' && partyDetails) {
+
+    <!-- Self-assessment -->
+    <section class="section">
+      <div class="section-header">
+        <h2>Self-assessment</h2>
+        <p>Set your party's position on the political compass.</p>
+      </div>
+
+      <div class="self-rating-block">
+        <app-political-plane
+          [(ngModel)]="selfPoint"
+          name="selfPoint"
+          mode="interactive"
+          [size]="300">
+        </app-political-plane>
+
+        <div class="axis-hint">
+          Economic: <strong>{{ selfPoint.x | number:'1.0-2' }}</strong> &nbsp;
+          Social: <strong>{{ selfPoint.y | number:'1.0-2' }}</strong>
+        </div>
+
+        @if (ratingError) { <div class="error-msg">{{ ratingError }}</div> }
+        @if (ratingSaved) { <div class="success-msg">Position saved!</div> }
+
+        <div class="form-actions">
+          <button class="btn-primary" (click)="saveRating()" [disabled]="savingRating">
+            {{ savingRating ? 'Saving...' : 'Save Position' }}
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Political compass comparison -->
+    @if (partyMarkers.length > 0) {
+      <section class="section">
+        <div class="section-header">
+          <h2>Political compass</h2>
+          <p>Comparison between self-assessment and specialist rating.</p>
+        </div>
+        <app-political-plane title="Party orientation" [markers]="partyMarkers"></app-political-plane>
+      </section>
+    }
+
+    <!-- Specialist rating info -->
+    @if (partyDetails.specEconomicAxis != null) {
+      <section class="section">
+        <div class="section-header">
+          <h2>Specialist Rating</h2>
+        </div>
+        <div class="meta-grid">
+          <div>
+            <span>Economic axis</span>
+            <strong>{{ partyDetails.specEconomicAxis | number:'1.0-2' }}</strong>
+          </div>
+          <div>
+            <span>Social axis</span>
+            <strong>{{ partyDetails.specSocialAxis | number:'1.0-2' }}</strong>
+          </div>
+          @if (partyDetails.politicalLabel) {
+            <div>
+              <span>Label</span>
+              <strong>{{ partyDetails.politicalLabel }}</strong>
+            </div>
+          }
+        </div>
+      </section>
+    }
+  }
+}

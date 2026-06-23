@@ -14,9 +14,7 @@
   </div>
 } @else if (program) {
   <section class="details-hero">
-    <a class="back-link" [routerLink]="['/elections', program.electionId]">
-      ← Back to election
-    </a>
+    <span class="back-link" (click)="goBack()">← Back</span>
 
     <p class="eyebrow">Political program</p>
 

@@ -1,0 +1,109 @@
+@if (loading) {
+  <div class="state-box">
+    <h3>Loading program...</h3>
+    <p>Please wait while we fetch the program information.</p>
+  </div>
+} @else {
+  <section class="details-hero">
+    <span class="back-link" (click)="goBack()">← Back</span>
+
+    <p class="eyebrow">{{ loadedProgram ? 'Edit program' : 'New program' }}</p>
+
+    <div class="field">
+      <input class="title-input" type="text" [(ngModel)]="title" placeholder="Program title" />
+    </div>
+
+    @if (electionName) {
+      <div class="meta-grid">
+        <div>
+          <span>Election</span>
+          <strong>{{ electionName }}</strong>
+        </div>
+      </div>
+    }
+
+    <div class="template-action">
+      <button class="btn-secondary" (click)="useTemplate()">Use last program as template</button>
+      @if (templateMsg) {
+        <span [class]="templateMsg.startsWith('No') ? 'msg-error' : 'msg-success'">{{ templateMsg }}</span>
+      }
+    </div>
+  </section>
+
+  @if (saveError) { <div class="error-msg">{{ saveError }}</div> }
+
+  <section class="compass-section">
+    <div class="section-header">
+      <h2>Self-reported position</h2>
+      <p>Set your party's position on the political compass for this program.</p>
+    </div>
+
+    <app-political-plane [(ngModel)]="selfPoint" name="selfPoint" mode="interactive" [size]="300"></app-political-plane>
+
+    <p class="axis-hint">
+      Economic: <strong>{{ selfPoint.x | number:'1.0-2' }}</strong> &nbsp;&nbsp;
+      Social: <strong>{{ selfPoint.y | number:'1.0-2' }}</strong>
+    </p>
+  </section>
+
+  <section class="content-section">
+    <div class="section-header">
+      <h2>Program content</h2>
+      <p>Describe your party's goals and commitments for this election.</p>
+    </div>
+
+    <textarea class="content-input" [(ngModel)]="content" rows="8" placeholder="Describe your party's program for this election..."></textarea>
+  </section>
+
+  <section class="policies-section">
+    <div class="section-header">
+      <h2>Policies</h2>
+      <p>Search and attach policies to this program.</p>
+    </div>
+
+    <input
+      class="policy-search-input"
+      type="text"
+      [(ngModel)]="policySearch"
+      (input)="searchPolicies()"
+      placeholder="Search policies to add..."
+    />
+
+    @if (searchResults.length > 0) {
+      <div class="policy-search-results">
+        @for (policy of searchResults; track policy.id) {
+          <button type="button" class="policy-result-item" (click)="addPolicy(policy)">
+            <span>{{ policy.name }}</span>
+            <span class="position-tag">{{ policy.politicalPosition }}</span>
+          </button>
+        }
+      </div>
+    }
+
+    @if (selectedPolicies.length === 0) {
+      <div class="state-box">
+        <h3>No policies added</h3>
+        <p>Use the search above to find and attach policies to this program.</p>
+      </div>
+    } @else {
+      <div class="policy-grid">
+        @for (policy of selectedPolicies; track policy.id) {
+          <article class="policy-card">
+            <div class="policy-card-top">
+              <h3>{{ policy.name }}</h3>
+              <button class="remove-btn" (click)="removePolicy(policy.id)" title="Remove policy">×</button>
+            </div>
+            <p class="position">{{ policy.politicalPosition }}</p>
+          </article>
+        }
+      </div>
+    }
+  </section>
+
+  <div class="form-actions">
+    <button class="btn-secondary" (click)="goBack()">Cancel</button>
+    <button class="btn-primary" (click)="save()" [disabled]="saving">
+      {{ saving ? 'Saving...' : 'Save Program' }}
+    </button>
+  </div>
+}

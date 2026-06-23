@@ -7,18 +7,24 @@
   <div class="error-msg">{{ error }}</div>
 }
 
+<div class="table-controls">
+  <input class="search-input" type="text" [(ngModel)]="search" (ngModelChange)="applyFilters()" placeholder="Search by name or slug..." />
+  <select [(ngModel)]="filterPosition" (ngModelChange)="applyFilters()">
+    <option value="">All positions</option>
+    @for (p of positions; track p.value) {
+      <option [value]="p.value">{{ p.label }}</option>
+    }
+  </select>
+</div>
+
 @if (showModal) {
   <div class="modal-backdrop" (click)="closeModal()">
     <div class="modal" (click)="$event.stopPropagation()">
       <div class="modal-header">
-        <h3>{{ 'New policy' }}</h3>
+        <h3>{{ editing ? 'Edit Policy' : 'New Policy' }}</h3>
         <button class="close-btn" (click)="closeModal()">✕</button>
       </div>
-
-      @if (modalError) {
-        <div class="error-msg">{{ modalError }}</div>
-      }
-
+      @if (modalError) { <div class="error-msg">{{ modalError }}</div> }
       <div class="field">
         <label>Name</label>
         <input type="text" [(ngModel)]="name" placeholder="Policy name" />
@@ -30,15 +36,12 @@
       <div class="field">
         <label>Political compass</label>
         <form [formGroup]="form">
-            <app-political-plane formControlName="policyPosition"></app-political-plane>
+          <app-political-plane formControlName="policyPosition" mode="interactive" [size]="300"></app-political-plane>
         </form>
       </div>
-
       <div class="modal-actions">
         <button class="btn-secondary" (click)="closeModal()">Cancel</button>
-        <button class="btn-primary" (click)="save()" [disabled]="saving">
-          {{ saving ? 'Saving...' : 'Save' }}
-        </button>
+        <button class="btn-primary" (click)="save()" [disabled]="saving">{{ saving ? 'Saving...' : 'Save' }}</button>
       </div>
     </div>
   </div>
@@ -48,11 +51,10 @@
   <div class="modal-backdrop" (click)="cancelDelete()">
     <div class="modal" (click)="$event.stopPropagation()">
       <div class="modal-header">
-        <h3>Delete policy</h3>
+        <h3>Delete Policy</h3>
         <button class="close-btn" (click)="cancelDelete()">✕</button>
       </div>
-      <p>Are you sure you want to delete this election?</p>
-      <p class="danger-notice">⚠ This functionality may be moved or discontinued in the future.</p>
+      <p>Are you sure you want to delete this policy?</p>
       <div class="modal-actions">
         <button class="btn-secondary" (click)="cancelDelete()">Cancel</button>
         <button class="btn-danger" (click)="confirmDelete()">Delete</button>
@@ -72,12 +74,13 @@
       </tr>
     </thead>
     <tbody>
-      @for (policy of policies; track policy.id) {
+      @for (policy of pagedPolicies; track policy.id) {
         <tr>
           <td>{{ policy.name }}</td>
           <td>{{ policy.slug }}</td>
           <td>{{ policy.politicalPosition }}</td>
           <td class="actions">
+            <button class="btn-secondary" (click)="openEdit(policy)">Edit</button>
             <button class="btn-danger" (click)="startDelete(policy.id)">Delete</button>
           </td>
         </tr>
@@ -85,3 +88,11 @@
     </tbody>
   </table>
 </div>
+
+@if (totalPages > 1) {
+  <div class="pagination">
+    <button (click)="prevPage()" [disabled]="page === 0">← Prev</button>
+    <span>{{ page + 1 }} / {{ totalPages }}</span>
+    <button (click)="nextPage()" [disabled]="page >= totalPages - 1">Next →</button>
+  </div>
+}

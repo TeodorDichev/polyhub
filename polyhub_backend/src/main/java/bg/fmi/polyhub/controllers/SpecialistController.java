@@ -1,7 +1,9 @@
 package bg.fmi.polyhub.controllers;
 
 import bg.fmi.polyhub.dto.election.CreateElectionRequest;
+import bg.fmi.polyhub.dto.election.ElectionDetailsResponse;
 import bg.fmi.polyhub.dto.election.ElectionResponse;
+import bg.fmi.polyhub.dto.party.PartyDetailsResponse;
 import bg.fmi.polyhub.dto.specialist.PartyForRatingResponse;
 import bg.fmi.polyhub.dto.specialist.PartyRatingRequest;
 import bg.fmi.polyhub.dto.specialist.CreatePolicyRequest;
@@ -56,6 +58,11 @@ public class SpecialistController {
         return electionService.update(id, request);
     }
 
+    @GetMapping("/elections/{id}")
+    public ElectionDetailsResponse getElectionDetails(@PathVariable Long id) {
+        return electionService.getById(id);
+    }
+
     @DeleteMapping("/elections/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteElection(@PathVariable Long id) {
@@ -72,6 +79,11 @@ public class SpecialistController {
         return policyService.createNewPolicy(request);
     }
 
+    @PutMapping("/policies/{id}")
+    public PolicySummary updatePolicy(@PathVariable Long id, @Valid @RequestBody CreatePolicyRequest request) {
+        return policyService.updatePolicy(id, request);
+    }
+
     @DeleteMapping("/policies/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deletePolicy(@PathVariable Long id) {
@@ -81,6 +93,11 @@ public class SpecialistController {
     @GetMapping("/parties")
     public List<PartyForRatingResponse> getAllParties() {
         return partyService.getAllApprovedParties();
+    }
+
+    @GetMapping("/parties/{id}")
+    public PartyDetailsResponse getPartyDetails(@PathVariable Long id) {
+        return partyService.getDetails(id);
     }
 
     @PutMapping("/parties/{id}/rate")

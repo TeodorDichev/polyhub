@@ -1,11 +1,13 @@
 package bg.fmi.polyhub.dto.election;
 
 import bg.fmi.polyhub.entities.ElectionTypeEnum;
+import lombok.Builder;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
+@Builder(toBuilder = true)
 public record ElectionDetailsResponse(
         Long id,
         String name,

@@ -2,6 +2,7 @@ package bg.fmi.polyhub.controllers;
 
 import bg.fmi.polyhub.dto.election.ElectionWithProgramResponse;
 import bg.fmi.polyhub.dto.party.PartyResponse;
+import bg.fmi.polyhub.dto.party.SelfRatePartyRequest;
 import bg.fmi.polyhub.dto.party.SubmitPartyRequest;
 import bg.fmi.polyhub.dto.policy.PolicySummary;
 import bg.fmi.polyhub.dto.program.CreateProgramRequest;
@@ -56,6 +57,13 @@ public class PartyAdminController {
     @ResponseStatus(HttpStatus.OK)
     public PartyResponse getMyParty(@AuthenticationPrincipal String email) {
         return partyService.getMyParty(email);
+    }
+
+    @PutMapping("/parties/self-rating")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void selfRateParty(@Valid @RequestBody SelfRatePartyRequest request,
+                              @AuthenticationPrincipal String email) {
+        partyService.selfRateParty(request.selfEconomicAxis(), request.selfSocialAxis(), email);
     }
 
     @PutMapping("/programs/{electionId}")

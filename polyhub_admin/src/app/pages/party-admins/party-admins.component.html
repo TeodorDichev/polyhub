@@ -6,6 +6,15 @@
   <div class="error-msg">{{ error }}</div>
 }
 
+<div class="table-controls">
+  <input class="search-input" type="text" [(ngModel)]="search" (ngModelChange)="applyFilters()" placeholder="Search by name or email..." />
+  <select [(ngModel)]="filterStatus" (ngModelChange)="applyFilters()">
+    <option value="">All</option>
+    <option value="active">Active</option>
+    <option value="suspended">Suspended</option>
+  </select>
+</div>
+
 <div class="table-wrapper">
   <table>
     <thead>
@@ -17,7 +26,7 @@
       </tr>
     </thead>
     <tbody>
-      @for (user of users; track user.id) {
+      @for (user of pagedUsers; track user.id) {
         <tr>
           <td>{{ user.firstname }} {{ user.lastname }}</td>
           <td>{{ user.email }}</td>
@@ -34,9 +43,7 @@
             } @else {
               <button class="btn-warning" (click)="suspend(user.id)">Suspend</button>
             }
-            
             <button class="btn-info" (click)="openInfo(user)">Info</button>
-
             <button class="btn-danger" (click)="delete(user.id)">Delete</button>
           </td>
         </tr>
@@ -44,6 +51,14 @@
     </tbody>
   </table>
 </div>
+
+@if (totalPages > 1) {
+  <div class="pagination">
+    <button (click)="prevPage()" [disabled]="page === 0">← Prev</button>
+    <span>{{ page + 1 }} / {{ totalPages }}</span>
+    <button (click)="nextPage()" [disabled]="page >= totalPages - 1">Next →</button>
+  </div>
+}
 
 @if (selectedUser) {
   <div class="modal-backdrop" (click)="closeInfo()">
@@ -62,12 +77,12 @@
           <span>{{ selectedUser.role }}</span>
         </div>
         <div class="info-field">
-          <span class="label">Created At</span>
-          <span>{{ selectedUser.createdAt }}</span>
-        </div>
-        <div class="info-field">
-          <span class="label">Suspended On</span>
-          <span>{{ selectedUser.suspendedOn ?? '—' }}</span>
+          <span class="label">Status</span>
+          @if (selectedUser.suspendedOn) {
+            <span class="badge suspended">Suspended since {{ selectedUser.suspendedOn }}</span>
+          } @else {
+            <span class="badge active">Active</span>
+          }
         </div>
       </div>
     </div>

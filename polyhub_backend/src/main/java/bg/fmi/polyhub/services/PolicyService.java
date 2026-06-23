@@ -10,7 +10,6 @@ import bg.fmi.polyhub.repositories.PolicyRepository;
 import bg.fmi.polyhub.repositories.ProgramPolicyRepository;
 import bg.fmi.polyhub.repositories.ProgramRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,8 +19,8 @@ import java.util.List;
 public class PolicyService {
     private final PolicyRepository policyRepository;
     private final PolicyMapper policyMapper;
-    private ProgramRepository programRepository;
-    private ProgramPolicyRepository programPolicyRepository;
+    private final ProgramRepository programRepository;
+    private final ProgramPolicyRepository programPolicyRepository;
 
     public List<PolicySummary> getAllPolicies() {
         return policyRepository.findAll()
@@ -54,10 +53,27 @@ public class PolicyService {
         return policyMapper.toPolicySummary(saved);
     }
 
+    public PolicySummary updatePolicy(Long id, CreatePolicyRequest request) {
+        Policy policy = policyRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Policy not found"));
+
+        if (!isValid(request.specSocialAxis(), request.specEconomicAxis())) {
+            throw new RuntimeException("Invalid axis params");
+        }
+
+        policy.setName(request.name());
+        policy.setSlug(request.slug());
+        policy.setSpecEconomicAxis(request.specEconomicAxis());
+        policy.setSpecSocialAxis(request.specSocialAxis());
+
+        return policyMapper.toPolicySummary(policyRepository.save(policy));
+    }
+
     public void deletePolicyById(Long id) {
-        if (policyRepository.existsById(id)) {
+        if (!policyRepository.existsById(id)) {
             throw new RuntimeException("Policy with this id does not exist.");
         }
+        policyRepository.deleteById(id);
     }
 
     public static boolean isValid(Double economic, Double social) {

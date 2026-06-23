@@ -1,5 +1,8 @@
 package bg.fmi.polyhub.dto.program;
 
+import lombok.Builder;
+
+@Builder(toBuilder = true)
 public record ProgramPolicyDetailsResponse(
         Long id,
         String name,

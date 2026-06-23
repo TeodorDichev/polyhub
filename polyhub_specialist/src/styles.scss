@@ -14,6 +14,14 @@
   --success-light: #dcfce7;
   --warning: #b45309;
   --warning-light: #fef3c7;
+
+  /* Aliases used by detail-page components */
+  --navy: #1a1a2e;
+  --navy-light: #252540;
+  --navy-lighter: #3a3a58;
+  --gold: #c9a84c;
+  --white: #ffffff;
+  --grey: #6b7280;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -27,3 +35,86 @@ body {
 
 a { text-decoration: none; color: inherit; }
 button { cursor: pointer; border: none; outline: none; }
+
+/* ── Table controls (search + filter row) ── */
+.table-controls {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+
+  select {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--text);
+    font-size: 0.9rem;
+    cursor: pointer;
+    &:focus { outline: none; border-color: var(--accent); }
+  }
+}
+
+.search-input {
+  flex: 1;
+  min-width: 180px;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.9rem;
+  &:focus { outline: none; border-color: var(--accent); }
+  &::placeholder { color: var(--text-muted); }
+}
+
+/* ── Pagination ── */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+
+  button {
+    padding: 0.4rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--surface);
+    color: var(--text);
+    font-size: 0.85rem;
+    font-weight: 600;
+    &:hover:not(:disabled) { background: var(--bg); border-color: var(--accent); color: var(--accent); }
+    &:disabled { opacity: 0.4; cursor: not-allowed; }
+  }
+
+  span { font-size: 0.9rem; color: var(--text-muted); }
+}
+
+/* ── Political label badge ── */
+.label-badge {
+  background: rgba(201, 168, 76, 0.14);
+  color: var(--navy);
+  text-transform: capitalize;
+}
+
+/* ── Badge ── */
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.7rem;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  background: #eff6ff;
+  color: var(--accent);
+
+  &.rated    { background: var(--success-light); color: var(--success); }
+  &.unrated  { background: var(--warning-light); color: var(--warning); }
+  &.finished { background: #e8f5e9; color: #2e7d32; }
+  &.running  { background: #fff8e1; color: #9a7300; }
+  &.upcoming { background: #eff6ff; color: var(--accent); }
+  &.active   { background: var(--success-light); color: var(--success); }
+  &.muted    { background: var(--bg); color: var(--text-muted); }
+}
+
+.muted { color: var(--text-muted); }

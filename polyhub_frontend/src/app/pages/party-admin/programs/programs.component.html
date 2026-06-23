@@ -1,0 +1,66 @@
+<div class="page-header">
+  <h2>My Programs</h2>
+</div>
+
+@if (error) {
+  <div class="error-msg">{{ error }}</div>
+}
+
+<div class="table-controls">
+  <input class="search-input" type="text" [(ngModel)]="search" (ngModelChange)="applyFilters()" placeholder="Search by election name..." />
+  <select [(ngModel)]="filterStatus" (ngModelChange)="applyFilters()">
+    <option value="">All statuses</option>
+    <option value="UPCOMING">Upcoming</option>
+    <option value="RUNNING">Running</option>
+    <option value="FINISHED">Finished</option>
+  </select>
+</div>
+
+<div class="table-wrapper">
+  <table>
+    <thead>
+      <tr>
+        <th>Election</th>
+        <th>Type</th>
+        <th>Date</th>
+        <th>Status</th>
+        <th>Editable</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (e of pagedPrograms; track e.id) {
+        <tr>
+          <td>{{ e.name }}</td>
+          <td>{{ e.type }}</td>
+          <td>{{ e.electionDate | date:'dd MMM yyyy' }}</td>
+          <td>
+            <span class="badge" [class]="e.status.toLowerCase()">{{ e.status }}</span>
+          </td>
+          <td>
+            @if (e.editable) {
+              <span class="badge submitted">Yes</span>
+            } @else {
+              <span class="badge muted">No</span>
+            }
+          </td>
+          <td class="actions">
+            <button class="btn-info" (click)="viewProgram(e)">View Program</button>
+            @if (e.editable) {
+              <button class="btn-primary" (click)="goToEdit(e)">Edit Program</button>
+            }
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
+
+@if (totalPages > 1) {
+  <div class="pagination">
+    <button (click)="prevPage()" [disabled]="page === 0">← Prev</button>
+    <span>{{ page + 1 }} / {{ totalPages }}</span>
+    <button (click)="nextPage()" [disabled]="page >= totalPages - 1">Next →</button>
+  </div>
+}
+

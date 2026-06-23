@@ -9,6 +9,12 @@
   --danger: #c0392b;
   --bg: #ffffff;
   --text: #1a1a2e;
+
+  // Aliases for component scss compatibility
+  --surface: #f8f9fb;
+  --border: #dde1ea;
+  --text-muted: #8892a4;
+  --accent: #c9a84c;
 }
 
 * {
@@ -33,4 +39,171 @@ button {
   cursor: pointer;
   border: none;
   outline: none;
+}
+
+// ─── Global layout helpers ────────────────────────────────────────────────────
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+
+  h2 { color: var(--navy); font-size: 1.3rem; }
+}
+
+.table-controls {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+
+  select, input {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    color: var(--navy);
+    background: white;
+    &:focus { outline: none; border-color: var(--gold); }
+  }
+}
+
+.search-input { min-width: 220px; }
+
+.table-wrapper {
+  background: white;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  overflow-x: auto;
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th {
+      text-align: left;
+      padding: 0.75rem 1rem;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--grey);
+      border-bottom: 1px solid #eee;
+    }
+
+    td {
+      padding: 0.75rem 1rem;
+      font-size: 0.9rem;
+      border-bottom: 1px solid #eee;
+      color: var(--navy);
+    }
+
+    tr:last-child td { border-bottom: none; }
+    tr.locked-row { opacity: 0.6; }
+  }
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.25rem;
+  font-size: 0.9rem;
+  color: var(--navy);
+
+  button {
+    padding: 0.35rem 0.9rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: white;
+    color: var(--navy);
+    font-size: 0.85rem;
+    &:hover:not(:disabled) { border-color: var(--gold); color: var(--gold); }
+    &:disabled { opacity: 0.4; cursor: not-allowed; }
+  }
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.7rem;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+
+  &.finished  { background: #f3f4f6; color: #6b7280; }
+  &.running   { background: #fff8e1; color: #b8860b; }
+  &.upcoming  { background: #e8f5e9; color: #2e7d32; }
+  &.submitted { background: #e8f5e9; color: #2e7d32; }
+  &.approved  { background: #e8f5e9; color: #2e7d32; }
+  &.pending   { background: #fff8e1; color: #b8860b; }
+  &.rejected  { background: #fef2f2; color: #c0392b; }
+  &.missing   { background: #fff8e1; color: #b8860b; }
+  &.muted     { background: #f3f4f6; color: #9ca3af; }
+  &.active    { background: #e8f5e9; color: #2e7d32; }
+}
+
+.actions { display: flex; gap: 0.5rem; align-items: center; }
+
+.btn-primary, .btn-secondary, .btn-info, .btn-danger {
+  padding: 0.4rem 1rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: background 0.15s;
+}
+
+.btn-primary {
+  background: var(--gold);
+  color: var(--navy);
+  &:hover:not(:disabled) { background: var(--gold-light); }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+}
+
+.btn-secondary {
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+  color: var(--grey);
+  &:hover:not(:disabled) { background: #eee; }
+}
+
+.btn-info {
+  background: #eff6ff;
+  color: #3a86ff;
+  border: 1px solid #bfdbfe;
+  &:hover:not(:disabled) { background: #dbeafe; }
+}
+
+.btn-danger {
+  background: rgba(192, 57, 43, 0.08);
+  color: var(--danger);
+  border: 1px solid rgba(192, 57, 43, 0.2);
+  &:hover:not(:disabled) { background: var(--danger); color: white; }
+}
+
+.error-msg {
+  background: rgba(192, 57, 43, 0.08);
+  border: 1px solid rgba(192, 57, 43, 0.25);
+  color: var(--danger);
+  border-radius: 8px;
+  padding: 0.65rem 1rem;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.success-msg {
+  background: rgba(46, 125, 50, 0.08);
+  border: 1px solid rgba(46, 125, 50, 0.25);
+  color: #2e7d32;
+  border-radius: 8px;
+  padding: 0.65rem 1rem;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.muted-text {
+  color: var(--grey);
+  font-size: 0.9rem;
 }

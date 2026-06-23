@@ -46,6 +46,7 @@ export interface PartyDetailsResponse {
   selfSocialAxis?: number | null;
   specEconomicAxis?: number | null;
   specSocialAxis?: number | null;
+  politicalLabel?: string | null;
 
   programs: PartyProgramSummaryResponse[];
   participations: PartyElectionParticipationResponse[];
@@ -330,5 +331,9 @@ export class ApiService {
 
   saveProgram(electionId: number, data: CreateProgramRequest): Observable<ProgramResponse> {
     return this.http.put<ProgramResponse>(`${this.base}/party-admin/programs/${electionId}`, data, { withCredentials: true });
+  }
+
+  selfRateParty(data: { selfEconomicAxis: number; selfSocialAxis: number }): Observable<void> {
+    return this.http.put<void>(`${this.base}/party-admin/parties/self-rating`, data, { withCredentials: true });
   }
 }

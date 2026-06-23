@@ -12,28 +12,22 @@
 
     <nav class="sidebar-nav">
       @if (authService.isLoggedIn()) {
-        <a routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="closeSidebar()">
-          Dashboard
+        <a routerLink="/dashboard/my-party" routerLinkActive="active" (click)="closeSidebar()">
+          My Party
         </a>
-        <a routerLink="/dashboard/submit-party" routerLinkActive="active"
-          [class.locked]="authService.partyStatus() === 'PENDING' || authService.partyStatus() === 'APPROVED'"
-          (click)="closeSidebar()">
-          Submit Party
-        </a>
-        <a routerLink="/dashboard/my-submission" routerLinkActive="active" (click)="closeSidebar()">
-          My Submission
-        </a>
-        <a routerLink="/dashboard/elections" routerLinkActive="active" (click)="closeSidebar()">
-          Elections and Programs
-        </a>
+        @if (authService.hasApprovedParty()) {
+          <a routerLink="/dashboard/elections" routerLinkActive="active" (click)="closeSidebar()">
+            Elections
+          </a>
+          <a routerLink="/dashboard/programs" routerLinkActive="active" (click)="closeSidebar()">
+            Programs
+          </a>
+        } @else {
+          <span class="nav-item locked" title="Available after your party is approved">Elections</span>
+          <span class="nav-item locked" title="Available after your party is approved">Programs</span>
+        }
         <a routerLink="/dashboard/personal-details" routerLinkActive="active" (click)="closeSidebar()">
           Personal Details
-        </a>
-        <a class="locked" title="Requires approved party">
-          Party Analytics
-        </a>
-        <a class="locked" title="Requires approved party">
-          Policies
         </a>
       } @else {
         <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="closeSidebar()">

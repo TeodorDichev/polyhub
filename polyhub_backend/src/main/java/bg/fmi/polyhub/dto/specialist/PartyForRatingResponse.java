@@ -19,5 +19,6 @@ public record PartyForRatingResponse(
         Double selfSocialAxis,
         Double specEconomicAxis,
         Double specSocialAxis,
-        boolean rated
+        boolean rated,
+        String politicalLabel
 ) {}

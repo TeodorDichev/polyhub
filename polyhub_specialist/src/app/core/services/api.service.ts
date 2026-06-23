@@ -11,6 +11,38 @@ export interface ElectionResponse {
   electionDate: string;
   description?: string;
   type: string;
+  status?: string;
+}
+
+export interface ElectionPartyResult {
+  partyId: number;
+  partyName: string;
+  partyDescription: string;
+  partyMotto?: string;
+  partySelfEconomicAxis?: number;
+  partySelfSocialAxis?: number;
+  partySpecEconomicAxis?: number;
+  partySpecSocialAxis?: number;
+  votesCount?: number;
+  votePercentage?: number;
+  programId?: number;
+  programTitle?: string;
+  programSelfEconomicAxis?: number;
+  programSelfSocialAxis?: number;
+  programSpecEconomicAxis?: number;
+  programSpecSocialAxis?: number;
+}
+
+export interface ElectionDetailsResponse {
+  id: number;
+  name: string;
+  electionDate: string;
+  description?: string;
+  type: string;
+  status?: string;
+  winnerPartyName?: string;
+  winnerVotePercentage?: number;
+  parties: ElectionPartyResult[];
 }
 
 export interface CreateElectionRequest {
@@ -46,6 +78,7 @@ export interface PartyForRatingResponse {
   specEconomicAxis?: number;
   specSocialAxis?: number;
   rated: boolean;
+  politicalLabel?: string;
 }
 
 export interface PartyRatingRequest {
@@ -86,6 +119,78 @@ export interface ProgramForRatingResponse {
 export interface ProgramRatingRequest {
   specEconomicAxis: number;
   specSocialAxis: number;
+}
+
+export interface PartyProgramSummaryResponse {
+  id: number;
+  title: string;
+  selfEconomicAxis?: number | null;
+  selfSocialAxis?: number | null;
+  specEconomicAxis?: number | null;
+  specSocialAxis?: number | null;
+  createdAt?: string | null;
+  lastEditAt?: string | null;
+  electionId: number;
+  electionName: string;
+  electionDate: string;
+}
+
+export interface PartyElectionParticipationResponse {
+  electionId: number;
+  electionName: string;
+  electionDate: string;
+  electionType: string;
+  electionStatus: string;
+  votesCount?: number | null;
+  votePercentage?: number | null;
+  programId?: number | null;
+  programTitle?: string | null;
+}
+
+export interface PartyDetailsResponse {
+  id: number;
+  name: string;
+  description: string;
+  motto?: string | null;
+  logoUrl?: string | null;
+  foundedOn?: string | null;
+  createdAt?: string | null;
+  selfEconomicAxis?: number | null;
+  selfSocialAxis?: number | null;
+  specEconomicAxis?: number | null;
+  specSocialAxis?: number | null;
+  politicalLabel?: string | null;
+  programs: PartyProgramSummaryResponse[];
+  participations: PartyElectionParticipationResponse[];
+}
+
+export interface ProgramPolicyDetailsResponse {
+  id: number;
+  name: string;
+  slug: string;
+  politicalPosition?: string | null;
+  specEconomicAxis?: number | null;
+  specSocialAxis?: number | null;
+}
+
+export interface ProgramDetailsResponse {
+  id: number;
+  title: string;
+  content: string;
+  selfEconomicAxis?: number | null;
+  selfSocialAxis?: number | null;
+  specEconomicAxis?: number | null;
+  specSocialAxis?: number | null;
+  createdAt?: string | null;
+  lastEditAt?: string | null;
+  electionId: number;
+  electionName: string;
+  electionDate: string;
+  partyId: number;
+  partyName: string;
+  partyDescription: string;
+  partyMotto?: string | null;
+  policies: ProgramPolicyDetailsResponse[];
 }
 
 
@@ -131,8 +236,24 @@ export class ApiService {
     return this.http.post<PolicySummary>(`${this.base}/specialist/policies`, data, { withCredentials: true });
   }
 
+  updatePolicy(id: number, data: CreatePolicyRequest): Observable<PolicySummary> {
+    return this.http.put<PolicySummary>(`${this.base}/specialist/policies/${id}`, data, { withCredentials: true });
+  }
+
   deletePolicy(id: number): Observable<void> {
     return this.http.delete<void>(`${this.base}/specialist/policies/${id}`, { withCredentials: true });
+  }
+
+  getElectionById(id: number): Observable<ElectionDetailsResponse> {
+    return this.http.get<ElectionDetailsResponse>(`${this.base}/specialist/elections/${id}`, { withCredentials: true });
+  }
+
+  getPartyDetails(id: number): Observable<PartyDetailsResponse> {
+    return this.http.get<PartyDetailsResponse>(`${this.base}/parties/details/${id}`, { withCredentials: true });
+  }
+
+  getProgramDetails(id: number): Observable<ProgramDetailsResponse> {
+    return this.http.get<ProgramDetailsResponse>(`${this.base}/programs/details/${id}`, { withCredentials: true });
   }
 
   getPartiesForRating(): Observable<PartyForRatingResponse[]> {

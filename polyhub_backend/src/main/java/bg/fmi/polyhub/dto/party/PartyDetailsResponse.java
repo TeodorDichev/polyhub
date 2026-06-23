@@ -1,9 +1,12 @@
 package bg.fmi.polyhub.dto.party;
 
+import lombok.Builder;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Builder(toBuilder = true)
 public record PartyDetailsResponse(
         Long id,
         String name,
@@ -19,5 +22,7 @@ public record PartyDetailsResponse(
         Double specSocialAxis,
 
         List<PartyProgramSummaryResponse> programs,
-        List<PartyElectionParticipationResponse> participations
+        List<PartyElectionParticipationResponse> participations,
+
+        String politicalLabel
 ) {}

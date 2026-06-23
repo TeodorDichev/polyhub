@@ -1,0 +1,209 @@
+.page-header {
+  margin-bottom: 1.5rem;
+  h2 { color: var(--navy); font-size: 1.3rem; }
+}
+
+.state-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.5rem;
+  color: var(--grey);
+}
+
+// ─── Submit form ──────────────────────────────────────────────────────────────
+
+.form-card {
+  background: white;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  border-top: 4px solid var(--gold);
+  padding: 2rem;
+  max-width: 560px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.eyebrow {
+  color: var(--gold);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.form-card h3 {
+  color: var(--navy);
+  font-size: 1.4rem;
+  margin: 0;
+}
+
+.cta-hint {
+  color: var(--grey);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+
+  label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--grey);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+
+  input, textarea {
+    padding: 0.55rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: white;
+    color: var(--navy);
+    font-size: 0.95rem;
+    resize: vertical;
+    &:focus { outline: none; border-color: var(--gold); }
+  }
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+// ─── Party hero ───────────────────────────────────────────────────────────────
+
+.party-hero {
+  background: white;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  border-top: 4px solid var(--gold);
+  padding: 2rem;
+  max-width: 760px;
+  margin-bottom: 2rem;
+}
+
+.hero-top {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.party-logo {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  border-radius: 10px;
+  border: 1px solid #eee;
+  background: var(--surface);
+  flex-shrink: 0;
+}
+
+.hero-info h1 {
+  color: var(--navy);
+  font-size: 1.7rem;
+  margin-bottom: 0.25rem;
+}
+
+.motto {
+  color: var(--grey);
+  font-style: italic;
+  font-size: 0.95rem;
+}
+
+.status-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 0.75rem 0;
+  flex-wrap: wrap;
+}
+
+.status-hint {
+  color: var(--grey);
+  font-size: 0.9rem;
+}
+
+.description {
+  color: var(--grey);
+  line-height: 1.6;
+  margin-bottom: 1rem;
+  max-width: 680px;
+}
+
+.meta-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+
+  div {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
+  }
+
+  span {
+    display: block;
+    color: var(--grey);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-bottom: 0.3rem;
+  }
+
+  strong {
+    color: var(--navy);
+    font-size: 0.95rem;
+  }
+}
+
+// ─── Sections ─────────────────────────────────────────────────────────────────
+
+.section {
+  max-width: 760px;
+  margin-bottom: 2rem;
+}
+
+.section-header {
+  margin-bottom: 1rem;
+
+  h2 {
+    color: var(--navy);
+    font-size: 1.15rem;
+    margin-bottom: 0.2rem;
+  }
+
+  p { color: var(--grey); font-size: 0.9rem; }
+}
+
+.self-rating-block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.axis-hint {
+  font-size: 0.85rem;
+  color: var(--grey);
+  strong { color: var(--navy); }
+}
+
+// ─── Notice boxes ─────────────────────────────────────────────────────────────
+
+.rejection-notice {
+  background: rgba(192, 57, 43, 0.07);
+  border: 1px solid rgba(192, 57, 43, 0.25);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem;
+  color: var(--danger);
+}

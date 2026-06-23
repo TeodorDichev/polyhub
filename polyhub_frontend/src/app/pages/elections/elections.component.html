@@ -6,6 +6,16 @@
   <div class="error-msg">{{ error }}</div>
 }
 
+<div class="table-controls">
+  <input class="search-input" type="text" [(ngModel)]="search" (ngModelChange)="applyFilters()" placeholder="Search by election name..." />
+  <select [(ngModel)]="filterStatus" (ngModelChange)="applyFilters()">
+    <option value="">All statuses</option>
+    <option value="UPCOMING">Upcoming</option>
+    <option value="RUNNING">Running</option>
+    <option value="FINISHED">Finished</option>
+  </select>
+</div>
+
 <div class="table-wrapper">
   <table>
     <thead>
@@ -20,11 +30,11 @@
       </tr>
     </thead>
     <tbody>
-      @for (election of elections; track election.id) {
-        <tr [class.locked-row]="!election.editable && election.status === 'UPCOMING'">
+      @for (election of pagedElections; track election.id) {
+        <tr>
           <td>{{ election.name }}</td>
           <td>{{ election.type }}</td>
-          <td>{{ election.electionDate }}</td>
+          <td>{{ election.electionDate | date:'dd MMM yyyy' }}</td>
           <td>
             <span class="badge" [class]="election.status.toLowerCase()">{{ election.status }}</span>
           </td>
@@ -33,22 +43,23 @@
             @if (election.hasProgram) {
               <span class="badge submitted">Submitted</span>
             } @else if (election.editable) {
-              <span class="badge missing">Not Submitted</span>
+              <span class="badge missing">Not submitted</span>
             } @else {
               <span class="badge muted">None</span>
             }
           </td>
           <td class="actions">
-            <button class="btn-info" (click)="openInfo(election)">Info</button>
-            <button class="btn-primary" (click)="openProgram(election)">
-              @if (election.hasProgram) {
-                View Program
-              } @else if (election.editable) {
-                Add Program
-              } @else {
-                Locked
-              }
-            </button>
+            <button class="btn-info" (click)="goToInfo(election)">Info</button>
+
+            @if (election.hasProgram) {
+              <button class="btn-secondary" (click)="goToProgram(election)">View Program</button>
+            }
+
+            @if (election.editable) {
+              <button class="btn-primary" (click)="goToEdit(election)">
+                {{ election.hasProgram ? 'Edit Program' : 'Add Program' }}
+              </button>
+            }
           </td>
         </tr>
       }
@@ -56,184 +67,10 @@
   </table>
 </div>
 
-<!-- Election info modal -->
-@if (infoElection || infoLoading) {
-  <div class="modal-backdrop" (click)="closeInfo()">
-    <div class="modal" (click)="$event.stopPropagation()">
-      <div class="modal-header">
-        <h3>{{ infoElection?.name ?? 'Loading...' }}</h3>
-        <button class="close-btn" (click)="closeInfo()">✕</button>
-      </div>
-
-      @if (infoElection) {
-        <div class="info-section">
-          <span class="label">Description</span>
-          <p class="content">{{ infoElection.description }}</p>
-        </div>
-        <div class="info-section">
-          <span class="label">Date</span>
-          <span class="value">{{ infoElection.electionDate }}</span>
-        </div>
-        <div class="info-section">
-          <span class="label">Winner</span>
-          <span class="value">
-            {{ infoElection.winnerPartyName ?? 'Not announced yet' }}
-            @if (infoElection.winnerVotePercentage != null) {
-              ({{ infoElection.winnerVotePercentage }}%)
-            }
-          </span>
-        </div>
-
-        @if (infoElection.parties.length > 0) {
-          <div class="info-section">
-            <span class="label">Participating Parties</span>
-            <div class="party-results">
-              @for (p of infoElection.parties; track p.partyId) {
-                <div class="party-result-row">
-                  <span>{{ p.partyName }}</span>
-                  <span>{{ p.votePercentage != null ? p.votePercentage + '%' : '—' }}</span>
-                </div>
-              }
-            </div>
-          </div>
-        }
-      }
-    </div>
-  </div>
-}
-
-<!-- Program view/edit modal -->
-@if (programModalElection) {
-  <div class="modal-backdrop" (click)="closeProgram()">
-    <div class="modal wide" (click)="$event.stopPropagation()">
-      <div class="modal-header">
-        <h3>{{ programModalElection.name }} — Program</h3>
-        <button class="close-btn" (click)="closeProgram()">✕</button>
-      </div>
-
-      @if (programError) {
-        <div class="error-msg">{{ programError }}</div>
-      }
-
-      @if (programMode === 'view') {
-        @if (loadedProgram) {
-          <div class="info-section">
-            <span class="label">Title</span>
-            <span class="value">{{ loadedProgram.title }}</span>
-          </div>
-          <div class="info-section">
-            <span class="label">Content</span>
-            <p class="content">{{ loadedProgram.content }}</p>
-          </div>
-          <div class="info-section">
-            <span class="label">Self-Reported Position</span>
-            <span class="value">({{ loadedProgram.selfEconomicAxis }}, {{ loadedProgram.selfSocialAxis }})</span>
-          </div>
-          @if (loadedProgram.specEconomicAxis != null) {
-            <div class="info-section">
-              <span class="label">Specialist Rating</span>
-              <span class="value">({{ loadedProgram.specEconomicAxis }}, {{ loadedProgram.specSocialAxis }})</span>
-            </div>
-          }
-          @if (loadedProgram.policies.length > 0) {
-            <div class="info-section">
-              <span class="label">Policies</span>
-              <div class="policy-list">
-                @for (policy of loadedProgram.policies; track policy.id) {
-                  <div class="policy-chip">
-                    <span>{{ policy.name }}</span>
-
-                    <div class="policy-tooltip">
-                      <div>{{ policy.slug }}</div>
-                      <div>{{ policy.politicalPosition }}</div>
-                    </div>
-
-                    @if (!isReadOnly()) {
-                      <button class="remove-policy" (click)="removePolicy(policy.id)">×</button>
-                    }
-                  </div>
-                }
-              </div>
-            </div>
-          }
-
-          @if (programModalElection.editable) {
-            <div class="modal-actions">
-              <button class="btn-primary" (click)="switchToEdit()">Edit Program</button>
-            </div>
-          }
-        } @else {
-          <p class="content">No program submitted for this election yet.</p>
-        }
-      } @else {
-        <!-- edit mode -->
-        <div class="modal-actions" style="justify-content: flex-start;">
-          <button class="btn-secondary" (click)="useTemplate()">Use my last program as template</button>
-        </div>
-
-        <div class="field">
-          <label>Title</label>
-          <input type="text" [(ngModel)]="title" placeholder="Program title" />
-        </div>
-        <div class="field">
-          <label>Content</label>
-          <textarea [(ngModel)]="content" rows="4" placeholder="Program content"></textarea>
-        </div>
-
-        <div class="field">
-          <label>Self-Reported Position</label>
-          <app-political-plane [(ngModel)]="selfPoint" name="selfPoint" />
-        </div>
-
-        <div class="field">
-          <label>Policies</label>
-
-          <input
-            type="text"
-            [(ngModel)]="policySearch"
-            (input)="searchPolicies()"
-            placeholder="Search policies..."
-            [disabled]="isReadOnly()"
-          />
-
-          @if (searchResults.length > 0 && !isReadOnly()) {
-            <div class="policy-search-results">
-              @for (policy of searchResults; track policy.id) {
-                <button
-                  type="button"
-                  class="policy-search-item"
-                  (click)="addPolicy(policy)">
-                  {{ policy.name }}
-                </button>
-              }
-            </div>
-          }
-
-          <div class="policy-list">
-            @for (policy of selectedPolicies; track policy.id) {
-              <div class="policy-chip">
-                <span>{{ policy.name }}</span>
-
-                <div class="policy-tooltip">
-                  <div>{{ policy.slug }}</div>
-                  <div>{{ policy.politicalPosition }}</div>
-                </div>
-
-                @if (!isReadOnly()) {
-                  <button class="remove-policy" (click)="removePolicy(policy.id)">×</button>
-                }
-              </div>
-            }
-          </div>
-        </div>
-
-        <div class="modal-actions">
-          <button class="btn-secondary" (click)="closeProgram()">Cancel</button>
-          <button class="btn-primary" (click)="saveProgram()" [disabled]="saving">
-            {{ saving ? 'Saving...' : 'Save Program' }}
-          </button>
-        </div>
-      }
-    </div>
+@if (totalPages > 1) {
+  <div class="pagination">
+    <button (click)="prevPage()" [disabled]="page === 0">← Prev</button>
+    <span>{{ page + 1 }} / {{ totalPages }}</span>
+    <button (click)="nextPage()" [disabled]="page >= totalPages - 1">Next →</button>
   </div>
 }

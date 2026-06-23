@@ -9,6 +9,7 @@ import bg.fmi.polyhub.dto.party.PartyResponse;
 import bg.fmi.polyhub.dto.party.SubmitPartyRequest;
 import bg.fmi.polyhub.dto.specialist.PartyForRatingResponse;
 import bg.fmi.polyhub.dto.specialist.PartyRatingRequest;
+import bg.fmi.polyhub.dto.PoliticalPositionType;
 import bg.fmi.polyhub.entities.Election;
 import bg.fmi.polyhub.entities.Party;
 import bg.fmi.polyhub.entities.PartyParticipation;
@@ -103,7 +104,23 @@ public class PartyService {
         return partyMapper.toResponse(party);
     }
 
-    // try to replace with a mapper or add a builder annotation
+    public void selfRateParty(Double selfEconomicAxis, Double selfSocialAxis, String email) {
+        User user = getActiveUser(email);
+        ensureNotSuspended(user);
+
+        Party party = partyRepository
+                .findByCreatedByAndDeletedAtIsNull(user)
+                .orElseThrow(() -> new RuntimeException("No party found"));
+
+        if (party.getStatus().getName() != PartyStatusType.APPROVED) {
+            throw new RuntimeException("Only approved parties can be self-rated");
+        }
+
+        party.setSelfEconomicAxis(selfEconomicAxis);
+        party.setSelfSocialAxis(selfSocialAxis);
+        partyRepository.save(party);
+    }
+
     public PartyDetailsResponse getDetails(Long id) {
         Party party = findActiveParty(id);
 
@@ -111,36 +128,36 @@ public class PartyService {
             throw new RuntimeException("Party is not approved");
         }
 
-        List<PartyProgramSummaryResponse> programs = programRepository
-                .findAllByPartyOrderByCreatedAtDesc(party)
-                .stream()
-                .map(this::toProgramSummary)
-                .toList();
+        User owner = party.getCreatedBy();
+        boolean ownerActive = owner.getDeletedAt() == null && owner.getSuspendedOn() == null;
 
-        List<PartyElectionParticipationResponse> participations = partyParticipationRepository
-                .findAllByParty_Id(party.getId())
-                .stream()
-                .sorted(this::compareByElectionDateDesc)
-                .map(this::toParticipationResponse)
-                .toList();
+        List<PartyProgramSummaryResponse> programs;
+        List<PartyElectionParticipationResponse> participations;
 
-        return new PartyDetailsResponse(
-                party.getId(),
-                party.getName(),
-                party.getDescription(),
-                party.getMotto(),
-                party.getLogoUrl(),
-                party.getFoundedOn(),
-                party.getCreatedAt(),
+        if (ownerActive) {
+            programs = programRepository
+                    .findAllByPartyOrderByCreatedAtDesc(party)
+                    .stream()
+                    .map(partyMapper::toProgramSummary)
+                    .toList();
 
-                party.getSelfEconomicAxis(),
-                party.getSelfSocialAxis(),
-                party.getSpecEconomicAxis(),
-                party.getSpecSocialAxis(),
+            participations = partyParticipationRepository
+                    .findAllByParty_Id(party.getId())
+                    .stream()
+                    .sorted(this::compareByElectionDateDesc)
+                    .map(this::toParticipationResponse)
+                    .toList();
+        } else {
+            programs = List.of();
+            participations = List.of();
+        }
 
-                programs,
-                participations
-        );
+        String label = PoliticalPositionType.toSimpleLabel(party.getSpecEconomicAxis(), party.getSpecSocialAxis());
+
+        return partyMapper.toDetailsResponse(party, programs, participations)
+                .toBuilder()
+                .politicalLabel(label)
+                .build();
     }
 
     public List<PartyAdminResponse> getAllParties() {
@@ -188,6 +205,10 @@ public class PartyService {
         return partyRepository.findAllByDeletedAtIsNull()
                 .stream()
                 .filter(p -> p.getStatus().getName() == PartyStatusType.APPROVED)
+                .filter(p -> {
+                    User owner = p.getCreatedBy();
+                    return owner.getDeletedAt() == null && owner.getSuspendedOn() == null;
+                })
                 .map(this::toRatingResponse)
                 .toList();
     }
@@ -235,34 +256,15 @@ public class PartyService {
 
     private PartyForRatingResponse toRatingResponse(Party party) {
         boolean rated = party.getSpecEconomicAxis() != null && party.getSpecSocialAxis() != null;
+        String label = PoliticalPositionType.toSimpleLabel(party.getSpecEconomicAxis(), party.getSpecSocialAxis());
 
         return partyMapper.toRatingResponseBase(party)
                 .toBuilder()
                 .rated(rated)
+                .politicalLabel(label)
                 .build();
     }
 
-    // try to replace with a mapper or add a builder annotation
-    private PartyProgramSummaryResponse toProgramSummary(Program program) {
-        return new PartyProgramSummaryResponse(
-                program.getId(),
-                program.getTitle(),
-
-                program.getSelfEconomicAxis(),
-                program.getSelfSocialAxis(),
-                program.getSpecEconomicAxis(),
-                program.getSpecSocialAxis(),
-
-                program.getCreatedAt(),
-                program.getLastEditAt(),
-
-                program.getElection().getId(),
-                program.getElection().getName(),
-                program.getElection().getElectionDate()
-        );
-    }
-
-    // try to replace with a mapper or add a builder annotation
     private PartyElectionParticipationResponse toParticipationResponse(PartyParticipation participation) {
         Election election = participation.getElection();
 
@@ -270,19 +272,10 @@ public class PartyService {
                 .findByPartyAndElection(participation.getParty(), election)
                 .orElse(null);
 
-        return new PartyElectionParticipationResponse(
-                election.getId(),
-                election.getName(),
-                election.getElectionDate(),
-                election.getType().getName().name(),
-                ElectionStatusUtils.getStatus(election),
-
-                participation.getVotesCount(),
-                participation.getVotePercentage(),
-
-                program != null ? program.getId() : null,
-                program != null ? program.getTitle() : null
-        );
+        return partyMapper.toParticipationResponse(participation, program)
+                .toBuilder()
+                .electionStatus(ElectionStatusUtils.getStatus(election))
+                .build();
     }
 
     private int compareByElectionDateDesc(PartyParticipation first, PartyParticipation second) {

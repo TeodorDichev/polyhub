@@ -75,6 +75,8 @@
   gap: 1rem;
   padding: 0 1.5rem;
   height: 56px;
+  min-height: 56px;
+  flex-shrink: 0;
   background: var(--surface);
   border-bottom: 1px solid var(--border);
   position: sticky;

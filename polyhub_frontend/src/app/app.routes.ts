@@ -4,9 +4,10 @@ import { HomeComponent } from './pages/home/home.component';
 import { LoginComponent } from './pages/auth/login/login.component';
 import { RegisterComponent } from './pages/auth/register/register.component';
 import { DashboardComponent } from './pages/party-admin/dashboard/dashboard.component';
-import { SubmitPartyComponent } from './pages/party-admin/submit-party/submit-party.component';
-import { MySubmissionComponent } from './pages/party-admin/my-submission/my-submission.component';
+import { MyPartyComponent } from './pages/party-admin/my-party/my-party.component';
+import { PartyProgramsComponent } from './pages/party-admin/programs/programs.component';
 import { PersonalDetailsComponent } from './pages/party-admin/personal-details/personal-details.component';
+import { EditProgramComponent } from './pages/party-admin/edit-program/edit-program.component';
 import { ElectionDetailsComponent } from './pages/election-details/election-details.component';
 import { ProgramDetailsComponent } from './pages/program-details/program-details.component';
 import { PartyDetailsComponent } from './pages/party-details/party-details.component';
@@ -16,7 +17,7 @@ import { ElectionsComponent } from './pages/elections/elections.component';
 export const routes: Routes = [
   {
     path: '',
-    component: MainLayoutComponent,   // wraps all pages with the sidebar layout
+    component: MainLayoutComponent,
     children: [
       { path: '', component: HomeComponent },
       { path: 'auth/login', component: LoginComponent },
@@ -29,10 +30,12 @@ export const routes: Routes = [
         canActivate: [authGuard],
         component: DashboardComponent,
         children: [
-          { path: 'submit-party', component: SubmitPartyComponent },
-          { path: 'my-submission', component: MySubmissionComponent },
-          { path: 'personal-details', component: PersonalDetailsComponent },
+          { path: '', redirectTo: 'my-party', pathMatch: 'full' },
+          { path: 'my-party', component: MyPartyComponent },
           { path: 'elections', component: ElectionsComponent },
+          { path: 'programs', component: PartyProgramsComponent },
+          { path: 'personal-details', component: PersonalDetailsComponent },
+          { path: 'edit-program/:electionId', component: EditProgramComponent },
         ]
       }
     ]
