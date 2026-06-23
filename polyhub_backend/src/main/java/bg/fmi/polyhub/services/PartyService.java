@@ -30,6 +30,12 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import bg.fmi.polyhub.dto.party.PartyListItemResponse;
+import bg.fmi.polyhub.dto.party.PartyPageResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 @Service
 @RequiredArgsConstructor
@@ -119,6 +125,51 @@ public class PartyService {
         party.setSelfEconomicAxis(selfEconomicAxis);
         party.setSelfSocialAxis(selfSocialAxis);
         partyRepository.save(party);
+    }
+
+    public PartyPageResponse getPublicParties(
+            String search,
+            int page,
+            int size
+    ) {
+        int safePage = Math.max(page, 0);
+        int safeSize = normalizePageSize(size);
+
+        Pageable pageable = PageRequest.of(
+                safePage,
+                safeSize,
+                Sort.by("name").ascending()
+        );
+
+        String normalizedSearch = search == null ? "" : search.trim();
+
+        Page<Party> partiesPage;
+
+        if (normalizedSearch.isBlank()) {
+            partiesPage = partyRepository.findAllByDeletedAtIsNullAndStatus_Name(
+                    PartyStatusType.APPROVED,
+                    pageable
+            );
+        } else {
+            partiesPage = partyRepository.findAllByDeletedAtIsNullAndStatus_NameAndNameContainingIgnoreCase(
+                    PartyStatusType.APPROVED,
+                    normalizedSearch,
+                    pageable
+            );
+        }
+
+        return new PartyPageResponse(
+                partiesPage.getContent()
+                        .stream()
+                        .map(this::toListItemResponse)
+                        .toList(),
+                partiesPage.getNumber(),
+                partiesPage.getSize(),
+                partiesPage.getTotalElements(),
+                partiesPage.getTotalPages(),
+                partiesPage.isFirst(),
+                partiesPage.isLast()
+        );
     }
 
     public PartyDetailsResponse getDetails(Long id) {
@@ -281,5 +332,32 @@ public class PartyService {
     private int compareByElectionDateDesc(PartyParticipation first, PartyParticipation second) {
         return second.getElection().getElectionDate()
                 .compareTo(first.getElection().getElectionDate());
+    }
+
+    private int normalizePageSize(int size) {
+        if (size == 10 || size == 15) {
+            return size;
+        }
+
+        return 5;
+    }
+
+    private PartyListItemResponse toListItemResponse(Party party) {
+        String label = PoliticalPositionType.toSimpleLabel(
+                party.getSpecEconomicAxis(),
+                party.getSpecSocialAxis()
+        );
+
+        return new PartyListItemResponse(
+                party.getId(),
+                party.getName(),
+                party.getDescription(),
+                party.getMotto(),
+                party.getLogoUrl(),
+                party.getFoundedOn(),
+                party.getSpecEconomicAxis(),
+                party.getSpecSocialAxis(),
+                label
+        );
     }
 }
