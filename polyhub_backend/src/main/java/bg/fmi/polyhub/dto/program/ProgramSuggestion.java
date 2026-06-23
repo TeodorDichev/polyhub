@@ -1,5 +1,7 @@
 package bg.fmi.polyhub.dto.program;
 
+import bg.fmi.polyhub.dto.policy.PolicySummary;
+
 import java.util.List;
 
 public record ProgramSuggestion(
@@ -7,5 +9,5 @@ public record ProgramSuggestion(
         String content,
         Double selfEconomicAxis,
         Double selfSocialAxis,
-        List<Long> policyIds
+        List<PolicySummary> policies
 ) {}

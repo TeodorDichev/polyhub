@@ -1,5 +1,6 @@
 package bg.fmi.polyhub.repositories;
 
+import bg.fmi.polyhub.entities.Election;
 import bg.fmi.polyhub.entities.PartyParticipation;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -12,6 +13,7 @@ public interface PartyParticipationRepository extends JpaRepository<PartyPartici
     List<PartyParticipation> findAllByElection_Id(Long electionId);
     List<PartyParticipation> findAllByParty_Id(Long partyId);
 
+    Optional<PartyParticipation> findTopByElectionOrderByVotePercentageDesc(Election election);
     default Optional<PartyParticipation> findWinnerByElectionId(Long electionId) {
         return findFirstByElection_IdAndVotePercentageIsNotNullOrderByVotePercentageDesc(electionId);
     }

@@ -16,4 +16,6 @@ public interface PolicyRepository extends JpaRepository<Policy, Long> {
     List<Policy> findAllByIdIn(List<Long> ids);
 
     boolean existsByNameOrSlug(String name, String slug);
+
+    List<Policy> findTop10ByNameContainingIgnoreCaseOrderByNameAsc(String query);
 }

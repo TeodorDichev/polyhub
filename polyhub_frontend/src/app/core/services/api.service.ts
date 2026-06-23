@@ -172,6 +172,60 @@ export interface ProgramDetailsResponse {
   policies: ProgramPolicyDetailsResponse[];
 }
 
+export interface ElectionWithProgramResponse {
+  id: number;
+  name: string;
+  electionDate: string;
+  description?: string;
+  type: string;
+  status: string;
+  winnerPartyName?: string;
+  winnerVotePercentage?: number;
+  programId?: number;
+  hasProgram: boolean;
+  editable: boolean;
+}
+
+export interface PolicySummary {
+  id: number;
+  name: string;
+  slug: string;
+  politicalPosition: string;
+}
+
+export interface ProgramSuggestion {
+  title: string;
+  content: string;
+  selfEconomicAxis?: number;
+  selfSocialAxis?: number;
+  policies: PolicySummary[];
+}
+
+export interface CreateProgramRequest {
+  title: string;
+  content: string;
+  selfEconomicAxis?: number;
+  selfSocialAxis?: number;
+  policyIds: number[];
+}
+
+export interface ProgramResponse {
+  id: number;
+  title: string;
+  content: string;
+  selfEconomicAxis?: number;
+  selfSocialAxis?: number;
+  specEconomicAxis?: number;
+  specSocialAxis?: number;
+  createdAt: string;
+  lastEditAt?: string;
+  electionId: number;
+  electionName: string;
+  partyId: number;
+  partyName: string;
+  policies: PolicySummary[];
+}
+
 @Injectable({ providedIn: 'root' })
 export class ApiService {
   private base = 'http://localhost:8080';
@@ -202,28 +256,6 @@ export class ApiService {
     });
   }
 
-  getMe(): Observable<LoggedPartyAdmin> {
-    return this.me();
-  }
-
-  submitParty(data: SubmitPartyRequest): Observable<PartyResponse> {
-    return this.http.post<PartyResponse>(`${this.base}/party-admin/parties/submit`, data, {
-      withCredentials: true
-    });
-  }
-
-  getMyParty(): Observable<PartyResponse> {
-    return this.http.get<PartyResponse>(`${this.base}/party-admin/parties/my`, {
-      withCredentials: true
-    });
-  }
-
-  resubmitParty(data: SubmitPartyRequest): Observable<PartyResponse> {
-    return this.http.put<PartyResponse>(`${this.base}/party-admin/parties/resubmit`, data, {
-      withCredentials: true
-    });
-  }
-
   getElections(): Observable<ElectionResponse[]> {
     return this.http.get<ElectionResponse[]>(`${this.base}/elections`, {
       withCredentials: true
@@ -246,5 +278,57 @@ export class ApiService {
     return this.http.get<PartyDetailsResponse>(`${this.base}/parties/details/${id}`, {
       withCredentials: true
     });
+  }
+
+    submitParty(data: SubmitPartyRequest): Observable<PartyResponse> {
+    return this.http.post<PartyResponse>(`${this.base}/party-admin/parties/submit`, data, {
+      withCredentials: true
+    });
+  }
+
+  getMyParty(): Observable<PartyResponse> {
+    return this.http.get<PartyResponse>(`${this.base}/party-admin/parties/my`, {
+      withCredentials: true
+    });
+  }
+
+  resubmitParty(data: SubmitPartyRequest): Observable<PartyResponse> {
+    return this.http.put<PartyResponse>(`${this.base}/party-admin/parties/resubmit`, data, {
+      withCredentials: true
+    });
+  }
+
+  getElectionsWithProgramStatus(): Observable<ElectionWithProgramResponse[]> {
+    return this.http.get<ElectionWithProgramResponse[]>(`${this.base}/party-admin/elections`, { withCredentials: true });
+  }
+
+  // check if the two below are used anywhere and delete
+  getAllPolicies(): Observable<PolicySummary[]> {
+    return this.http.get<PolicySummary[]>(`${this.base}/party-admin/policies`, { withCredentials: true });
+  }
+
+  getProgramPolicies(programId: number): Observable<PolicySummary[]> {
+    return this.http.get<PolicySummary[]>(`${this.base}/party-admin/programs/${programId}/policies`, { withCredentials: true });
+  }
+
+  searchPolicies(query: string): Observable<PolicySummary[]> {
+    return this.http.get<PolicySummary[]>(`${this.base}/party-admin/policies/s`,
+      {
+        params: { query },
+        withCredentials: true
+      }
+    );
+  }
+
+  getProgramSuggestion(): Observable<ProgramSuggestion> {
+    return this.http.get<ProgramSuggestion>(`${this.base}/party-admin/programs/suggestion`, { withCredentials: true });
+  }
+
+  getMyProgram(electionId: number): Observable<ProgramResponse> {
+    return this.http.get<ProgramResponse>(`${this.base}/party-admin/programs/${electionId}`, { withCredentials: true });
+  }
+
+  saveProgram(electionId: number, data: CreateProgramRequest): Observable<ProgramResponse> {
+    return this.http.put<ProgramResponse>(`${this.base}/party-admin/programs/${electionId}`, data, { withCredentials: true });
   }
 }

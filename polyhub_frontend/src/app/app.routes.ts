@@ -11,6 +11,7 @@ import { ElectionDetailsComponent } from './pages/election-details/election-deta
 import { ProgramDetailsComponent } from './pages/program-details/program-details.component';
 import { PartyDetailsComponent } from './pages/party-details/party-details.component';
 import { authGuard } from './core/guards/auth.guard';
+import { ElectionsComponent } from './pages/elections/elections.component';
 
 export const routes: Routes = [
   {
@@ -31,6 +32,7 @@ export const routes: Routes = [
           { path: 'submit-party', component: SubmitPartyComponent },
           { path: 'my-submission', component: MySubmissionComponent },
           { path: 'personal-details', component: PersonalDetailsComponent },
+          { path: 'elections', component: ElectionsComponent },
         ]
       }
     ]

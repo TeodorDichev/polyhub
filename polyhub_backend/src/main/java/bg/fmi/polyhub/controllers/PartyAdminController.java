@@ -1,11 +1,14 @@
 package bg.fmi.polyhub.controllers;
 
+import bg.fmi.polyhub.dto.election.ElectionWithProgramResponse;
 import bg.fmi.polyhub.dto.party.PartyResponse;
 import bg.fmi.polyhub.dto.party.SubmitPartyRequest;
+import bg.fmi.polyhub.dto.policy.PolicySummary;
 import bg.fmi.polyhub.dto.program.CreateProgramRequest;
 import bg.fmi.polyhub.dto.program.ProgramResponse;
 import bg.fmi.polyhub.dto.program.ProgramSuggestion;
 import bg.fmi.polyhub.services.PartyService;
+import bg.fmi.polyhub.services.PolicyService;
 import bg.fmi.polyhub.services.ProgramService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,9 +21,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -31,6 +36,7 @@ public class PartyAdminController {
 
     private final PartyService partyService;
     private final ProgramService programService;
+    private final PolicyService policyService;
 
     @PostMapping("/parties/submit")
     @ResponseStatus(HttpStatus.CREATED)
@@ -52,15 +58,8 @@ public class PartyAdminController {
         return partyService.getMyParty(email);
     }
 
-    @GetMapping("/suggestion")
-    @PreAuthorize("hasRole('PARTY_ADMIN')")
-    public Optional<ProgramSuggestion> getSuggestion(@AuthenticationPrincipal String email) {
-        return programService.getSuggestion(email);
-    }
-
     @PutMapping("/programs/{electionId}")
     @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasRole('PARTY_ADMIN')")
     public ProgramResponse createOrUpdate(
             @PathVariable Long electionId,
             @Valid @RequestBody CreateProgramRequest request,
@@ -69,10 +68,34 @@ public class PartyAdminController {
     }
 
     @GetMapping("/programs/{electionId}")
-    @PreAuthorize("hasRole('PARTY_ADMIN')")
     public ProgramResponse getMyProgram(
             @PathVariable Long electionId,
             @AuthenticationPrincipal String email) {
         return programService.getMyProgram(electionId, email);
+    }
+
+    @GetMapping("/elections")
+    public List<ElectionWithProgramResponse> getElectionsWithProgramStatus(@AuthenticationPrincipal String email) {
+        return programService.getAllElectionsWithProgramStatus(email);
+    }
+
+    @GetMapping("/programs/suggestion")
+    public Optional<ProgramSuggestion> getSuggestion(@AuthenticationPrincipal String email) {
+        return programService.getSuggestion(email);
+    }
+
+    @GetMapping("programs/{programId}/policies")
+    public List<PolicySummary> getProgramPolicies(@PathVariable Long programId) {
+        return policyService.getProgramPolicies(programId);
+    }
+
+    @GetMapping("/policies")
+    public List<PolicySummary> getAllPolicies() {
+        return policyService.getAllPolicies();
+    }
+
+    @GetMapping("/policies/s")
+    public List<PolicySummary> searchPolicies(@RequestParam String query) {
+        return policyService.search(query);
     }
 }
