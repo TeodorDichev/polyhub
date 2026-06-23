@@ -1,0 +1,216 @@
+@if (loading) {
+  <div class="state-box">
+    <h3>Loading party details...</h3>
+    <p>Please wait while we fetch the party information.</p>
+  </div>
+} @else if (error) {
+  <div class="state-box error">
+    <h3>Could not load party</h3>
+    <p>{{ error }}</p>
+
+    <a class="state-action" routerLink="/">
+      Back to home
+    </a>
+  </div>
+} @else if (party) {
+  <section class="details-hero">
+    <a class="back-link" routerLink="/">
+      ← Back to home
+    </a>
+
+    <p class="eyebrow">Political party</p>
+
+    <div class="hero-title">
+      @if (party.logoUrl) {
+        <img [src]="party.logoUrl" [alt]="party.name">
+      }
+
+      <div>
+        <h1>{{ party.name }}</h1>
+
+        @if (party.motto) {
+          <p class="motto">“{{ party.motto }}”</p>
+        }
+      </div>
+    </div>
+
+    <p class="description">
+      {{ party.description || 'No description has been added for this party yet.' }}
+    </p>
+
+    <div class="meta-grid">
+      @if (party.foundedOn) {
+        <div>
+          <span>Founded</span>
+          <strong>{{ party.foundedOn | date:'dd MMM yyyy' }}</strong>
+        </div>
+      }
+
+      <div>
+        <span>Programs</span>
+        <strong>{{ party.programs.length }}</strong>
+      </div>
+
+      <div>
+        <span>Election participations</span>
+        <strong>{{ party.participations.length }}</strong>
+      </div>
+    </div>
+  </section>
+
+  <section class="compass-section">
+    <div class="section-header">
+      <div>
+        <h2>Party political compass</h2>
+        <p>Comparison between the party self-assessment and the specialist assessment.</p>
+      </div>
+    </div>
+
+    @if (partyMarkers.length === 0) {
+      <div class="state-box">
+        No political compass coordinates have been added for this party yet.
+      </div>
+    } @else {
+      <app-political-plane
+        title="Party orientation"
+        [markers]="partyMarkers">
+      </app-political-plane>
+    }
+  </section>
+
+  <section class="programs-section">
+    <div class="section-header">
+      <div>
+        <h2>Programs</h2>
+        <p>Programs submitted by this party for different elections.</p>
+      </div>
+    </div>
+
+    @if (party.programs.length === 0) {
+      <div class="state-box">
+        <h3>No programs yet</h3>
+        <p>No programs have been added for this party yet.</p>
+      </div>
+    }@else {
+      <div class="program-grid">
+        @for (program of party.programs; track program.id) {
+          <a
+            class="program-card"
+            [routerLink]="['/programs', program.id]">
+            <h3>{{ program.title }}</h3>
+
+            <div class="info-row">
+              <span>Election</span>
+              <strong>{{ program.electionName }}</strong>
+            </div>
+
+            <div class="info-row">
+              <span>Date</span>
+              <strong>{{ program.electionDate | date:'dd MMM yyyy' }}</strong>
+            </div>
+
+            @if (program.specEconomicAxis !== null && program.specEconomicAxis !== undefined
+            && program.specSocialAxis !== null && program.specSocialAxis !== undefined) {
+              <div class="axis-list">
+                <div>
+                  <span>Specialist economic</span>
+                  <strong>{{ program.specEconomicAxis }}</strong>
+                </div>
+
+                <div>
+                  <span>Specialist social</span>
+                  <strong>{{ program.specSocialAxis }}</strong>
+                </div>
+              </div>
+            }
+          </a>
+        }
+      </div>
+    }
+  </section>
+
+  @if (programMarkers.length > 0) {
+    <section class="compass-section">
+      <div class="section-header">
+        <div>
+          <h2>Program positions</h2>
+          <p>Specialist assessment of this party’s programs.</p>
+        </div>
+      </div>
+
+      <app-political-plane
+        title="Party programs"
+        [markers]="programMarkers">
+      </app-political-plane>
+    </section>
+  }
+
+  <section class="participations-section">
+    <div class="section-header">
+      <div>
+        <h2>Election participations</h2>
+        <p>Election results and submitted programs for this party.</p>
+      </div>
+    </div>
+
+    @if (party.participations.length === 0) {
+      <div class="state-box">
+        <h3>No election participations yet</h3>
+        <p>This party has no election participations yet.</p>
+      </div>
+    } @else {
+      <div class="participation-grid">
+        @for (participation of party.participations; track participation.electionId) {
+          <article class="participation-card">
+            <div class="card-top">
+              <span class="type-badge">
+                {{ getTypeLabel(participation.electionType) }}
+              </span>
+
+              <span
+                class="status-badge"
+                [class]="participation.electionStatus.toLowerCase()">
+                {{ getStatusLabel(participation.electionStatus) }}
+              </span>
+            </div>
+
+            <h3>
+              <a [routerLink]="['/elections', participation.electionId]">
+                {{ participation.electionName }}
+              </a>
+            </h3>
+
+            <div class="info-row">
+              <span>Date</span>
+              <strong>{{ participation.electionDate | date:'dd MMM yyyy' }}</strong>
+            </div>
+
+            @if (participation.votePercentage !== null && participation.votePercentage !== undefined) {
+              <div class="info-row">
+                <span>Result</span>
+                <strong>{{ participation.votePercentage }}%</strong>
+              </div>
+            }
+
+            @if (participation.votesCount !== null && participation.votesCount !== undefined) {
+              <div class="info-row">
+                <span>Votes</span>
+                <strong>{{ participation.votesCount }}</strong>
+              </div>
+            }
+
+            @if (participation.programId && participation.programTitle) {
+              <a
+                class="program-link"
+                [routerLink]="['/programs', participation.programId]">
+                Program: {{ participation.programTitle }}
+              </a>
+            } @else {
+              <p class="muted">No program added for this election.</p>
+            }
+          </article>
+        }
+      </div>
+    }
+  </section>
+}

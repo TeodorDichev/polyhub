@@ -1,12 +1,152 @@
-<div class="details-placeholder">
-  <p class="eyebrow">Election details</p>
+@if (loading) {
+  <div class="state-box">
+    <h3>Loading election details...</h3>
+    <p>Please wait while we fetch the election information.</p>
+  </div>
+} @else if (error) {
+  <div class="state-box error">
+    <h3>Could not load election</h3>
+    <p>{{ error }}</p>
 
-  <h2>Election #{{ electionId }}</h2>
+    <a class="state-action" routerLink="/">
+      Back to home
+    </a>
+  </div>
+} @else if (election) {
+  <section class="details-hero">
+    <div class="hero-top">
+      <a routerLink="/" class="back-link">← Back to elections</a>
 
-  <p>
-    This page will show the election description, participating parties,
-    party results and programs.
-  </p>
+      <span
+        class="status-badge"
+        [class.finished]="election.status === 'FINISHED'"
+        [class.running]="election.status === 'RUNNING'"
+        [class.upcoming]="election.status === 'UPCOMING'">
+        {{ getStatusLabel(election.status) }}
+      </span>
+    </div>
 
-  <a routerLink="/" class="back-link">← Back to home</a>
-</div>
+    <p class="eyebrow">{{ getTypeLabel(election.type) }}</p>
+
+    <h1>{{ election.name }}</h1>
+
+    <p class="description">
+      {{ election.description || 'No description has been added yet.' }}
+    </p>
+
+    <div class="hero-meta">
+      <div>
+        <span>Date</span>
+        <strong>{{ election.electionDate | date:'dd MMM yyyy' }}</strong>
+      </div>
+
+      <div>
+        <span>Winner</span>
+
+        @if (election.winnerPartyName) {
+          <strong>
+            {{ election.winnerPartyName }}
+            @if (election.winnerVotePercentage !== null && election.winnerVotePercentage !== undefined) {
+              — {{ election.winnerVotePercentage }}%
+            }
+          </strong>
+        } @else {
+          <strong>Not announced yet</strong>
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="compass-section">
+    <div class="section-header">
+      <div>
+        <h2>Political compass overview</h2>
+        <p>
+          Specialist assessment of the participating parties in this election.
+        </p>
+      </div>
+    </div>
+
+    @if (partyMarkers.length === 0) {
+      <div class="state-box">
+        No political compass coordinates have been added for these parties yet.
+      </div>
+    } @else {
+      <app-political-plane
+        title="Participating parties"
+        [markers]="partyMarkers">
+      </app-political-plane>
+    }
+  </section>
+
+  <section class="parties-section">
+    <div class="section-header">
+      <div>
+        <h2>Participating parties</h2>
+        <p>Parties registered for this election and their available results.</p>
+      </div>
+    </div>
+
+    @if (election.parties.length === 0) {
+      <div class="state-box">
+        No parties have been added for this election yet.
+      </div>
+    } @else {
+      <div class="party-list">
+        @for (party of election.parties; track party.partyId) {
+          <article class="party-card">
+            <div class="party-main">
+              <div>
+                <h3>
+                  <a
+                    class="party-link"
+                    [routerLink]="['/parties', party.partyId]">
+                    {{ party.partyName }}
+                  </a>
+                </h3>
+
+                @if (party.partyMotto) {
+                  <p class="motto">“{{ party.partyMotto }}”</p>
+                }
+
+                <p class="party-description">
+                  {{ party.partyDescription || 'No party description has been added yet.' }}
+                </p>
+              </div>
+
+              <div class="result-box">
+                <span>Result</span>
+
+                @if (party.votePercentage !== null && party.votePercentage !== undefined) {
+                  <strong>{{ party.votePercentage }}%</strong>
+                } @else {
+                  <strong>-</strong>
+                }
+
+                @if (party.votesCount !== null && party.votesCount !== undefined) {
+                  <small>{{ party.votesCount | number }} votes</small>
+                } @else {
+                  <small>No votes yet</small>
+                }
+              </div>
+            </div>
+
+            <div class="party-footer">
+              @if (party.programId && party.programTitle) {
+                <a
+                  class="program-link"
+                  [routerLink]="['/programs', party.programId]">
+                  Program: {{ party.programTitle }}
+                </a>
+              } @else {
+                <div class="program-label muted">
+                  No program added yet
+                </div>
+              }
+            </div>
+          </article>
+        }
+      </div>
+    }
+  </section>
+}

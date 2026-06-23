@@ -1,0 +1,137 @@
+@if (loading) {
+  <div class="state-box">
+    <h3>Loading program details...</h3>
+    <p>Please wait while we fetch the program information.</p>
+  </div>
+} @else if (error) {
+  <div class="state-box error">
+    <h3>Could not load program</h3>
+    <p>{{ error }}</p>
+
+    <a class="state-action" routerLink="/">
+      Back to home
+    </a>
+  </div>
+} @else if (program) {
+  <section class="details-hero">
+    <a class="back-link" [routerLink]="['/elections', program.electionId]">
+      ← Back to election
+    </a>
+
+    <p class="eyebrow">Political program</p>
+
+    <h1>{{ program.title }}</h1>
+
+    <div class="meta-grid">
+      <div>
+        <span>Party</span>
+        <strong>
+          <a
+            class="party-link"
+            [routerLink]="['/parties', program.partyId]">
+            {{ program.partyName }}
+          </a>
+        </strong>
+      </div>
+
+      <div>
+        <span>Election</span>
+        <strong>{{ program.electionName }}</strong>
+      </div>
+
+      <div>
+        <span>Election date</span>
+        <strong>{{ program.electionDate | date:'dd MMM yyyy' }}</strong>
+      </div>
+    </div>
+
+    @if (program.partyMotto) {
+      <p class="motto">“{{ program.partyMotto }}”</p>
+    }
+  </section>
+
+  <section class="compass-section">
+    <div class="section-header">
+      <div>
+        <h2>Program political compass</h2>
+        <p>Comparison between the party self-assessment and the specialist assessment.</p>
+      </div>
+    </div>
+
+    @if (programMarkers.length === 0) {
+      <div class="state-box">
+        No political compass coordinates have been added for this program yet.
+      </div>
+    } @else {
+      <app-political-plane
+        title="Program orientation"
+        [markers]="programMarkers">
+      </app-political-plane>
+    }
+  </section>
+
+  <section class="content-section">
+    <h2>Program content</h2>
+
+    <div class="content-card">
+      {{ program.content || 'No content has been added for this program yet.' }}
+    </div>
+  </section>
+
+  <section class="policies-section">
+    <div class="section-header">
+      <div>
+        <h2>Policies</h2>
+        <p>Policies connected to this program.</p>
+      </div>
+    </div>
+
+    @if (program.policies.length === 0) {
+      <div class="state-box">
+        <h3>No policies yet</h3>
+        <p>No policies have been connected to this program yet.</p>
+      </div>
+    } @else {
+      <div class="policy-grid">
+        @for (policy of program.policies; track policy.id) {
+          <article class="policy-card">
+            <h3>{{ policy.name }}</h3>
+
+            <p class="position">
+              {{ getPositionLabel(policy.politicalPosition) }}
+            </p>
+
+            @if (policy.specEconomicAxis !== null && policy.specEconomicAxis !== undefined
+            && policy.specSocialAxis !== null && policy.specSocialAxis !== undefined) {
+              <div class="axis-row">
+                <span>Economic</span>
+                <strong>{{ policy.specEconomicAxis }}</strong>
+              </div>
+
+              <div class="axis-row">
+                <span>Social</span>
+                <strong>{{ policy.specSocialAxis }}</strong>
+              </div>
+            }
+          </article>
+        }
+      </div>
+    }
+  </section>
+
+  @if (policyMarkers.length > 0) {
+    <section class="compass-section">
+      <div class="section-header">
+        <div>
+          <h2>Policy positions</h2>
+          <p>Specialist assessment of the policies connected to this program.</p>
+        </div>
+      </div>
+
+      <app-political-plane
+        title="Program policies"
+        [markers]="policyMarkers">
+      </app-political-plane>
+    </section>
+  }
+}

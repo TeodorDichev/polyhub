@@ -9,6 +9,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 import java.util.List;
+import bg.fmi.polyhub.dto.specialist.ProgramForRatingResponse;
 
 @Mapper(
         componentModel = "spring",
@@ -29,6 +30,20 @@ public interface ProgramMapper {
     @Mapping(target = "partyName", source = "program.party.name")
     @Mapping(target = "policies", source = "programPolicies")
     ProgramResponse toResponse(Program program, List<ProgramPolicy> programPolicies);
+
+    @Mapping(target = "programId", source = "id")
+    @Mapping(target = "electionId", source = "election.id")
+    @Mapping(target = "electionName", source = "election.name")
+    @Mapping(target = "electionDate", source = "election.electionDate")
+    @Mapping(target = "partyId", source = "party.id")
+    @Mapping(target = "partyName", source = "party.name")
+    @Mapping(target = "partyMotto", source = "party.motto")
+    @Mapping(target = "partyDescription", source = "party.description")
+    @Mapping(target = "partyLogoUrl", source = "party.logoUrl")
+    @Mapping(target = "policies", ignore = true)
+    @Mapping(target = "rated", ignore = true)
+    @Mapping(target = "electionPassed", ignore = true)
+    ProgramForRatingResponse toRatingResponseBase(Program program);
 
     @Mapping(target = "programId", source = "id")
     @Mapping(target = "electionId", source = "election.id")

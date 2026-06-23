@@ -1,8 +1,10 @@
 package bg.fmi.polyhub.services;
 
-import bg.fmi.polyhub.dto.PoliticalPositionType;
+import bg.fmi.polyhub.dto.policy.PoliticalPositionType;
 import bg.fmi.polyhub.dto.policy.PolicySummary;
 import bg.fmi.polyhub.dto.program.CreateProgramRequest;
+import bg.fmi.polyhub.dto.program.ProgramDetailsResponse;
+import bg.fmi.polyhub.dto.program.ProgramPolicyDetailsResponse;
 import bg.fmi.polyhub.dto.program.ProgramResponse;
 import bg.fmi.polyhub.dto.program.ProgramSuggestion;
 import bg.fmi.polyhub.dto.specialist.ProgramForRatingResponse;
@@ -25,7 +27,6 @@ import bg.fmi.polyhub.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -57,6 +58,7 @@ public class ProgramService {
                             .stream()
                             .map(pp -> pp.getPolicy().getId())
                             .toList();
+
                     return new ProgramSuggestion(
                             prev.getTitle(),
                             prev.getContent(),
@@ -67,7 +69,7 @@ public class ProgramService {
                 });
     }
 
-    @Transactional // check if we need it on other service methods
+    @Transactional
     public ProgramResponse createOrUpdate(Long electionId, CreateProgramRequest request, String email) {
         User user = getActiveUser(email);
         Party party = getApprovedParty(user);
@@ -96,16 +98,15 @@ public class ProgramService {
 
         Program saved = programRepository.save(program);
 
-        // replace policies
         programPolicyRepository.deleteAllByProgram(saved);
 
         List<Policy> policies = policyRepository.findAllByIdIn(request.policyIds());
         policies.forEach(policy -> {
-            ProgramPolicy pp = new ProgramPolicy();
-            pp.setId(new ProgramPolicyId(saved.getId(), policy.getId()));
-            pp.setProgram(saved);
-            pp.setPolicy(policy);
-            programPolicyRepository.save(pp);
+            ProgramPolicy programPolicy = new ProgramPolicy();
+            programPolicy.setId(new ProgramPolicyId(saved.getId(), policy.getId()));
+            programPolicy.setProgram(saved);
+            programPolicy.setPolicy(policy);
+            programPolicyRepository.save(programPolicy);
         });
 
         List<ProgramPolicy> savedPolicies = programPolicyRepository.findAllByProgram(saved);
@@ -126,6 +127,44 @@ public class ProgramService {
         return programMapper.toResponse(program, policies);
     }
 
+    // ── Public details action ─────────────────────────────────────
+
+    public ProgramDetailsResponse getDetails(Long id) {
+        Program program = programRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Program not found"));
+
+        List<ProgramPolicy> policies = programPolicyRepository.findAllByProgram(program);
+
+        return new ProgramDetailsResponse(
+                program.getId(),
+                program.getTitle(),
+                program.getContent(),
+
+                program.getSelfEconomicAxis(),
+                program.getSelfSocialAxis(),
+                program.getSpecEconomicAxis(),
+                program.getSpecSocialAxis(),
+
+                program.getCreatedAt(),
+                program.getLastEditAt(),
+
+                program.getElection().getId(),
+                program.getElection().getName(),
+                program.getElection().getElectionDate(),
+
+                program.getParty().getId(),
+                program.getParty().getName(),
+                program.getParty().getDescription(),
+                program.getParty().getMotto(),
+
+                policies.stream()
+                        .map(this::toPolicyDetails)
+                        .toList()
+        );
+    }
+
+    // ── Specialist actions ────────────────────────────────────────
+
     public List<ProgramForRatingResponse> getAllPrograms() {
         return programRepository.findAll()
                 .stream()
@@ -136,6 +175,7 @@ public class ProgramService {
     public ProgramForRatingResponse getProgram(Long id) {
         Program program = programRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Program not found"));
+
         return toRatingResponse(program);
     }
 
@@ -153,15 +193,37 @@ public class ProgramService {
         return toRatingResponse(programRepository.save(program));
     }
 
+    // ── Shared helpers ────────────────────────────────────────────
+
+    private ProgramPolicyDetailsResponse toPolicyDetails(ProgramPolicy programPolicy) {
+        Policy policy = programPolicy.getPolicy();
+
+        PoliticalPositionType positionType = PoliticalPositionType.from(
+                policy.getSpecEconomicAxis(),
+                policy.getSpecSocialAxis()
+        );
+
+        return new ProgramPolicyDetailsResponse(
+                policy.getId(),
+                policy.getName(),
+                policy.getSlug(),
+                positionType != null ? positionType.name() : null,
+                policy.getSpecEconomicAxis(),
+                policy.getSpecSocialAxis()
+        );
+    }
+
     private ProgramForRatingResponse toRatingResponse(Program program) {
         List<PolicySummary> policies = programPolicyRepository.findAllByProgram(program)
                 .stream()
-                .map(pp -> {
-                    Policy policy = pp.getPolicy();
+                .map(programPolicy -> {
+                    Policy policy = programPolicy.getPolicy();
+
                     PoliticalPositionType position = PoliticalPositionType.from(
                             policy.getSpecEconomicAxis(),
                             policy.getSpecSocialAxis()
                     );
+
                     return new PolicySummary(
                             policy.getId(),
                             policy.getName(),

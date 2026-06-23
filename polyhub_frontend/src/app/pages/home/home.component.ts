@@ -2,6 +2,10 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ApiService, ElectionResponse } from '../../core/services/api.service';
+import {
+  getElectionStatusLabel,
+  getElectionTypeLabel
+} from '../../shared/utils/display-labels';
 
 @Component({
   selector: 'app-home',
@@ -14,6 +18,8 @@ export class HomeComponent implements OnInit {
   elections: ElectionResponse[] = [];
   loading = false;
   error = '';
+  readonly getStatusLabel = getElectionStatusLabel;
+  readonly getTypeLabel = getElectionTypeLabel;
 
   constructor(private api: ApiService) {}
 
@@ -35,22 +41,5 @@ export class HomeComponent implements OnInit {
         this.loading = false;
       }
     });
-  }
-
-  getStatusLabel(status: string): string {
-    switch (status) {
-      case 'FINISHED':
-        return 'Finished';
-      case 'RUNNING':
-        return 'Running';
-      case 'UPCOMING':
-        return 'Upcoming';
-      default:
-        return status;
-    }
-  }
-
-  getTypeLabel(type: string): string {
-    return type.replaceAll('_', ' ');
   }
 }

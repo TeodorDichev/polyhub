@@ -11,9 +11,15 @@ import bg.fmi.polyhub.repositories.ElectionTypeRepository;
 import bg.fmi.polyhub.repositories.PartyParticipationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
+import bg.fmi.polyhub.dto.election.ElectionDetailsResponse;
+import bg.fmi.polyhub.dto.election.ElectionPartyResultResponse;
+import bg.fmi.polyhub.entities.Program;
+import bg.fmi.polyhub.repositories.ProgramRepository;
 import java.time.LocalDate;
 import java.util.List;
+
+import static bg.fmi.polyhub.utils.ElectionStatusUtils.getStatus;
+import static bg.fmi.polyhub.utils.ElectionStatusUtils.isFinished;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +29,7 @@ public class ElectionService {
     private final ElectionTypeRepository electionTypeRepository;
     private final PartyParticipationRepository partyParticipationRepository;
     private final ElectionMapper electionMapper;
+    private final ProgramRepository programRepository;
 
     public ElectionResponse create(CreateElectionRequest request) {
         ElectionType type = electionTypeRepository
@@ -90,21 +97,90 @@ public class ElectionService {
         );
     }
 
-    private String getStatus(Election election) {
-        LocalDate today = LocalDate.now();
+    public ElectionDetailsResponse getById(Long id) {
+        Election election = electionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Election not found"));
 
-        if (election.getElectionDate().isBefore(today)) {
-            return "FINISHED";
-        }
-
-        if (election.getElectionDate().isEqual(today)) {
-            return "RUNNING";
-        }
-
-        return "UPCOMING";
+        return toDetailsResponse(election);
     }
 
-    private boolean isFinished(Election election) {
-        return election.getElectionDate().isBefore(LocalDate.now());
+    private ElectionDetailsResponse toDetailsResponse(Election election) {
+        PartyParticipation winner = null;
+
+        if (isFinished(election)) {
+            winner = partyParticipationRepository
+                    .findWinnerByElectionId(election.getId())
+                    .orElse(null);
+        }
+
+        List<ElectionPartyResultResponse> parties = partyParticipationRepository
+                .findAllByElection_Id(election.getId())
+                .stream()
+                .sorted(this::compareByVotePercentageDesc)
+                .map(participation -> toPartyResultResponse(participation, election))
+                .toList();
+
+        return new ElectionDetailsResponse(
+                election.getId(),
+                election.getName(),
+                election.getElectionDate(),
+                election.getDescription(),
+                election.getType().getName(),
+                getStatus(election),
+                winner != null ? winner.getParty().getName() : null,
+                winner != null ? winner.getVotePercentage() : null,
+                parties
+        );
+    }
+
+    private ElectionPartyResultResponse toPartyResultResponse(
+            PartyParticipation participation,
+            Election election
+    ) {
+        Program program = programRepository
+                .findByPartyAndElection(participation.getParty(), election)
+                .orElse(null);
+
+        return new ElectionPartyResultResponse(
+                participation.getParty().getId(),
+                participation.getParty().getName(),
+                participation.getParty().getDescription(),
+                participation.getParty().getMotto(),
+
+                participation.getParty().getSelfEconomicAxis(),
+                participation.getParty().getSelfSocialAxis(),
+                participation.getParty().getSpecEconomicAxis(),
+                participation.getParty().getSpecSocialAxis(),
+
+                participation.getVotesCount(),
+                participation.getVotePercentage(),
+
+                program != null ? program.getId() : null,
+                program != null ? program.getTitle() : null,
+
+                program != null ? program.getSelfEconomicAxis() : null,
+                program != null ? program.getSelfSocialAxis() : null,
+                program != null ? program.getSpecEconomicAxis() : null,
+                program != null ? program.getSpecSocialAxis() : null
+        );
+    }
+
+    private int compareByVotePercentageDesc(
+            PartyParticipation first,
+            PartyParticipation second
+    ) {
+        if (first.getVotePercentage() == null && second.getVotePercentage() == null) {
+            return 0;
+        }
+
+        if (first.getVotePercentage() == null) {
+            return 1;
+        }
+
+        if (second.getVotePercentage() == null) {
+            return -1;
+        }
+
+        return second.getVotePercentage().compareTo(first.getVotePercentage());
     }
 }

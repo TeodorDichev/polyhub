@@ -2,18 +2,27 @@ package bg.fmi.polyhub.services;
 
 import bg.fmi.polyhub.dto.admin.PartyAdminResponse;
 import bg.fmi.polyhub.dto.admin.RejectPartyRequest;
+import bg.fmi.polyhub.dto.party.PartyDetailsResponse;
+import bg.fmi.polyhub.dto.party.PartyElectionParticipationResponse;
+import bg.fmi.polyhub.dto.party.PartyProgramSummaryResponse;
 import bg.fmi.polyhub.dto.party.PartyResponse;
 import bg.fmi.polyhub.dto.party.SubmitPartyRequest;
 import bg.fmi.polyhub.dto.specialist.PartyForRatingResponse;
 import bg.fmi.polyhub.dto.specialist.PartyRatingRequest;
+import bg.fmi.polyhub.entities.Election;
 import bg.fmi.polyhub.entities.Party;
+import bg.fmi.polyhub.entities.PartyParticipation;
 import bg.fmi.polyhub.entities.PartyStatus;
 import bg.fmi.polyhub.entities.PartyStatusType;
+import bg.fmi.polyhub.entities.Program;
 import bg.fmi.polyhub.entities.User;
 import bg.fmi.polyhub.mappers.PartyMapper;
+import bg.fmi.polyhub.repositories.PartyParticipationRepository;
 import bg.fmi.polyhub.repositories.PartyRepository;
 import bg.fmi.polyhub.repositories.PartyStatusRepository;
+import bg.fmi.polyhub.repositories.ProgramRepository;
 import bg.fmi.polyhub.repositories.UserRepository;
+import bg.fmi.polyhub.utils.ElectionStatusUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +38,8 @@ public class PartyService {
     private final PartyStatusRepository partyStatusRepository;
     private final UserRepository userRepository;
     private final PartyMapper partyMapper;
+    private final ProgramRepository programRepository;
+    private final PartyParticipationRepository partyParticipationRepository;
 
     // ── Party Admin actions ──────────────────────────────────────
 
@@ -91,6 +102,47 @@ public class PartyService {
                 .orElseThrow(() -> new RuntimeException("No party found"));
 
         return partyMapper.toResponse(party);
+    }
+
+    // ── Public actions ────────────────────────────────────────────
+
+    public PartyDetailsResponse getDetails(Long id) {
+        Party party = findActiveParty(id);
+
+        if (party.getStatus().getName() != PartyStatusType.APPROVED) {
+            throw new RuntimeException("Party is not approved");
+        }
+
+        List<PartyProgramSummaryResponse> programs = programRepository
+                .findAllByPartyOrderByCreatedAtDesc(party)
+                .stream()
+                .map(this::toProgramSummary)
+                .toList();
+
+        List<PartyElectionParticipationResponse> participations = partyParticipationRepository
+                .findAllByParty_Id(party.getId())
+                .stream()
+                .sorted(this::compareByElectionDateDesc)
+                .map(this::toParticipationResponse)
+                .toList();
+
+        return new PartyDetailsResponse(
+                party.getId(),
+                party.getName(),
+                party.getDescription(),
+                party.getMotto(),
+                party.getLogoUrl(),
+                party.getFoundedOn(),
+                party.getCreatedAt(),
+
+                party.getSelfEconomicAxis(),
+                party.getSelfSocialAxis(),
+                party.getSpecEconomicAxis(),
+                party.getSpecSocialAxis(),
+
+                programs,
+                participations
+        );
     }
 
     // ── Admin actions ─────────────────────────────────────────────
@@ -191,9 +243,56 @@ public class PartyService {
 
     private PartyForRatingResponse toRatingResponse(Party party) {
         boolean rated = party.getSpecEconomicAxis() != null && party.getSpecSocialAxis() != null;
+
         return partyMapper.toRatingResponseBase(party)
                 .toBuilder()
                 .rated(rated)
                 .build();
+    }
+
+    private PartyProgramSummaryResponse toProgramSummary(Program program) {
+        return new PartyProgramSummaryResponse(
+                program.getId(),
+                program.getTitle(),
+
+                program.getSelfEconomicAxis(),
+                program.getSelfSocialAxis(),
+                program.getSpecEconomicAxis(),
+                program.getSpecSocialAxis(),
+
+                program.getCreatedAt(),
+                program.getLastEditAt(),
+
+                program.getElection().getId(),
+                program.getElection().getName(),
+                program.getElection().getElectionDate()
+        );
+    }
+
+    private PartyElectionParticipationResponse toParticipationResponse(PartyParticipation participation) {
+        Election election = participation.getElection();
+
+        Program program = programRepository
+                .findByPartyAndElection(participation.getParty(), election)
+                .orElse(null);
+
+        return new PartyElectionParticipationResponse(
+                election.getId(),
+                election.getName(),
+                election.getElectionDate(),
+                election.getType().getName().name(),
+                ElectionStatusUtils.getStatus(election),
+
+                participation.getVotesCount(),
+                participation.getVotePercentage(),
+
+                program != null ? program.getId() : null,
+                program != null ? program.getTitle() : null
+        );
+    }
+
+    private int compareByElectionDateDesc(PartyParticipation first, PartyParticipation second) {
+        return second.getElection().getElectionDate()
+                .compareTo(first.getElection().getElectionDate());
     }
 }
