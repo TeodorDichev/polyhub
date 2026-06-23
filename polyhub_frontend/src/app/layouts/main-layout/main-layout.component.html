@@ -30,8 +30,19 @@
           Personal Details
         </a>
       } @else {
-        <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="closeSidebar()">
+        <a
+          routerLink="/"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{exact: true}"
+          (click)="closeSidebar()">
           Home
+        </a>
+
+        <a
+          routerLink="/parties"
+          routerLinkActive="active"
+          (click)="closeSidebar()">
+          Parties
         </a>
       }
     </nav>

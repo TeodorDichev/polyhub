@@ -12,6 +12,7 @@ import { ElectionDetailsComponent } from './pages/election-details/election-deta
 import { ProgramDetailsComponent } from './pages/program-details/program-details.component';
 import { PartyDetailsComponent } from './pages/party-details/party-details.component';
 import { authGuard } from './core/guards/auth.guard';
+import { PartiesComponent } from './pages/parties/parties.component';
 import { ElectionsComponent } from './pages/elections/elections.component';
 
 export const routes: Routes = [
@@ -25,6 +26,8 @@ export const routes: Routes = [
       { path: 'elections/:id', component: ElectionDetailsComponent },
       { path: 'programs/:id', component: ProgramDetailsComponent },
       { path: 'parties/:id', component: PartyDetailsComponent },
+      { path: 'parties', component: PartiesComponent },
+      { path: '**', redirectTo: '' },
       {
         path: 'dashboard',
         canActivate: [authGuard],
