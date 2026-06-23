@@ -26,8 +26,10 @@ export class LoginComponent {
     this.api.login({ email: this.email, password: this.password }).subscribe({
       next: (user) => {
         if (user.role !== 'POLYHUB_SPECIALIST') {
-          this.loading = false;
-          this.error = 'Access denied. Specialist accounts only.';
+          this.api.logout().subscribe({
+            next: () => this.handleAccessDenied(),
+            error: () => this.handleAccessDenied()
+          });
           return;
         }
         this.authService.setUser(user);
@@ -38,5 +40,11 @@ export class LoginComponent {
         this.error = err.error?.message || 'The server did not respond';
       }
     });
+  }
+
+  private handleAccessDenied() {
+    this.loading = false;
+    this.error = 'Access denied. Specialist accounts only.';
+    this.authService.clearUser();
   }
 }

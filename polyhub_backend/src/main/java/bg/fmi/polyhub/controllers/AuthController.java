@@ -2,7 +2,7 @@ package bg.fmi.polyhub.controllers;
 
 import bg.fmi.polyhub.dto.auth.LoginRequest;
 import bg.fmi.polyhub.dto.auth.RegisterRequest;
-import bg.fmi.polyhub.dto.partyadmin.LoggedPartyAdmin;
+import bg.fmi.polyhub.dto.auth.LoggedUser;
 import bg.fmi.polyhub.services.AuthService;
 import bg.fmi.polyhub.services.JwtService;
 import jakarta.servlet.http.Cookie;
@@ -34,9 +34,9 @@ public class AuthController {
 
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
-    public LoggedPartyAdmin login(@Valid @RequestBody LoginRequest request,
-                                  HttpServletResponse response) {
-        LoggedPartyAdmin loggedUser = authService.login(request);
+    public LoggedUser login(@Valid @RequestBody LoginRequest request,
+                            HttpServletResponse response) {
+        LoggedUser loggedUser = authService.login(request);
 
         String token = jwtService.generateToken(
                 loggedUser.email(),
@@ -66,7 +66,7 @@ public class AuthController {
 
     @GetMapping("/me")
     @ResponseStatus(HttpStatus.OK)
-    public LoggedPartyAdmin me(@AuthenticationPrincipal String email) {
+    public LoggedUser me(@AuthenticationPrincipal String email) {
         return authService.me(email);
     }
 }

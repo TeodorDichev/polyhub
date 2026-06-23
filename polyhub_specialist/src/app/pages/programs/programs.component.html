@@ -1,0 +1,125 @@
+<div class="page-header">
+  <h2>Programs</h2>
+</div>
+
+@if (error) {
+  <div class="error-msg">{{ error }}</div>
+}
+
+<div class="table-wrapper">
+  <table>
+    <thead>
+      <tr>
+        <th>Party</th>
+        <th>Election</th>
+        <th>Election Date</th>
+        <th>Created At</th>
+        <th>Rated</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (program of programs; track program.programId) {
+        <tr>
+          <td>{{ program.partyName }}</td>
+          <td>{{ program.electionName }}</td>
+          <td>{{ program.electionDate }}</td>
+          <td>{{ program.createdAt }}</td>
+          <td>
+            @if (program.rated) {
+              <span class="badge rated">Rated</span>
+            } @else {
+              <span class="badge unrated">Not Rated</span>
+            }
+          </td>
+          <td class="actions">
+            <button class="btn-primary" (click)="openDetail(program)">
+              View / Rate
+            </button>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
+
+@if (selectedProgram) {
+  <div class="modal-backdrop" (click)="closeDetail()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>{{ selectedProgram.title }}</h3>
+        <button class="close-btn" (click)="closeDetail()">✕</button>
+      </div>
+
+      @if (selectedProgram.electionPassed) {
+        <div class="warning-banner">⚠ This election has already passed. Rating is locked.</div>
+      }
+
+      <div class="info-section">
+        <span class="label">Party</span>
+        <span class="value">{{ selectedProgram.partyName }}</span>
+      </div>
+      @if (selectedProgram.partyMotto) {
+        <div class="info-section">
+          <span class="label">Party Motto</span>
+          <span class="value">{{ selectedProgram.partyMotto }}</span>
+        </div>
+      }
+      <div class="info-section">
+        <span class="label">Party Description</span>
+        <span class="value">{{ selectedProgram.partyDescription }}</span>
+      </div>
+      <div class="info-section">
+        <span class="label">Election</span>
+        <span class="value">{{ selectedProgram.electionName }} ({{ selectedProgram.electionDate }})</span>
+      </div>
+
+      <hr />
+
+      <div class="info-section">
+        <span class="label">Program Content</span>
+        <p class="content">{{ selectedProgram.content }}</p>
+      </div>
+
+      @if (selectedProgram.selfEconomicAxis != null) {
+        <div class="info-section">
+          <span class="label">Self-Reported Position</span>
+          <span class="value">({{ selectedProgram.selfEconomicAxis }}, {{ selectedProgram.selfSocialAxis }})</span>
+        </div>
+      }
+
+      @if (selectedProgram.policies.length > 0) {
+        <div class="info-section">
+          <span class="label">Policies</span>
+          <div class="policy-list">
+            @for (policy of selectedProgram.policies; track policy.id) {
+              <span class="policy-chip">{{ policy.name }}</span>
+            }
+          </div>
+        </div>
+      }
+
+      @if (ratingError) {
+        <div class="error-msg">{{ ratingError }}</div>
+      }
+
+      @if (!hasReadProgram) {
+        <button class="btn-primary read-btn" (click)="confirmRead()" [disabled]="selectedProgram.electionPassed">
+          I have read this program
+        </button>
+      } @else {
+        <div class="rating-section">
+          <h4>Rate this program</h4>
+          <app-political-plane [(ngModel)]="ratingPoint" name="rating" />
+
+          <div class="modal-actions">
+            <button class="btn-secondary" (click)="closeDetail()">Cancel</button>
+            <button class="btn-primary" (click)="saveRating()" [disabled]="saving">
+              {{ saving ? 'Saving...' : 'Save Rating' }}
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+}

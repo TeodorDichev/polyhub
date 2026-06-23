@@ -17,47 +17,12 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class AdminService {
+public class SpecialistService {
 
     private final UserRepository userRepository;
     private final UserRoleRepository userRoleRepository;
     private final UserMapper userMapper;
     private final BCryptPasswordEncoder passwordEncoder;
-
-    public List<AdminUserResponse> getAllPartyAdmins() {
-        return userRepository.findAllByRoleNameAndDeletedAtIsNull(RoleType.PARTY_ADMIN)
-                .stream()
-                .map(userMapper::toAdminUserResponse)
-                .toList();
-    }
-
-    public AdminUserResponse getPartyAdmin(Long id) {
-        return userMapper.toAdminUserResponse(findActiveUser(id));
-    }
-
-    public AdminUserResponse suspendPartyAdmin(Long id) {
-        User user = findActiveUser(id);
-        if (user.getSuspendedOn() != null) {
-            throw new RuntimeException("User is already suspended");
-        }
-        user.setSuspendedOn(LocalDateTime.now());
-        return userMapper.toAdminUserResponse(userRepository.save(user));
-    }
-
-    public AdminUserResponse unsuspendPartyAdmin(Long id) {
-        User user = findActiveUser(id);
-        if (user.getSuspendedOn() == null) {
-            throw new RuntimeException("User is not suspended");
-        }
-        user.setSuspendedOn(null);
-        return userMapper.toAdminUserResponse(userRepository.save(user));
-    }
-
-    public void deletePartyAdmin(Long id) {
-        User user = findActiveUser(id);
-        user.setDeletedAt(LocalDateTime.now());
-        userRepository.save(user);
-    }
 
     public List<AdminUserResponse> getAllSpecialists() {
         return userRepository.findAllByRoleNameAndDeletedAtIsNull(RoleType.POLYHUB_SPECIALIST)

@@ -1,8 +1,8 @@
-package bg.fmi.polyhub.dto.partyadmin;
+package bg.fmi.polyhub.dto.auth;
 
 import bg.fmi.polyhub.entities.RoleType;
 
-public record LoggedPartyAdmin(
+public record LoggedUser(
         Long id,
         String email,
         String firstname,

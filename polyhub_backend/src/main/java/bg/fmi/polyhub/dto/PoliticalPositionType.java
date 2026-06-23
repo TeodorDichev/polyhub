@@ -1,4 +1,4 @@
-package bg.fmi.polyhub.dto.policy;
+package bg.fmi.polyhub.dto;
 
 public enum PoliticalPositionType {
 

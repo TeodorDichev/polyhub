@@ -3,7 +3,7 @@ package bg.fmi.polyhub.dto.admin;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-public record AdminPartyResponse(
+public record PartyAdminResponse(
         Long id,
         String name,
         String description,

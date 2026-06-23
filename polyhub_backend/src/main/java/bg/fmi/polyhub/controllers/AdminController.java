@@ -1,11 +1,12 @@
 package bg.fmi.polyhub.controllers;
 
-import bg.fmi.polyhub.dto.admin.AdminPartyResponse;
+import bg.fmi.polyhub.dto.admin.PartyAdminResponse;
 import bg.fmi.polyhub.dto.admin.AdminUserResponse;
 import bg.fmi.polyhub.dto.admin.CreateSpecialistRequest;
 import bg.fmi.polyhub.dto.admin.RejectPartyRequest;
-import bg.fmi.polyhub.services.AdminPartyService;
-import bg.fmi.polyhub.services.AdminService;
+import bg.fmi.polyhub.services.PartyAdminService;
+import bg.fmi.polyhub.services.PartyService;
+import bg.fmi.polyhub.services.SpecialistService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,87 +23,90 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+// after discussion, we decided to leave this controller role-based
+
 @RestController
 @RequestMapping("/admin")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminController {
 
-    private final AdminService adminUserService;
-    private final AdminPartyService adminPartyService;
+    private final PartyAdminService partyAdminService;
+    private final SpecialistService specialistService;
+    private final PartyService partyService;
 
     @GetMapping("/party-admins")
     public List<AdminUserResponse> getAllPartyAdmins() {
-        return adminUserService.getAllPartyAdmins();
+        return partyAdminService.getAllPartyAdmins();
     }
 
     @GetMapping("/party-admins/{id}")
     public AdminUserResponse getPartyAdmin(@PathVariable Long id) {
-        return adminUserService.getPartyAdmin(id);
+        return partyAdminService.getPartyAdmin(id);
     }
 
     @PutMapping("/party-admins/{id}/suspend")
     public AdminUserResponse suspendPartyAdmin(@PathVariable Long id) {
-        return adminUserService.suspendPartyAdmin(id);
+        return partyAdminService.suspendPartyAdmin(id);
     }
 
     @PutMapping("/party-admins/{id}/unsuspend")
     public AdminUserResponse unsuspendPartyAdmin(@PathVariable Long id) {
-        return adminUserService.unsuspendPartyAdmin(id);
+        return partyAdminService.unsuspendPartyAdmin(id);
     }
 
     @DeleteMapping("/party-admins/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deletePartyAdmin(@PathVariable Long id) {
-        adminUserService.deletePartyAdmin(id);
+        partyAdminService.deletePartyAdmin(id);
     }
 
     @GetMapping("/specialists")
     public List<AdminUserResponse> getAllSpecialists() {
-        return adminUserService.getAllSpecialists();
+        return specialistService.getAllSpecialists();
     }
 
     @GetMapping("/specialists/{id}")
     public AdminUserResponse getSpecialist(@PathVariable Long id) {
-        return adminUserService.getSpecialist(id);
+        return specialistService.getSpecialist(id);
     }
 
     @PostMapping("/specialists")
     @ResponseStatus(HttpStatus.CREATED)
     public AdminUserResponse createSpecialist(@Valid @RequestBody CreateSpecialistRequest request) {
-        return adminUserService.createSpecialist(request);
+        return specialistService.createSpecialist(request);
     }
 
     @DeleteMapping("/specialists/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteSpecialist(@PathVariable Long id) {
-        adminUserService.deleteSpecialist(id);
+        specialistService.deleteSpecialist(id);
     }
 
     @GetMapping("/parties")
-    public List<AdminPartyResponse> getAllParties() {
-        return adminPartyService.getAllParties();
+    public List<PartyAdminResponse> getAllParties() {
+        return partyService.getAllParties();
     }
 
     @GetMapping("/parties/{id}")
-    public AdminPartyResponse getParty(@PathVariable Long id) {
-        return adminPartyService.getParty(id);
+    public PartyAdminResponse getParty(@PathVariable Long id) {
+        return partyService.getParty(id);
     }
 
     @PutMapping("/parties/{id}/approve")
-    public AdminPartyResponse approveParty(@PathVariable Long id) {
-        return adminPartyService.approveParty(id);
+    public PartyAdminResponse approveParty(@PathVariable Long id) {
+        return partyService.approveParty(id);
     }
 
     @PutMapping("/parties/{id}/reject")
-    public AdminPartyResponse rejectParty(@PathVariable Long id,
+    public PartyAdminResponse rejectParty(@PathVariable Long id,
                                           @RequestBody RejectPartyRequest request) {
-        return adminPartyService.rejectParty(id, request);
+        return partyService.rejectParty(id, request);
     }
 
     @DeleteMapping("/parties/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteParty(@PathVariable Long id) {
-        adminPartyService.deleteParty(id);
+        partyService.deleteParty(id);
     }
 }

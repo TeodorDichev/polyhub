@@ -8,7 +8,15 @@ import { AuthService } from './core/services/auth.service';
 function initSession(api: ApiService, auth: AuthService) {
   return () => new Promise<void>((resolve) => {
     api.me().subscribe({
-      next: (user) => { auth.setUser(user); resolve(); },
+      next: (user) => {
+        if (user.role !== 'ADMIN') {
+          auth.clearUser();
+          resolve();
+          return;
+        }
+        auth.setUser(user);
+        resolve();
+      },
       error: () => { auth.clearUser(); resolve(); }
     });
   });

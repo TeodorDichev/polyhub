@@ -58,6 +58,7 @@ public class ProgramService {
                             .stream()
                             .map(pp -> pp.getPolicy().getId())
                             .toList();
+
                     return new ProgramSuggestion(
                             prev.getTitle(),
                             prev.getContent(),
@@ -68,7 +69,7 @@ public class ProgramService {
                 });
     }
 
-    @Transactional // check if we need it on other service methods
+    @Transactional
     public ProgramResponse createOrUpdate(Long electionId, CreateProgramRequest request, String email) {
         User user = getActiveUser(email);
         Party party = getApprovedParty(user);
@@ -97,16 +98,15 @@ public class ProgramService {
 
         Program saved = programRepository.save(program);
 
-        // replace policies
         programPolicyRepository.deleteAllByProgram(saved);
 
         List<Policy> policies = policyRepository.findAllByIdIn(request.policyIds());
         policies.forEach(policy -> {
-            ProgramPolicy pp = new ProgramPolicy();
-            pp.setId(new ProgramPolicyId(saved.getId(), policy.getId()));
-            pp.setProgram(saved);
-            pp.setPolicy(policy);
-            programPolicyRepository.save(pp);
+            ProgramPolicy programPolicy = new ProgramPolicy();
+            programPolicy.setId(new ProgramPolicyId(saved.getId(), policy.getId()));
+            programPolicy.setProgram(saved);
+            programPolicy.setPolicy(policy);
+            programPolicyRepository.save(programPolicy);
         });
 
         List<ProgramPolicy> savedPolicies = programPolicyRepository.findAllByProgram(saved);
@@ -126,6 +126,8 @@ public class ProgramService {
         List<ProgramPolicy> policies = programPolicyRepository.findAllByProgram(program);
         return programMapper.toResponse(program, policies);
     }
+
+    // ── Public details action ─────────────────────────────────────
 
     public ProgramDetailsResponse getDetails(Long id) {
         Program program = programRepository.findById(id)
@@ -161,6 +163,8 @@ public class ProgramService {
         );
     }
 
+    // ── Specialist actions ────────────────────────────────────────
+
     public List<ProgramForRatingResponse> getAllPrograms() {
         return programRepository.findAll()
                 .stream()
@@ -171,6 +175,7 @@ public class ProgramService {
     public ProgramForRatingResponse getProgram(Long id) {
         Program program = programRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Program not found"));
+
         return toRatingResponse(program);
     }
 
@@ -187,6 +192,8 @@ public class ProgramService {
 
         return toRatingResponse(programRepository.save(program));
     }
+
+    // ── Shared helpers ────────────────────────────────────────────
 
     private ProgramPolicyDetailsResponse toPolicyDetails(ProgramPolicy programPolicy) {
         Policy policy = programPolicy.getPolicy();
@@ -209,12 +216,14 @@ public class ProgramService {
     private ProgramForRatingResponse toRatingResponse(Program program) {
         List<PolicySummary> policies = programPolicyRepository.findAllByProgram(program)
                 .stream()
-                .map(pp -> {
-                    Policy policy = pp.getPolicy();
+                .map(programPolicy -> {
+                    Policy policy = programPolicy.getPolicy();
+
                     PoliticalPositionType position = PoliticalPositionType.from(
                             policy.getSpecEconomicAxis(),
                             policy.getSpecSocialAxis()
                     );
+
                     return new PolicySummary(
                             policy.getId(),
                             policy.getName(),

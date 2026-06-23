@@ -1,6 +1,6 @@
 package bg.fmi.polyhub.services;
 
-import bg.fmi.polyhub.dto.admin.AdminPartyResponse;
+import bg.fmi.polyhub.dto.admin.PartyAdminResponse;
 import bg.fmi.polyhub.dto.admin.RejectPartyRequest;
 import bg.fmi.polyhub.dto.party.PartyDetailsResponse;
 import bg.fmi.polyhub.dto.party.PartyElectionParticipationResponse;
@@ -147,18 +147,18 @@ public class PartyService {
 
     // ── Admin actions ─────────────────────────────────────────────
 
-    public List<AdminPartyResponse> getAllParties() {
+    public List<PartyAdminResponse> getAllParties() {
         return partyRepository.findAllByDeletedAtIsNull()
                 .stream()
                 .map(partyMapper::toAdminPartyResponse)
                 .toList();
     }
 
-    public AdminPartyResponse getParty(Long id) {
+    public PartyAdminResponse getParty(Long id) {
         return partyMapper.toAdminPartyResponse(findActiveParty(id));
     }
 
-    public AdminPartyResponse approveParty(Long id) {
+    public PartyAdminResponse approveParty(Long id) {
         Party party = findActiveParty(id);
 
         if (party.getStatus().getName() != PartyStatusType.PENDING) {
@@ -170,7 +170,7 @@ public class PartyService {
         return partyMapper.toAdminPartyResponse(partyRepository.save(party));
     }
 
-    public AdminPartyResponse rejectParty(Long id, RejectPartyRequest request) {
+    public PartyAdminResponse rejectParty(Long id, RejectPartyRequest request) {
         Party party = findActiveParty(id);
 
         if (party.getStatus().getName() != PartyStatusType.PENDING) {
@@ -243,6 +243,7 @@ public class PartyService {
 
     private PartyForRatingResponse toRatingResponse(Party party) {
         boolean rated = party.getSpecEconomicAxis() != null && party.getSpecSocialAxis() != null;
+
         return partyMapper.toRatingResponseBase(party)
                 .toBuilder()
                 .rated(rated)

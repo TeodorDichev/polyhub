@@ -2,7 +2,7 @@ package bg.fmi.polyhub.services;
 
 import bg.fmi.polyhub.dto.auth.LoginRequest;
 import bg.fmi.polyhub.dto.auth.RegisterRequest;
-import bg.fmi.polyhub.dto.partyadmin.LoggedPartyAdmin;
+import bg.fmi.polyhub.dto.auth.LoggedUser;
 import bg.fmi.polyhub.entities.RoleType;
 import bg.fmi.polyhub.entities.User;
 import bg.fmi.polyhub.entities.UserRole;
@@ -39,7 +39,7 @@ public class AuthService {
         userRepository.save(user);
     }
 
-    public LoggedPartyAdmin login(LoginRequest request) {
+    public LoggedUser login(LoginRequest request) {
         User user = userRepository
                 .findByEmailAndDeletedAtIsNull(request.email())
                 .orElseThrow(() -> new RuntimeException("Invalid credentials"));
@@ -55,7 +55,7 @@ public class AuthService {
         return userMapper.toLoggedPartyAdmin(user);
     }
 
-    public LoggedPartyAdmin me(String email) {
+    public LoggedUser me(String email) {
         User user = userRepository
                 .findByEmailAndDeletedAtIsNull(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
