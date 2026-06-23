@@ -80,22 +80,6 @@ public class ElectionService {
         electionRepository.delete(election);
     }
 
-    private ElectionResponse toResponse(Election election) {
-        PartyParticipation winner = null;
-
-        if (isFinished(election)) {
-            winner = partyParticipationRepository
-                    .findFirstByElection_IdAndVotePercentageIsNotNullOrderByVotePercentageDesc(election.getId())
-                    .orElse(null);
-        }
-
-        return electionMapper.toResponse(
-                election,
-                getStatus(election),
-                winner != null ? winner.getParty().getName() : null,
-                winner != null ? winner.getVotePercentage() : null
-        );
-    }
 
     public ElectionDetailsResponse getById(Long id) {
         Election election = electionRepository.findById(id)
@@ -104,6 +88,7 @@ public class ElectionService {
         return toDetailsResponse(election);
     }
 
+    // try to replace with a mapper or add builder annotation to record
     private ElectionDetailsResponse toDetailsResponse(Election election) {
         PartyParticipation winner = null;
 
@@ -133,10 +118,8 @@ public class ElectionService {
         );
     }
 
-    private ElectionPartyResultResponse toPartyResultResponse(
-            PartyParticipation participation,
-            Election election
-    ) {
+    // try to replace with a mapper or add builder annotation to record
+    private ElectionPartyResultResponse toPartyResultResponse(PartyParticipation participation, Election election) {
         Program program = programRepository
                 .findByPartyAndElection(participation.getParty(), election)
                 .orElse(null);
@@ -165,10 +148,7 @@ public class ElectionService {
         );
     }
 
-    private int compareByVotePercentageDesc(
-            PartyParticipation first,
-            PartyParticipation second
-    ) {
+    private int compareByVotePercentageDesc(PartyParticipation first, PartyParticipation second) {
         if (first.getVotePercentage() == null && second.getVotePercentage() == null) {
             return 0;
         }
@@ -182,5 +162,22 @@ public class ElectionService {
         }
 
         return second.getVotePercentage().compareTo(first.getVotePercentage());
+    }
+
+    private ElectionResponse toResponse(Election election) {
+        PartyParticipation winner = null;
+
+        if (isFinished(election)) {
+            winner = partyParticipationRepository
+                    .findFirstByElection_IdAndVotePercentageIsNotNullOrderByVotePercentageDesc(election.getId())
+                    .orElse(null);
+        }
+
+        return electionMapper.toResponse(
+                election,
+                getStatus(election),
+                winner != null ? winner.getParty().getName() : null,
+                winner != null ? winner.getVotePercentage() : null
+        );
     }
 }

@@ -127,8 +127,7 @@ public class ProgramService {
         return programMapper.toResponse(program, policies);
     }
 
-    // ── Public details action ─────────────────────────────────────
-
+    // try to replace with a mapper or add a builder annotation
     public ProgramDetailsResponse getDetails(Long id) {
         Program program = programRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Program not found"));
@@ -163,8 +162,6 @@ public class ProgramService {
         );
     }
 
-    // ── Specialist actions ────────────────────────────────────────
-
     public List<ProgramForRatingResponse> getAllPrograms() {
         return programRepository.findAll()
                 .stream()
@@ -193,8 +190,7 @@ public class ProgramService {
         return toRatingResponse(programRepository.save(program));
     }
 
-    // ── Shared helpers ────────────────────────────────────────────
-
+    // try to replace with a mapper or add a builder annotation
     private ProgramPolicyDetailsResponse toPolicyDetails(ProgramPolicy programPolicy) {
         Policy policy = programPolicy.getPolicy();
 

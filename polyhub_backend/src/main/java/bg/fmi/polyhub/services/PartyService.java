@@ -41,8 +41,7 @@ public class PartyService {
     private final ProgramRepository programRepository;
     private final PartyParticipationRepository partyParticipationRepository;
 
-    // ── Party Admin actions ──────────────────────────────────────
-
+    // move setting fields to a mapper or a private method
     public PartyResponse submit(SubmitPartyRequest request, String email) {
         User user = getActiveUser(email);
         ensureNotSuspended(user);
@@ -104,8 +103,7 @@ public class PartyService {
         return partyMapper.toResponse(party);
     }
 
-    // ── Public actions ────────────────────────────────────────────
-
+    // try to replace with a mapper or add a builder annotation
     public PartyDetailsResponse getDetails(Long id) {
         Party party = findActiveParty(id);
 
@@ -144,8 +142,6 @@ public class PartyService {
                 participations
         );
     }
-
-    // ── Admin actions ─────────────────────────────────────────────
 
     public List<PartyAdminResponse> getAllParties() {
         return partyRepository.findAllByDeletedAtIsNull()
@@ -188,8 +184,6 @@ public class PartyService {
         partyRepository.save(party);
     }
 
-    // ── Specialist actions ────────────────────────────────────────
-
     public List<PartyForRatingResponse> getAllApprovedParties() {
         return partyRepository.findAllByDeletedAtIsNull()
                 .stream()
@@ -210,8 +204,6 @@ public class PartyService {
 
         return toRatingResponse(partyRepository.save(party));
     }
-
-    // ── Shared helpers ─────────────────────────────────────────────
 
     private Party findActiveParty(Long id) {
         return partyRepository.findByIdAndDeletedAtIsNull(id)
@@ -250,6 +242,7 @@ public class PartyService {
                 .build();
     }
 
+    // try to replace with a mapper or add a builder annotation
     private PartyProgramSummaryResponse toProgramSummary(Program program) {
         return new PartyProgramSummaryResponse(
                 program.getId(),
@@ -269,6 +262,7 @@ public class PartyService {
         );
     }
 
+    // try to replace with a mapper or add a builder annotation
     private PartyElectionParticipationResponse toParticipationResponse(PartyParticipation participation) {
         Election election = participation.getElection();
 
