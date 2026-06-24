@@ -10,10 +10,6 @@ import java.util.Optional;
 
 public interface ProgramRepository extends JpaRepository<Program, Long> {
 
-    List<Program> findByPartyId(Long partyId);
-
-    List<Program> findByElectionId(Long electionId);
-
     Optional<Program> findByPartyAndElection(Party party, Election election);
 
     List<Program> findAllByPartyOrderByCreatedAtDesc(Party party);
