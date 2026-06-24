@@ -1,0 +1,173 @@
+<div class="page-header">
+  <h2>Parties</h2>
+</div>
+
+@if (error) {
+  <div class="error-msg">{{ error }}</div>
+}
+
+<div class="table-controls">
+  <input class="search-input" type="text" [(ngModel)]="search" (ngModelChange)="applyFilters()" placeholder="Search by name or motto..." />
+  <select [(ngModel)]="filterRated" (ngModelChange)="applyFilters()">
+    <option value="">All</option>
+    <option value="rated">Rated</option>
+    <option value="unrated">Not Rated</option>
+  </select>
+</div>
+
+<div class="table-wrapper">
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Motto</th>
+        <th>Founded On</th>
+        <th>Political Label</th>
+        <th>Rated</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (party of pagedParties; track party.id) {
+        <tr>
+          <td>{{ party.name }}</td>
+          <td>{{ party.motto ?? '—' }}</td>
+          <td>{{ party.foundedOn ?? '—' }}</td>
+          <td>
+            @if (party.politicalLabel) {
+              <span class="badge label-badge">{{ party.politicalLabel }}</span>
+            } @else {
+              <span class="muted">—</span>
+            }
+          </td>
+          <td>
+            @if (party.rated) {
+              <span class="badge rated">Rated</span>
+            } @else {
+              <span class="badge unrated">Not Rated</span>
+            }
+          </td>
+          <td class="actions">
+            <button class="btn-info" (click)="openInfo(party)">Info</button>
+            <button class="btn-secondary" (click)="viewDetails(party.id)">Details</button>
+            <button class="btn-primary" (click)="openRate(party)">
+              {{ party.rated ? 'Edit Rating' : 'Rate' }}
+            </button>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
+
+@if (totalPages > 1) {
+  <div class="pagination">
+    <button (click)="prevPage()" [disabled]="page === 0">← Prev</button>
+    <span>{{ page + 1 }} / {{ totalPages }}</span>
+    <button (click)="nextPage()" [disabled]="page >= totalPages - 1">Next →</button>
+  </div>
+}
+
+<!-- Info-only modal -->
+@if (infoParty) {
+  <div class="modal-backdrop" (click)="closeInfo()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>{{ infoParty.name }}</h3>
+        <button class="close-btn" (click)="closeInfo()">✕</button>
+      </div>
+      @if (infoParty.logoUrl) {
+        <div class="info-section">
+          <span class="label">Logo URL</span>
+          <span class="value">{{ infoParty.logoUrl }}</span>
+        </div>
+      }
+      @if (infoParty.motto) {
+        <div class="info-section">
+          <span class="label">Motto</span>
+          <span class="value">{{ infoParty.motto }}</span>
+        </div>
+      }
+      <div class="info-section">
+        <span class="label">Description</span>
+        <p class="content">{{ infoParty.description }}</p>
+      </div>
+      @if (infoParty.foundedOn) {
+        <div class="info-section">
+          <span class="label">Founded On</span>
+          <span class="value">{{ infoParty.foundedOn }}</span>
+        </div>
+      }
+      @if (infoParty.politicalLabel) {
+        <div class="info-section">
+          <span class="label">Political Label</span>
+          <span class="value badge label-badge">{{ infoParty.politicalLabel }}</span>
+        </div>
+      }
+      @if (infoParty.selfEconomicAxis != null) {
+        <div class="info-section">
+          <span class="label">Self-Reported Position</span>
+          <span class="value">({{ infoParty.selfEconomicAxis | number:'1.0-2' }}, {{ infoParty.selfSocialAxis | number:'1.0-2' }})</span>
+        </div>
+      }
+      <div class="info-section">
+        <span class="label">Specialist Rating</span>
+        @if (infoParty.rated) {
+          <span class="value">({{ infoParty.specEconomicAxis | number:'1.0-2' }}, {{ infoParty.specSocialAxis | number:'1.0-2' }})</span>
+        } @else {
+          <span class="value muted">Not rated yet</span>
+        }
+      </div>
+      <div class="modal-actions">
+        <button class="btn-secondary" (click)="viewDetails(infoParty.id); closeInfo()">View Full Details</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Read-then-rate modal -->
+@if (ratingParty) {
+  <div class="modal-backdrop" (click)="closeRate()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Rate {{ ratingParty.name }}</h3>
+        <button class="close-btn" (click)="closeRate()">✕</button>
+      </div>
+      @if (ratingParty.motto) {
+        <div class="info-section">
+          <span class="label">Motto</span>
+          <span class="value">{{ ratingParty.motto }}</span>
+        </div>
+      }
+      <div class="info-section">
+        <span class="label">Description</span>
+        <p class="content">{{ ratingParty.description }}</p>
+      </div>
+      @if (ratingParty.foundedOn) {
+        <div class="info-section">
+          <span class="label">Founded On</span>
+          <span class="value">{{ ratingParty.foundedOn }}</span>
+        </div>
+      }
+      @if (ratingParty.selfEconomicAxis != null) {
+        <div class="info-section">
+          <span class="label">Self-Reported Position</span>
+          <span class="value">({{ ratingParty.selfEconomicAxis | number:'1.0-2' }}, {{ ratingParty.selfSocialAxis | number:'1.0-2' }})</span>
+        </div>
+      }
+      @if (ratingError) { <div class="error-msg">{{ ratingError }}</div> }
+      @if (!hasReadParty) {
+        <button class="btn-primary read-btn" (click)="confirmRead()">I have read this party's information</button>
+      } @else {
+        <div class="rating-section">
+          <h4>Rate this party</h4>
+          <app-political-plane [(ngModel)]="ratingPoint" name="rating" mode="interactive" [size]="300" />
+          <div class="modal-actions">
+            <button class="btn-secondary" (click)="closeRate()">Cancel</button>
+            <button class="btn-primary" (click)="saveRating()" [disabled]="saving">{{ saving ? 'Saving...' : 'Save Rating' }}</button>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+}

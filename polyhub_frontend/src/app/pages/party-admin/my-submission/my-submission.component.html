@@ -1,0 +1,64 @@
+<div class="submission">
+  <h2>My Submission</h2>
+
+  @if (error) {
+    <div class="error-msg">{{ error }}</div>
+  }
+
+  @if (party) {
+    <div class="card">
+      <div class="card-header">
+        <span class="status-badge" [class]="party.status.toLowerCase()">
+          {{ party.status }}
+        </span>
+        @if (party.status === 'REJECTED') {
+          <button class="resubmit-btn" (click)="showResubmitModal = true">
+            Resubmit
+          </button>
+        }
+      </div>
+
+      @if (party.rejectionComment) {
+        <div class="rejection-note">
+          <span class="label">Rejection Reason</span>
+          <span>{{ party.rejectionComment }}</span>
+        </div>
+      }
+
+      <div class="field">
+        <span class="label">Party Name</span>
+        <span class="value">{{ party.name }}</span>
+      </div>
+      <div class="field">
+        <span class="label">Description</span>
+        <span class="value">{{ party.description }}</span>
+      </div>
+      @if (party.motto) {
+        <div class="field">
+          <span class="label">Motto</span>
+          <span class="value">{{ party.motto }}</span>
+        </div>
+      }
+      @if (party.logoUrl) {
+        <div class="field">
+          <span class="label">Logo URL</span>
+          <span class="value">{{ party.logoUrl }}</span>
+        </div>
+      }
+      @if (party.foundedOn) {
+        <div class="field">
+          <span class="label">Founded On</span>
+          <span class="value">{{ party.foundedOn }}</span>
+        </div>
+      }
+    </div>
+  }
+</div>
+
+@if (showResubmitModal) {
+  <app-submit-party-modal
+    [prefill]="party"
+    (closed)="onResubmitClosed()"
+    (submitted)="onResubmitted()"
+  />
+}

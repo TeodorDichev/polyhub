@@ -1,0 +1,143 @@
+<section class="elections-hero">
+  <p class="eyebrow">Political elections</p>
+
+  <h1>Elections</h1>
+
+  <p class="hero-text">
+    Browse elections, search by name and open the full public details page.
+  </p>
+</section>
+
+<section class="toolbar">
+  <div class="search-box">
+    <label for="election-search">Search elections</label>
+
+    <input
+      id="election-search"
+      type="text"
+      placeholder="Search by election name..."
+      [formControl]="searchControl">
+  </div>
+
+  <div class="page-size-box">
+    <label for="page-size">Elections per page</label>
+
+    <select
+      id="page-size"
+      [value]="size"
+      (change)="changePageSize($any($event.target).value)">
+      @for (option of pageSizeOptions; track option) {
+        <option [value]="option">
+          {{ option }}
+        </option>
+      }
+    </select>
+  </div>
+</section>
+
+<section class="results-summary">
+  @if (!loading && !error) {
+    <p>
+      Showing {{ elections.length }} of {{ totalElements }} elections
+      @if (searchControl.value) {
+        for “{{ searchControl.value }}”
+      }
+    </p>
+  }
+</section>
+
+@if (loading) {
+  <div class="state-box">
+    <h3>Loading elections...</h3>
+    <p>Please wait while we fetch the elections.</p>
+  </div>
+} @else if (error) {
+  <div class="state-box error">
+    <h3>Could not load elections</h3>
+    <p>{{ error }}</p>
+  </div>
+} @else if (elections.length === 0) {
+  <div class="state-box">
+    <h3>No elections found</h3>
+    <p>No elections match your current search.</p>
+  </div>
+} @else {
+  <section class="election-grid">
+    @for (election of elections; track election.id) {
+      <a
+        class="election-card"
+        [routerLink]="['/elections', election.id]">
+        <div class="card-top">
+          <span
+            class="status-badge"
+            [class.finished]="election.status === 'FINISHED'"
+            [class.running]="election.status === 'RUNNING'"
+            [class.upcoming]="election.status === 'UPCOMING'">
+            {{ getStatusLabel(election.status) }}
+          </span>
+
+          <span class="type-badge">
+            {{ election.type }}
+          </span>
+        </div>
+
+        <h2>{{ election.name }}</h2>
+
+        <p class="date">
+          {{ election.electionDate | date:'dd MMM yyyy' }}
+        </p>
+
+        <p class="description">
+          {{ election.description || 'No description has been added for this election yet.' }}
+        </p>
+
+        @if (election.status === 'FINISHED' && election.winnerPartyName) {
+          <div class="winner-box">
+            <span>Winner</span>
+            <strong>{{ election.winnerPartyName }}</strong>
+
+            @if (election.winnerVotePercentage !== null && election.winnerVotePercentage !== undefined) {
+              <small>{{ election.winnerVotePercentage }}%</small>
+            }
+          </div>
+        } @else {
+          <div class="card-footer">
+            Open election details
+          </div>
+        }
+      </a>
+    }
+  </section>
+
+  @if (totalPages > 1) {
+    <nav class="pagination">
+      <button
+        type="button"
+        class="pagination-button"
+        [disabled]="first"
+        (click)="goToPreviousPage()">
+        Previous
+      </button>
+
+      <div class="page-buttons">
+        @for (pageNumber of pageNumbers; track pageNumber) {
+          <button
+            type="button"
+            class="page-number"
+            [class.active]="pageNumber === page"
+            (click)="goToPage(pageNumber)">
+            {{ pageNumber + 1 }}
+          </button>
+        }
+      </div>
+
+      <button
+        type="button"
+        class="pagination-button"
+        [disabled]="last"
+        (click)="goToNextPage()">
+        Next
+      </button>
+    </nav>
+  }
+}

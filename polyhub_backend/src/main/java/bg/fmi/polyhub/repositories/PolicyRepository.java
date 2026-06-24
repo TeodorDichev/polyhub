@@ -1,0 +1,15 @@
+package bg.fmi.polyhub.repositories;
+
+import bg.fmi.polyhub.entities.Policy;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+
+public interface PolicyRepository extends JpaRepository<Policy, Long> {
+
+    List<Policy> findAllByIdIn(List<Long> ids);
+
+    boolean existsByNameOrSlug(String name, String slug);
+
+    List<Policy> findTop10ByNameContainingIgnoreCaseOrderByNameAsc(String query);
+}

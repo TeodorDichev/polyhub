@@ -1,0 +1,54 @@
+<div class="modal-backdrop">
+  <div class="modal">
+
+    <div class="modal-header">
+      <h2>Submit Party Request</h2>
+      <button class="close-btn" (click)="close()">✕</button>
+    </div>
+
+    @if (success) {
+      <div class="success-msg">
+        Your party request has been submitted! Awaiting approval.
+      </div>
+    } @else {
+      <form (ngSubmit)="onSubmit()">
+        @if (error) {
+          <div class="error-msg">{{ error }}</div>
+        }
+
+        <div class="field">
+          <label>Party Name *</label>
+          <input type="text" [(ngModel)]="name" name="name" required placeholder="e.g. Democratic Alliance" />
+        </div>
+
+        <div class="field">
+          <label>Description *</label>
+          <textarea [(ngModel)]="description" name="description" required rows="3" placeholder="What does your party stand for?"></textarea>
+        </div>
+
+        <div class="field">
+          <label>Motto</label>
+          <input type="text" [(ngModel)]="motto" name="motto" placeholder="Optional" />
+        </div>
+
+        <div class="field">
+          <label>Logo URL</label>
+          <input type="text" [(ngModel)]="logoUrl" name="logoUrl" placeholder="https://..." />
+        </div>
+
+        <div class="field">
+          <label>Founded On</label>
+          <input type="date" [(ngModel)]="foundedOn" name="foundedOn" />
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="cancel-btn" (click)="close()">Cancel</button>
+          <button type="submit" class="submit-btn" [disabled]="loading">
+            {{ loading ? 'Submitting...' : 'Submit Request' }}
+          </button>
+        </div>
+      </form>
+    }
+
+  </div>
+</div>

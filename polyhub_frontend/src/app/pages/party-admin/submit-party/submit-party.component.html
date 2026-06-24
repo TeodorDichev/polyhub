@@ -1,0 +1,6 @@
+@if (showModal) {
+  <app-submit-party-modal
+    (closed)="onModalClosed()"
+    (submitted)="onPartySubmitted()"
+  />
+}

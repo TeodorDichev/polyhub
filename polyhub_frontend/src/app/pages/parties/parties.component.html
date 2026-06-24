@@ -1,0 +1,130 @@
+<section class="parties-hero">
+  <p class="eyebrow">Political parties</p>
+
+  <h1>Parties</h1>
+
+  <p class="hero-text">
+    Browse approved political parties, search by name and open their public details page.
+  </p>
+</section>
+
+<section class="toolbar">
+  <div class="search-box">
+    <label for="party-search">Search parties</label>
+
+    <input
+      id="party-search"
+      type="text"
+      placeholder="Search by party name..."
+      [formControl]="searchControl">
+  </div>
+
+  <div class="page-size-box">
+    <label for="page-size">Parties per page</label>
+
+    <select
+      id="page-size"
+      [value]="size"
+      (change)="changePageSize($any($event.target).value)">
+      @for (option of pageSizeOptions; track option) {
+        <option [value]="option">
+          {{ option }}
+        </option>
+      }
+    </select>
+  </div>
+</section>
+
+<section class="results-summary">
+  @if (!loading && !error) {
+    <p>
+      Showing {{ parties.length }} of {{ totalElements }} parties
+      @if (searchControl.value) {
+        for “{{ searchControl.value }}”
+      }
+    </p>
+  }
+</section>
+
+@if (loading) {
+  <div class="state-box">
+    <h3>Loading parties...</h3>
+    <p>Please wait while we fetch the approved parties.</p>
+  </div>
+} @else if (error) {
+  <div class="state-box error">
+    <h3>Could not load parties</h3>
+    <p>{{ error }}</p>
+  </div>
+} @else if (parties.length === 0) {
+  <div class="state-box">
+    <h3>No parties found</h3>
+    <p>No approved parties match your current search.</p>
+  </div>
+} @else {
+  <section class="party-grid">
+    @for (party of parties; track party.id) {
+      <a
+        class="party-card"
+        [routerLink]="['/parties', party.id]">
+        <div class="card-top">
+          @if (party.politicalLabel) {
+            <span class="position-badge">
+      {{ party.politicalLabel }}
+    </span>
+          }
+        </div>
+
+        <h2>{{ party.name }}</h2>
+
+        @if (party.motto) {
+          <p class="motto">“{{ party.motto }}”</p>
+        }
+
+        <p class="description">
+          {{ party.description || 'No description has been added for this party yet.' }}
+        </p>
+
+        <div class="card-footer">
+          @if (party.foundedOn) {
+            <span>Founded {{ party.foundedOn | date:'dd MMM yyyy' }}</span>
+          } @else {
+            <span>Open details</span>
+          }
+        </div>
+      </a>
+    }
+  </section>
+
+  @if (totalPages > 1) {
+    <nav class="pagination">
+      <button
+        type="button"
+        class="pagination-button"
+        [disabled]="first"
+        (click)="goToPreviousPage()">
+        Previous
+      </button>
+
+      <div class="page-buttons">
+        @for (pageNumber of pageNumbers; track pageNumber) {
+          <button
+            type="button"
+            class="page-number"
+            [class.active]="pageNumber === page"
+            (click)="goToPage(pageNumber)">
+            {{ pageNumber + 1 }}
+          </button>
+        }
+      </div>
+
+      <button
+        type="button"
+        class="pagination-button"
+        [disabled]="last"
+        (click)="goToNextPage()">
+        Next
+      </button>
+    </nav>
+  }
+}

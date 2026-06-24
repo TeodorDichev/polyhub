@@ -1,0 +1,76 @@
+<section class="hero">
+  <p class="eyebrow">Transparent political programs</p>
+
+  <h1>Welcome to <span>PolyHub</span></h1>
+
+  <p class="hero-text">
+    Explore elections, parties and political programs in one neutral place.
+  </p>
+</section>
+
+<section class="elections-section">
+  <div class="section-header">
+    <div>
+      <h2>Latest elections</h2>
+      <p>Follow current, upcoming and past elections.</p>
+    </div>
+  </div>
+
+  @if (loading) {
+    <div class="state-box">
+      Loading elections...
+    </div>
+  } @else if (error) {
+    <div class="state-box error">
+      {{ error }}
+    </div>
+  } @else if (elections.length === 0) {
+    <div class="state-box">
+      No elections have been added yet.
+    </div>
+  } @else {
+    <div class="election-grid">
+      @for (election of elections; track election.id) {
+        <a class="election-card" [routerLink]="['/elections', election.id]">
+          <div class="card-top">
+            <span class="type-badge">
+              {{ getTypeLabel(election.type) }}
+            </span>
+
+            <span class="status-badge" [class]="election.status.toLowerCase()">
+              {{ getStatusLabel(election.status) }}
+            </span>
+          </div>
+
+          <h3>{{ election.name }}</h3>
+
+          <p class="description">
+            {{ election.description || 'No description has been added yet.' }}
+          </p>
+
+          <div class="info-row">
+            <span>Date</span>
+            <strong>{{ election.electionDate | date:'dd MMM yyyy' }}</strong>
+          </div>
+
+          @if (election.status === 'FINISHED') {
+            <div class="info-row winner">
+              <span>Winner</span>
+
+              @if (election.winnerPartyName) {
+                <strong>
+                  {{ election.winnerPartyName }}
+                  @if (election.winnerVotePercentage !== null && election.winnerVotePercentage !== undefined) {
+                    — {{ election.winnerVotePercentage }}%
+                  }
+                </strong>
+              } @else {
+                <strong>Not announced yet</strong>
+              }
+            </div>
+          }
+        </a>
+      }
+    </div>
+  }
+</section>

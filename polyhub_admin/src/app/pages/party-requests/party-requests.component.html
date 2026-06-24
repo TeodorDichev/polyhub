@@ -1,0 +1,124 @@
+<div class="page-header">
+  <h2>Party Requests</h2>
+</div>
+
+@if (error) {
+  <div class="error-msg">{{ error }}</div>
+}
+
+<div class="table-controls">
+  <input class="search-input" type="text" [(ngModel)]="search" (ngModelChange)="applyFilters()" placeholder="Search by name or email..." />
+  <select [(ngModel)]="filterStatus" (ngModelChange)="applyFilters()">
+    <option value="">All statuses</option>
+    @for (s of statuses; track s) { <option [value]="s">{{ s }}</option> }
+  </select>
+</div>
+
+@if (rejectingId !== null) {
+  <div class="modal-backdrop">
+    <div class="modal">
+      <h3>Reject Party</h3>
+      <p>Optionally provide a reason:</p>
+      <textarea [(ngModel)]="rejectComment" rows="3" placeholder="Rejection reason (optional)"></textarea>
+      <div class="modal-actions">
+        <button class="btn-secondary" (click)="cancelReject()">Cancel</button>
+        <button class="btn-danger" (click)="confirmReject()">Confirm Reject</button>
+      </div>
+    </div>
+  </div>
+}
+
+<div class="table-wrapper">
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Submitted By</th>
+        <th>Status</th>
+        <th>Description</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (party of pagedParties; track party.id) {
+        <tr>
+          <td>{{ party.name }}</td>
+          <td>{{ party.createdByEmail }}</td>
+          <td>
+            <span class="badge" [class]="party.status.toLowerCase()">{{ party.status }}</span>
+          </td>
+          <td class="description">{{ party.description }}</td>
+          <td class="actions">
+            @if (party.status === 'PENDING') {
+              <button class="btn-success" (click)="approve(party.id)">Approve</button>
+              <button class="btn-danger" (click)="startReject(party.id)">Reject</button>
+            }
+            <button class="btn-info" (click)="openInfo(party)">Info</button>
+            <button class="btn-secondary" (click)="delete(party.id)">Delete</button>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
+
+@if (totalPages > 1) {
+  <div class="pagination">
+    <button (click)="prevPage()" [disabled]="page === 0">← Prev</button>
+    <span>{{ page + 1 }} / {{ totalPages }}</span>
+    <button (click)="nextPage()" [disabled]="page >= totalPages - 1">Next →</button>
+  </div>
+}
+
+@if (selectedParty) {
+  <div class="modal-backdrop" (click)="closeInfo()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>{{ selectedParty.name }}</h3>
+        <button class="close-btn" (click)="closeInfo()">✕</button>
+      </div>
+      <div class="info-grid">
+        <div class="info-field">
+          <span class="label">Status</span>
+          <span class="badge" [class]="selectedParty.status.toLowerCase()">{{ selectedParty.status }}</span>
+        </div>
+        <div class="info-field">
+          <span class="label">Submitted By</span>
+          <span>{{ selectedParty.createdByEmail }}</span>
+        </div>
+        <div class="info-field">
+          <span class="label">Created At</span>
+          <span>{{ selectedParty.createdAt }}</span>
+        </div>
+        <div class="info-field">
+          <span class="label">Description</span>
+          <span>{{ selectedParty.description }}</span>
+        </div>
+        @if (selectedParty.motto) {
+          <div class="info-field">
+            <span class="label">Motto</span>
+            <span>{{ selectedParty.motto }}</span>
+          </div>
+        }
+        @if (selectedParty.logoUrl) {
+          <div class="info-field">
+            <span class="label">Logo URL</span>
+            <span>{{ selectedParty.logoUrl }}</span>
+          </div>
+        }
+        @if (selectedParty.foundedOn) {
+          <div class="info-field">
+            <span class="label">Founded On</span>
+            <span>{{ selectedParty.foundedOn }}</span>
+          </div>
+        }
+        @if (selectedParty.rejectionComment) {
+          <div class="info-field">
+            <span class="label">Rejection Reason</span>
+            <span class="rejection">{{ selectedParty.rejectionComment }}</span>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+}

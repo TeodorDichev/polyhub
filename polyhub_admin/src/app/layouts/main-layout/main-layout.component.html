@@ -1,0 +1,41 @@
+<div class="layout">
+  @if (sidebarOpen) {
+    <div class="overlay" (click)="closeSidebar()"></div>
+  }
+
+  <aside class="sidebar" [class.open]="sidebarOpen">
+    <div class="sidebar-header">
+      <span class="logo">PolyHub Admin</span>
+      <button class="close-btn" (click)="closeSidebar()">✕</button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a routerLink="/party-requests" routerLinkActive="active" (click)="closeSidebar()">
+        Party Requests
+      </a>
+      <a routerLink="/party-admins" routerLinkActive="active" (click)="closeSidebar()">
+        Party Admins
+      </a>
+      <a routerLink="/specialists" routerLinkActive="active" (click)="closeSidebar()">
+        Specialists
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="logout-btn" (click)="logout()">Logout</button>
+    </div>
+  </aside>
+
+  <div class="content">
+    <header class="topbar">
+      <button class="menu-btn" (click)="toggleSidebar()">☰</button>
+      <span class="topbar-title">PolyHub Admin</span>
+      <span class="topbar-user">
+        {{ authService.currentUser()?.firstname }} {{ authService.currentUser()?.lastname }}
+      </span>
+    </header>
+    <main class="page">
+      <router-outlet />
+    </main>
+  </div>
+</div>

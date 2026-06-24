@@ -1,0 +1,90 @@
+<div class="page-header">
+  <h2>Specialists</h2>
+  <button class="btn-primary" (click)="openCreate()">+ New Specialist</button>
+</div>
+
+@if (error) {
+  <div class="error-msg">{{ error }}</div>
+}
+
+<div class="table-controls">
+  <input class="search-input" type="text" [(ngModel)]="search" (ngModelChange)="applyFilters()" placeholder="Search by name or email..." />
+</div>
+
+@if (showCreateModal) {
+  <div class="modal-backdrop">
+    <div class="modal">
+      <h3>Create Specialist</h3>
+      @if (createError) { <div class="error-msg">{{ createError }}</div> }
+      <div class="field">
+        <label>First Name</label>
+        <input type="text" [(ngModel)]="firstname" placeholder="John" />
+      </div>
+      <div class="field">
+        <label>Last Name</label>
+        <input type="text" [(ngModel)]="lastname" placeholder="Doe" />
+      </div>
+      <div class="field">
+        <label>Email</label>
+        <input type="email" [(ngModel)]="email" placeholder="specialist@polyhub.com" />
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" [(ngModel)]="password" placeholder="••••••••" />
+      </div>
+      <div class="modal-actions">
+        <button class="btn-secondary" (click)="showCreateModal = false">Cancel</button>
+        <button class="btn-primary" (click)="confirmCreate()" [disabled]="creating">{{ creating ? 'Creating...' : 'Create' }}</button>
+      </div>
+    </div>
+  </div>
+}
+
+<div class="table-wrapper">
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (s of pagedSpecialists; track s.id) {
+        <tr>
+          <td>{{ s.firstname }} {{ s.lastname }}</td>
+          <td>{{ s.email }}</td>
+          <td class="actions">
+            <button class="btn-info" (click)="openInfo(s)">Info</button>
+            <button class="btn-danger" (click)="delete(s.id)">Delete</button>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
+
+@if (totalPages > 1) {
+  <div class="pagination">
+    <button (click)="prevPage()" [disabled]="page === 0">← Prev</button>
+    <span>{{ page + 1 }} / {{ totalPages }}</span>
+    <button (click)="nextPage()" [disabled]="page >= totalPages - 1">Next →</button>
+  </div>
+}
+
+@if (selectedSpecialist) {
+  <div class="modal-backdrop" (click)="closeInfo()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>{{ selectedSpecialist.firstname }} {{ selectedSpecialist.lastname }}</h3>
+        <button class="close-btn" (click)="closeInfo()">✕</button>
+      </div>
+      <div class="info-grid">
+        <div class="info-field">
+          <span class="label">Email</span>
+          <span>{{ selectedSpecialist.email }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+}

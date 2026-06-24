@@ -1,0 +1,105 @@
+<div class="layout">
+
+  @if (sidebarOpen) {
+    <div class="overlay" (click)="closeSidebar()"></div>
+  }
+
+  <aside class="sidebar" [class.open]="sidebarOpen">
+    <div class="sidebar-header">
+      <a
+        class="logo"
+        routerLink="/"
+        (click)="closeSidebar()">
+        ⚖ PolyHub
+      </a>
+
+      <button class="close-btn" (click)="closeSidebar()">✕</button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a
+        routerLink="/"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{exact: true}"
+        (click)="closeSidebar()">
+        Home
+      </a>
+
+      <a
+        routerLink="/elections"
+        routerLinkActive="active"
+        (click)="closeSidebar()">
+        Elections
+      </a>
+
+      <a
+        routerLink="/parties"
+        routerLinkActive="active"
+        (click)="closeSidebar()">
+        Parties
+      </a>
+
+      @if (authService.isLoggedIn()) {
+        <a routerLink="/dashboard/my-party" routerLinkActive="active" (click)="closeSidebar()">
+          My Party
+        </a>
+
+        @if (authService.hasApprovedParty()) {
+          <a routerLink="/dashboard/elections" routerLinkActive="active" (click)="closeSidebar()">
+            Manage Elections
+          </a>
+
+          <a routerLink="/dashboard/programs" routerLinkActive="active" (click)="closeSidebar()">
+            Programs
+          </a>
+        } @else {
+          <span class="nav-item locked" title="Available after your party is approved">Manage Elections</span>
+          <span class="nav-item locked" title="Available after your party is approved">Programs</span>
+        }
+
+        <a routerLink="/dashboard/personal-details" routerLinkActive="active" (click)="closeSidebar()">
+          Personal Details
+        </a>
+      }
+    </nav>
+
+    <div class="sidebar-footer">
+      @if (authService.isLoggedIn()) {
+        <button class="footer-btn logout-btn" (click)="logout()">
+          Logout
+        </button>
+      } @else {
+        <a routerLink="/auth/login" class="footer-btn" (click)="closeSidebar()">
+          Login
+        </a>
+
+        <a routerLink="/auth/register" class="footer-btn register-btn" (click)="closeSidebar()">
+          Register
+        </a>
+      }
+    </div>
+  </aside>
+
+  <div class="content">
+    <header class="topbar">
+      <button class="menu-btn" (click)="toggleSidebar()">☰</button>
+
+      <a
+        class="topbar-title"
+        routerLink="/">
+        PolyHub
+      </a>
+
+      @if (authService.isLoggedIn()) {
+        <span class="topbar-user">
+          {{ authService.currentUser()?.firstname }} {{ authService.currentUser()?.lastname }}
+        </span>
+      }
+    </header>
+
+    <main class="page">
+      <router-outlet />
+    </main>
+  </div>
+
+</div>

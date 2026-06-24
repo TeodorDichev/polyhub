@@ -1,0 +1,108 @@
+<div class="page-header">
+  <h2>Elections</h2>
+  <button class="btn-primary" (click)="openCreate()">+ New Election</button>
+</div>
+
+@if (error) {
+  <div class="error-msg">{{ error }}</div>
+}
+
+<div class="table-controls">
+  <input class="search-input" type="text" [(ngModel)]="search" (ngModelChange)="applyFilters()" placeholder="Search by name..." />
+  <select [(ngModel)]="filterType" (ngModelChange)="applyFilters()">
+    <option value="">All types</option>
+    @for (t of types; track t) { <option [value]="t">{{ t }}</option> }
+  </select>
+  <select [(ngModel)]="filterStatus" (ngModelChange)="applyFilters()">
+    <option value="">All statuses</option>
+    @for (s of statuses; track s) { <option [value]="s">{{ s }}</option> }
+  </select>
+</div>
+
+@if (showModal) {
+  <div class="modal-backdrop" (click)="closeModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>{{ editing ? 'Edit Election' : 'New Election' }}</h3>
+        <button class="close-btn" (click)="closeModal()">✕</button>
+      </div>
+      @if (modalError) { <div class="error-msg">{{ modalError }}</div> }
+      <div class="field">
+        <label>Name</label>
+        <input type="text" [(ngModel)]="name" placeholder="Election name" />
+      </div>
+      <div class="field">
+        <label>Date</label>
+        <input type="date" [(ngModel)]="electionDate" />
+      </div>
+      <div class="field">
+        <label>Type</label>
+        <select [(ngModel)]="type">
+          <option value="">Select type</option>
+          @for (t of types; track t) { <option [value]="t">{{ t }}</option> }
+        </select>
+      </div>
+      <div class="field">
+        <label>Description</label>
+        <textarea [(ngModel)]="description" rows="3" placeholder="Optional"></textarea>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-secondary" (click)="closeModal()">Cancel</button>
+        <button class="btn-primary" (click)="save()" [disabled]="saving">{{ saving ? 'Saving...' : 'Save' }}</button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (confirmDeleteId !== null) {
+  <div class="modal-backdrop" (click)="cancelDelete()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Delete Election</h3>
+        <button class="close-btn" (click)="cancelDelete()">✕</button>
+      </div>
+      <p>Are you sure you want to delete this election?</p>
+      <div class="modal-actions">
+        <button class="btn-secondary" (click)="cancelDelete()">Cancel</button>
+        <button class="btn-danger" (click)="confirmDelete()">Delete</button>
+      </div>
+    </div>
+  </div>
+}
+
+<div class="table-wrapper">
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Date</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (election of pagedElections; track election.id) {
+        <tr>
+          <td>{{ election.name }}</td>
+          <td><span class="badge">{{ election.type }}</span></td>
+          <td>{{ election.electionDate }}</td>
+          <td><span class="badge" [class]="election.status?.toLowerCase()">{{ election.status }}</span></td>
+          <td class="actions">
+            <button class="btn-info" (click)="viewDetails(election.id)">View</button>
+            <button class="btn-secondary" (click)="openEdit(election)" [disabled]="isPast(election)" [title]="isPast(election) ? 'Cannot edit past elections' : ''">Edit</button>
+            <button class="btn-danger" (click)="startDelete(election.id)">Delete</button>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
+
+@if (totalPages > 1) {
+  <div class="pagination">
+    <button (click)="prevPage()" [disabled]="page === 0">← Prev</button>
+    <span>{{ page + 1 }} / {{ totalPages }}</span>
+    <button (click)="nextPage()" [disabled]="page >= totalPages - 1">Next →</button>
+  </div>
+}

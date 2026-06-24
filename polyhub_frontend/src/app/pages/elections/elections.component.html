@@ -1,0 +1,76 @@
+<div class="page-header">
+  <h2>Elections</h2>
+</div>
+
+@if (error) {
+  <div class="error-msg">{{ error }}</div>
+}
+
+<div class="table-controls">
+  <input class="search-input" type="text" [(ngModel)]="search" (ngModelChange)="applyFilters()" placeholder="Search by election name..." />
+  <select [(ngModel)]="filterStatus" (ngModelChange)="applyFilters()">
+    <option value="">All statuses</option>
+    <option value="UPCOMING">Upcoming</option>
+    <option value="RUNNING">Running</option>
+    <option value="FINISHED">Finished</option>
+  </select>
+</div>
+
+<div class="table-wrapper">
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Date</th>
+        <th>Status</th>
+        <th>Winner</th>
+        <th>My Program</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (election of pagedElections; track election.id) {
+        <tr>
+          <td>{{ election.name }}</td>
+          <td>{{ election.type }}</td>
+          <td>{{ election.electionDate | date:'dd MMM yyyy' }}</td>
+          <td>
+            <span class="badge" [class]="election.status.toLowerCase()">{{ election.status }}</span>
+          </td>
+          <td>{{ election.winnerPartyName ?? '—' }}</td>
+          <td>
+            @if (election.hasProgram) {
+              <span class="badge submitted">Submitted</span>
+            } @else if (election.editable) {
+              <span class="badge missing">Not submitted</span>
+            } @else {
+              <span class="badge muted">None</span>
+            }
+          </td>
+          <td class="actions">
+            <button class="btn-info" (click)="goToInfo(election)">Info</button>
+
+            @if (election.hasProgram) {
+              <button class="btn-secondary" (click)="goToProgram(election)">View Program</button>
+            }
+
+            @if (election.editable) {
+              <button class="btn-primary" (click)="goToEdit(election)">
+                {{ election.hasProgram ? 'Edit Program' : 'Add Program' }}
+              </button>
+            }
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
+
+@if (totalPages > 1) {
+  <div class="pagination">
+    <button (click)="prevPage()" [disabled]="page === 0">← Prev</button>
+    <span>{{ page + 1 }} / {{ totalPages }}</span>
+    <button (click)="nextPage()" [disabled]="page >= totalPages - 1">Next →</button>
+  </div>
+}

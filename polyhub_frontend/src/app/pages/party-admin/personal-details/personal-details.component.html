@@ -1,0 +1,24 @@
+<div class="page-header">
+  <h2>Personal Details</h2>
+</div>
+
+@if (authService.currentUser()) {
+  <div class="profile-card">
+    <div class="profile-field">
+      <span class="field-label">First Name</span>
+      <span class="field-value">{{ authService.currentUser()?.firstname }}</span>
+    </div>
+    <div class="profile-field">
+      <span class="field-label">Last Name</span>
+      <span class="field-value">{{ authService.currentUser()?.lastname }}</span>
+    </div>
+    <div class="profile-field">
+      <span class="field-label">Email</span>
+      <span class="field-value">{{ authService.currentUser()?.email }}</span>
+    </div>
+    <div class="profile-field">
+      <span class="field-label">Role</span>
+      <span class="field-value role-value">{{ authService.currentUser()?.role }}</span>
+    </div>
+  </div>
+}
