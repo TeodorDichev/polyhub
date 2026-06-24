@@ -15,6 +15,8 @@ public interface PolicyMapper {
     @Mapping(target = "name", source = "name")
     @Mapping(target = "slug", source = "slug")
     @Mapping(target = "politicalPosition", source = ".", qualifiedByName = "politicalPosition")
+    @Mapping(target = "specEconomicAxis", source = "specEconomicAxis")
+    @Mapping(target = "specSocialAxis", source = "specSocialAxis")
     PolicySummary toPolicySummary(Policy policy);
 
     @Mapping(target = "name", source = "name")

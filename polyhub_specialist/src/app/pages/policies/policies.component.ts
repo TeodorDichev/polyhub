@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormControl, FormGroup } from '@angular/forms';
 
-import { ApiService, PolicySummary, CreatePolicyRequest } from '../../core/services/api.service';
+import { ApiService } from '../../core/services/api.service';
+import { PolicySummary, CreatePolicyRequest } from '../../core/models';
 import { PoliticalPlaneComponent } from '../../shared/political-plane/political-plane.component';
 
 @Component({
@@ -87,7 +88,7 @@ export class PoliciesComponent implements OnInit {
     this.editing = policy;
     this.name = policy.name;
     this.slug = policy.slug;
-    this.form.setValue({ policyPosition: { x: 0, y: 0 } });
+    this.form.setValue({ policyPosition: { x: policy.specEconomicAxis ?? 0, y: policy.specSocialAxis ?? 0 } });
     this.modalError = '';
     this.showModal = true;
   }

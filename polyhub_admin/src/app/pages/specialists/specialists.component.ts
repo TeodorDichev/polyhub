@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ApiService, AdminUserResponse } from '../../core/services/api.service';
+import { ApiService } from '../../core/services/api.service';
+import { AdminUserResponse } from '../../core/models';
 
 @Component({
   selector: 'app-specialists',

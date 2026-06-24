@@ -3,6 +3,8 @@ export interface PolicySummary {
   name: string;
   slug: string;
   politicalPosition: string;
+  specEconomicAxis?: number;
+  specSocialAxis?: number;
 }
 
 export interface CreatePolicyRequest {
