@@ -2,58 +2,75 @@
 
 _Developed by: Teodor Dichev 7MI0600424, Georgi Stoyanov 6MI0600497_
 
-PolyHub is web application inspired by the need of a common place in the internet for neutral political assesment and where all parties in Bulgaria will share their plans and programs. With the new upcoming elections and rising interest in the youth such software is becoming more and more needed. For instance, take a look at this tool which gained massive popularity: [stazha](https://poltest.strazha.bg/).
+PolyHub is a web application inspired by the need for a common place on the internet for neutral political assessment, where all parties in Bulgaria can share their plans and programs. With upcoming elections and rising interest among youth, such software is becoming increasingly relevant. For reference, take a look at a similar tool that gained massive popularity: [stazha](https://poltest.strazha.bg/).
 
-The application will be developed using maven as a build tool and these techonologies:
+The application is built using Maven as a build tool and the following technologies:
 
-*   Java (Spring boot)
-    
+*   Java (Spring Boot)
 *   PostgreSQL
-    
-*   Angular and Bootstrap.
-    
+*   Angular
 
-We aim to create a RESTfull service with layerd architecture as a MVP and maybe move to SOA in the future. If there is enough time we will add:
+It follows a RESTful, layered architecture. Spring Boot Security is implemented using JWT authentication with HttpOnly cookies and role-based access control.
 
-*   Unit tests with Junit and Mockito
-    
-*   CI/CD pipelines like running tests after each commit
-    
-*   Spring Boot security
-    
-*   Containers and deploying the application using AWS services
-    
+## Roles and Entities
 
-Lets take a deeper look into the structure of the application.
+### Users
 
-## Roles and entities
+There are three types of users:
 
-Before taking a look at the database let’s discuss what roles and entities we will have.
+1.  **PartyAdmin** — can register, log in/out, submit a party for approval, manage the party's program and self-assessment on the political compass. Party members (names, roles, bios) can be added by the party admin but are not system users themselves.
 
-*   Users: We have three types of users:
-    
-    1.  PartyAdmin: they can login/logout/register, they are responsible for creating a party, adding the party members (party members are not users), managing the program. Everyone can create a profile, however to create a party you need approval. The best option will be to integrate the needed info for approval into a form which can be filled and send to our admins, however due to time limitations and that there are not really a lot of parties the needed info should be sent via email which we will provide.
-        
-    2.  PolyHubAdmin: they are seeded into the database and can add other admins and poly-specialists. They can approve or reject creating a party. They operate through a special dashboard.
-        
-    3.  PolyHubSpecialist: they add new election. They are politologists and experts and they job is to grade each political party, its policies and its program on the political compas.
-        
-*   Parties: they have members which can be added by party admins. For each election parties can have a different program with different policies. We think to integrate a simple text editor into the application and an option to use the last program for this election. Parties can self determine where they stand on the political compas but our PolyHub experts will also asses them.
-    
-*   Programs: they have policies (like tags) and a lot of text. As we said programs can be different for each election and have different priorities and politics. The party admin can create them.
-    
-*   Elections: added by our experts whenever their is a new election. Visualized with a new section and parties can add their programs for it. Can have policies and also should be placed on our political compas.
+2.  **PolyHubAdmin** — seeded into the database. Can approve or reject party registration requests, manage party admin accounts, and create new PolyHub Specialists. Operates through a dedicated admin dashboard.
 
-*   Policies: simple tags related to each programs. Their idea is to visualize the main goals of a program/party.
-    
-_Note that everyone can visit the page and take a look at the parties, their members and their programs for this or for any previous election. This is the main goal of our product to provide bulgarians with easy access to all political parties, their programs and their goals. Of course they cannot edit anything, neither leave comments or likes. Therefore for them our web application will be more like a blog or a news article._
+3.  **PolyHubSpecialist** — political scientists and domain experts. They create elections, manage policies, and assess each party and its programs on the political compass.
+
+### Parties
+
+Parties are submitted by PartyAdmins and require admin approval before they become visible. Once approved, parties can self-assess their political position and submit election programs. PolyHub Specialists independently assess each party's position on the compass. Both assessments are displayed side by side.
+
+### Programs
+
+Each party can submit one program per election. Programs contain rich text content and are tagged with policies. Party admins can reuse a previous program as a starting point. Both self-assessed and specialist-assessed compass positions are tracked per program.
+
+### Elections
+
+Created by PolyHub Specialists. Each election has a type (Parliamentary, Presidential, Mayoral, Municipal Council), a date, and an optional description. Parties can submit programs for each election they participate in, and vote results can be recorded after the election concludes.
+
+### Policies
+
+Policies are tags created and assessed by PolyHub Specialists. They are attached to programs to indicate the main political priorities of that program. Each policy has a specialist-assessed position on the political compass.
+
+_Note: the application is publicly readable — anyone can browse parties, their programs, and election results without logging in. The goal is to give Bulgarian citizens easy, neutral access to political information. Visitors cannot edit, comment, or rate anything._
 
 ## Database
 
-For our datastore we have chosen traditional relational database.
+The application uses a PostgreSQL relational database.
 
 ![](./media/polyhub_erd.png)
 
+The schema includes: `users`, `user_roles`, `parties`, `party_statuses`, `party_members`, `party_member_roles`, `elections`, `election_types`, `party_participations`, `programs`, `policies`, and `program_policies`.
+
 ## Endpoints
 
-We will provide our endpoints on a github-page. If you have postman try checking them out by opening this link with the application: [endpoints](https://teo-424459.postman.co/workspace/Teo's-Workspace~9ea87044-5372-4b12-8e57-888d2bb6697c/collection/45317997-123122e5-2fe3-42fd-84a0-59f7c58400d8?action=share&source=copy-link&creator=45317997)
+API documentation is served live via **Swagger UI** at:
+
+```
+http://localhost:8080/swagger-ui/index.html
+```
+
+The OpenAPI spec (importable into Postman or Insomnia) is available at:
+
+```
+http://localhost:8080/v3/api-docs
+```
+
+To import into Postman: _Import → Link → paste the api-docs URL_.
+
+## Version 2 Goals
+
+The following features are planned for the next version:
+
+*   **Unit tests** — JUnit and Mockito test coverage for service and repository layers, with CI running tests on each commit
+*   **Party members** — full CRUD for party member management (name, role, bio) via the party admin dashboard, visible publicly on the party detail page
+*   **Party and member images** — image upload support for party logos and member photos, stored via an object storage solution (e.g. AWS S3 or a local file server)
+*   **Containers and deployment** — Dockerize all services and deploy using AWS (ECS/RDS or similar)
