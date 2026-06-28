@@ -241,7 +241,9 @@ public class ProgramService {
                             policy.getId(),
                             policy.getName(),
                             policy.getSlug(),
-                            position != null ? position.name() : null
+                            position != null ? position.name() : null,
+                            policy.getSpecEconomicAxis(),
+                            policy.getSpecSocialAxis()
                     );
                 })
                 .toList();
@@ -279,7 +281,9 @@ public class ProgramService {
                 policy.getId(),
                 policy.getName(),
                 policy.getSlug(),
-                position != null ? position.name() : null
+                position != null ? position.name() : null,
+                policy.getSpecEconomicAxis(),
+                policy.getSpecSocialAxis()
         );
     }
 }

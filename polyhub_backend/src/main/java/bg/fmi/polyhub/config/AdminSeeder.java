@@ -36,7 +36,7 @@ public class AdminSeeder implements CommandLineRunner {
     @Override
     public void run(String... args) {
 
-        if (userRepository.existsByEmail(adminEmail)) {
+        if (userRepository.existsByEmailAndDeletedAtIsNull(adminEmail)) {
             return;
         }
 

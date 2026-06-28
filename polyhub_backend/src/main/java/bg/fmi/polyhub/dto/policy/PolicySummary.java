@@ -4,5 +4,7 @@ public record PolicySummary(
         Long id,
         String name,
         String slug,
-        String politicalPosition
+        String politicalPosition,
+        Double specEconomicAxis,
+        Double specSocialAxis
 ) {}

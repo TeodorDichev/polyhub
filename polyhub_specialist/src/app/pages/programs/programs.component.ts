@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ApiService, ProgramForRatingResponse } from '../../core/services/api.service';
+import { ApiService } from '../../core/services/api.service';
+import { ProgramForRatingResponse } from '../../core/models';
 import { PoliticalPlaneComponent, PoliticalPoint } from '../../shared/political-plane/political-plane.component';
 
 @Component({

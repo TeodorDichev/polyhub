@@ -100,7 +100,9 @@ public class PolicyService {
                 policy.getId(),
                 policy.getName(),
                 policy.getSlug(),
-                position != null ? position.name() : null
+                position != null ? position.name() : null,
+                policy.getSpecEconomicAxis(),
+                policy.getSpecSocialAxis()
         );
     }
 }

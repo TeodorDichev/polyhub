@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ApiService, ElectionResponse, CreateElectionRequest } from '../../core/services/api.service';
+import { ApiService } from '../../core/services/api.service';
+import { ElectionResponse, CreateElectionRequest } from '../../core/models';
 
 @Component({
   selector: 'app-elections',

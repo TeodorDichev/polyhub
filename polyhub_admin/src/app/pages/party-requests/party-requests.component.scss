@@ -69,6 +69,57 @@ table {
 .btn-danger { background: var(--danger-light); color: var(--danger); }
 .btn-secondary { background: var(--bg); border: 1px solid var(--border); color: var(--text-muted); }
 
+.table-controls {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+
+  .search-input {
+    flex: 1;
+    min-width: 180px;
+    padding: 0.55rem 0.9rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 0.9rem;
+    color: var(--text);
+    background: var(--surface);
+    &:focus { outline: none; border-color: var(--accent); }
+  }
+
+  select {
+    padding: 0.55rem 0.9rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 0.9rem;
+    color: var(--text);
+    background: var(--surface);
+    &:focus { outline: none; border-color: var(--accent); }
+  }
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+
+  button {
+    padding: 0.4rem 0.9rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--surface);
+    color: var(--text);
+    font-size: 0.85rem;
+    cursor: pointer;
+    &:hover:not(:disabled) { background: var(--bg); }
+    &:disabled { opacity: 0.4; cursor: not-allowed; }
+  }
+
+  span { font-size: 0.85rem; color: var(--text-muted); }
+}
+
 .error-msg {
   color: var(--danger);
   margin-bottom: 1rem;
