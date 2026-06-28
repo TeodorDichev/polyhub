@@ -1,6 +1,3 @@
-// Unified political-plane component — supports both 'display' (multi-marker read-only)
-// and 'interactive' (ControlValueAccessor single-point input) modes.
-// This file is duplicated in polyhub_specialist. Keep both in sync.
 import {
   AfterViewInit,
   Component,

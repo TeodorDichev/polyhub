@@ -6,9 +6,6 @@ import java.time.LocalDate;
 
 public final class ElectionStatusUtils {
 
-    private ElectionStatusUtils() {
-    }
-
     public static String getStatus(Election election) {
         LocalDate today = LocalDate.now();
 
