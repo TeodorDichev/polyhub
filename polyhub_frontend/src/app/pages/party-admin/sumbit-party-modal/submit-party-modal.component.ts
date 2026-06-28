@@ -16,22 +16,22 @@ import { AuthService } from '../../../core/services/auth.service';
   styleUrl: './submit-party-modal.component.scss'
 })
 export class SubmitPartyModalComponent implements OnInit {
-  @Input() prefill: PartyResponse | null = null;
-  @Output() closed = new EventEmitter<void>();
-  @Output() submitted = new EventEmitter<void>();
+  @Input() public prefill: PartyResponse | null = null;
+  @Output() public closed = new EventEmitter<void>();
+  @Output() public submitted = new EventEmitter<void>();
 
-  name = '';
-  description = '';
-  motto = '';
-  logoUrl = '';
-  foundedOn = '';
-  error = '';
-  loading = false;
-  success = false;
+  public name: string = '';
+  public description: string = '';
+  public motto: string = '';
+  public logoUrl: string = '';
+  public foundedOn: string = '';
+  public error: string = '';
+  public loading: boolean = false;
+  public success: boolean = false;
 
   constructor(private api: ApiService, private authService: AuthService) {}
 
-  ngOnInit() {
+  public ngOnInit(): void {
     if (this.prefill) {
       this.name = this.prefill.name;
       this.description = this.prefill.description;
@@ -41,11 +41,11 @@ export class SubmitPartyModalComponent implements OnInit {
     }
   }
 
-  isResubmit() {
+  public isResubmit(): boolean {
     return this.prefill !== null;
   }
 
-  onSubmit() {
+  public onSubmit(): void {
     this.error = '';
     this.loading = true;
 
@@ -75,7 +75,7 @@ export class SubmitPartyModalComponent implements OnInit {
     });
   }
 
-  close() {
+  public close(): void {
     this.closed.emit();
   }
 }

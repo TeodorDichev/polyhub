@@ -21,26 +21,26 @@ import {
   styleUrl: './party-details.component.scss'
 })
 export class PartyDetailsComponent implements OnInit {
-  party?: PartyDetailsResponse;
+  public party?: PartyDetailsResponse;
 
-  partyMarkers: PoliticalMarker[] = [];
-  programMarkers: PoliticalMarker[] = [];
+  public partyMarkers: PoliticalMarker[] = [];
+  public programMarkers: PoliticalMarker[] = [];
 
-  loading = false;
-  error = '';
-  readonly getStatusLabel = getElectionStatusLabel;
-  readonly getTypeLabel = getElectionTypeLabel;
+  public loading: boolean = false;
+  public error: string = '';
+  public readonly getStatusLabel = getElectionStatusLabel;
+  public readonly getTypeLabel = getElectionTypeLabel;
 
   constructor(
     private route: ActivatedRoute,
     private api: ApiService
   ) {}
 
-  ngOnInit() {
+  public ngOnInit(): void {
     this.loadParty();
   }
 
-  loadParty() {
+  public loadParty(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
 
     if (!id) {

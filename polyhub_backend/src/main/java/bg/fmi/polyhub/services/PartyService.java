@@ -1,7 +1,9 @@
 package bg.fmi.polyhub.services;
 
+import bg.fmi.polyhub.dto.admin.AdminPartyPageResponse;
 import bg.fmi.polyhub.dto.admin.PartyAdminResponse;
 import bg.fmi.polyhub.dto.admin.RejectPartyRequest;
+import bg.fmi.polyhub.dto.specialist.PartyForRatingPageResponse;
 import bg.fmi.polyhub.dto.party.PartyDetailsResponse;
 import bg.fmi.polyhub.dto.party.PartyElectionParticipationResponse;
 import bg.fmi.polyhub.dto.party.PartyProgramSummaryResponse;
@@ -211,11 +213,19 @@ public class PartyService {
                 .build();
     }
 
-    public List<PartyAdminResponse> getAllParties() {
-        return partyRepository.findAllByDeletedAtIsNull()
-                .stream()
-                .map(partyMapper::toAdminPartyResponse)
-                .toList();
+    public AdminPartyPageResponse getAllPartiesPaged(int page, int size) {
+        Page<Party> partiesPage = partyRepository.findAllByDeletedAtIsNull(
+                PageRequest.of(Math.max(page, 0), normalizePageSize(size), Sort.by("name").ascending())
+        );
+        return new AdminPartyPageResponse(
+                partiesPage.getContent().stream().map(partyMapper::toAdminPartyResponse).toList(),
+                partiesPage.getNumber(),
+                partiesPage.getSize(),
+                partiesPage.getTotalElements(),
+                partiesPage.getTotalPages(),
+                partiesPage.isFirst(),
+                partiesPage.isLast()
+        );
     }
 
     public PartyAdminResponse getParty(Long id) {
@@ -252,16 +262,32 @@ public class PartyService {
         partyRepository.save(party);
     }
 
-    public List<PartyForRatingResponse> getAllApprovedParties() {
-        return partyRepository.findAllByDeletedAtIsNull()
-                .stream()
-                .filter(p -> p.getStatus().getName() == PartyStatusType.APPROVED)
+    public PartyForRatingPageResponse getAllApprovedPartiesPaged(int page, int size) {
+        int safePage = Math.max(page, 0);
+        int safeSize = normalizePageSize(size);
+
+        Page<Party> partiesPage = partyRepository.findAllByDeletedAtIsNullAndStatus_Name(
+                PartyStatusType.APPROVED,
+                PageRequest.of(safePage, safeSize, Sort.by("name").ascending())
+        );
+
+        List<PartyForRatingResponse> items = partiesPage.getContent().stream()
                 .filter(p -> {
                     User owner = p.getCreatedBy();
                     return owner.getDeletedAt() == null && owner.getSuspendedOn() == null;
                 })
                 .map(this::toRatingResponse)
                 .toList();
+
+        return new PartyForRatingPageResponse(
+                items,
+                partiesPage.getNumber(),
+                partiesPage.getSize(),
+                partiesPage.getTotalElements(),
+                partiesPage.getTotalPages(),
+                partiesPage.isFirst(),
+                partiesPage.isLast()
+        );
     }
 
     public PartyForRatingResponse rateParty(Long id, PartyRatingRequest request) {

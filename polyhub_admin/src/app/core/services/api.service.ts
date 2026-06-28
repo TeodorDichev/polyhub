@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import {
   LoginRequest,
@@ -7,11 +7,13 @@ import {
   AdminPartyResponse,
   AdminUserResponse,
   CreateSpecialistRequest,
+  AdminUserPageResponse,
+  AdminPartyPageResponse,
 } from '../models';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
-  private base = 'http://localhost:8080';
+  private readonly base = 'http://localhost:8080';
 
   constructor(private http: HttpClient) {}
 
@@ -28,8 +30,9 @@ export class ApiService {
   }
 
   // Party Requests
-  getAllParties(): Observable<AdminPartyResponse[]> {
-    return this.http.get<AdminPartyResponse[]>(`${this.base}/admin/parties`, { withCredentials: true });
+  getAllParties(page: number = 0, size: number = 10): Observable<AdminPartyPageResponse> {
+    const params = new HttpParams().set('page', page).set('size', size);
+    return this.http.get<AdminPartyPageResponse>(`${this.base}/admin/parties`, { params, withCredentials: true });
   }
 
   approveParty(id: number): Observable<AdminPartyResponse> {
@@ -45,8 +48,9 @@ export class ApiService {
   }
 
   // Party Admins
-  getAllPartyAdmins(): Observable<AdminUserResponse[]> {
-    return this.http.get<AdminUserResponse[]>(`${this.base}/admin/party-admins`, { withCredentials: true });
+  getAllPartyAdmins(page: number = 0, size: number = 10): Observable<AdminUserPageResponse> {
+    const params = new HttpParams().set('page', page).set('size', size);
+    return this.http.get<AdminUserPageResponse>(`${this.base}/admin/party-admins`, { params, withCredentials: true });
   }
 
   suspendPartyAdmin(id: number): Observable<AdminUserResponse> {
@@ -62,8 +66,9 @@ export class ApiService {
   }
 
   // Specialists
-  getAllSpecialists(): Observable<AdminUserResponse[]> {
-    return this.http.get<AdminUserResponse[]>(`${this.base}/admin/specialists`, { withCredentials: true });
+  getAllSpecialists(page: number = 0, size: number = 10): Observable<AdminUserPageResponse> {
+    const params = new HttpParams().set('page', page).set('size', size);
+    return this.http.get<AdminUserPageResponse>(`${this.base}/admin/specialists`, { params, withCredentials: true });
   }
 
   createSpecialist(data: CreateSpecialistRequest): Observable<AdminUserResponse> {

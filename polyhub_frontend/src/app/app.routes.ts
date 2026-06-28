@@ -29,7 +29,6 @@ export const routes: Routes = [
       { path: 'programs/:id', component: ProgramDetailsComponent },
       { path: 'parties/:id', component: PartyDetailsComponent },
       { path: 'parties', component: PartiesComponent },
-      { path: '**', redirectTo: '' },
       {
         path: 'dashboard',
         canActivate: [authGuard],
@@ -42,7 +41,8 @@ export const routes: Routes = [
           { path: 'personal-details', component: PersonalDetailsComponent },
           { path: 'edit-program/:electionId', component: EditProgramComponent },
         ]
-      }
+      },
+      { path: '**', redirectTo: '' },
     ]
   }
 ];

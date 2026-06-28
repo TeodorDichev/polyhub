@@ -16,19 +16,19 @@ import {
   styleUrl: './home.component.scss'
 })
 export class HomeComponent implements OnInit {
-  elections: ElectionResponse[] = [];
-  loading = false;
-  error = '';
-  readonly getStatusLabel = getElectionStatusLabel;
-  readonly getTypeLabel = getElectionTypeLabel;
+  public elections: ElectionResponse[] = [];
+  public loading: boolean = false;
+  public error: string = '';
+  public readonly getStatusLabel = getElectionStatusLabel;
+  public readonly getTypeLabel = getElectionTypeLabel;
 
   constructor(private api: ApiService) {}
 
-  ngOnInit() {
+  public ngOnInit(): void {
     this.loadElections();
   }
 
-  loadElections() {
+  public loadElections(): void {
     this.loading = true;
     this.error = '';
 

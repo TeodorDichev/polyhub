@@ -12,16 +12,16 @@ import { ApiService } from '../../../core/services/api.service';
   styleUrl: './register.component.scss'
 })
 export class RegisterComponent {
-  email = '';
-  password = '';
-  firstname = '';
-  lastname = '';
-  error = '';
-  loading = false;
+  public email: string = '';
+  public password: string = '';
+  public firstname: string = '';
+  public lastname: string = '';
+  public error: string = '';
+  public loading: boolean = false;
 
   constructor(private api: ApiService, private router: Router) {}
 
-  onSubmit() {
+  public onSubmit(): void {
     this.error = '';
     this.loading = true;
 

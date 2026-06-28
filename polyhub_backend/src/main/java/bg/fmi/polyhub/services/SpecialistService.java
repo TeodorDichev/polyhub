@@ -1,5 +1,6 @@
 package bg.fmi.polyhub.services;
 
+import bg.fmi.polyhub.dto.admin.AdminUserPageResponse;
 import bg.fmi.polyhub.dto.admin.AdminUserResponse;
 import bg.fmi.polyhub.dto.admin.CreateSpecialistRequest;
 import bg.fmi.polyhub.entities.RoleType;
@@ -9,11 +10,13 @@ import bg.fmi.polyhub.mappers.UserMapper;
 import bg.fmi.polyhub.repositories.UserRepository;
 import bg.fmi.polyhub.repositories.UserRoleRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -24,11 +27,24 @@ public class SpecialistService {
     private final UserMapper userMapper;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    public List<AdminUserResponse> getAllSpecialists() {
-        return userRepository.findAllByRoleNameAndDeletedAtIsNull(RoleType.POLYHUB_SPECIALIST)
-                .stream()
-                .map(userMapper::toAdminUserResponse)
-                .toList();
+    public AdminUserPageResponse getAllSpecialistsPaged(int page, int size) {
+        Page<User> usersPage = userRepository.findAllByRoleNameAndDeletedAtIsNull(
+                RoleType.POLYHUB_SPECIALIST,
+                PageRequest.of(Math.max(page, 0), normalizePageSize(size), Sort.by("lastname").ascending())
+        );
+        return new AdminUserPageResponse(
+                usersPage.getContent().stream().map(userMapper::toAdminUserResponse).toList(),
+                usersPage.getNumber(),
+                usersPage.getSize(),
+                usersPage.getTotalElements(),
+                usersPage.getTotalPages(),
+                usersPage.isFirst(),
+                usersPage.isLast()
+        );
+    }
+
+    private int normalizePageSize(int size) {
+        return (size == 10 || size == 15 || size == 25) ? size : 10;
     }
 
     public AdminUserResponse getSpecialist(Long id) {

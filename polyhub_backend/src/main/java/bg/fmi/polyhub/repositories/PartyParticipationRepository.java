@@ -20,4 +20,6 @@ public interface PartyParticipationRepository extends JpaRepository<PartyPartici
     }
 
     boolean existsByPartyAndElection(Party party, Election election);
+
+    Optional<PartyParticipation> findByElection_IdAndParty_Id(Long electionId, Long partyId);
 }

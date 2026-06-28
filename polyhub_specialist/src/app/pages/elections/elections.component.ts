@@ -3,7 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ApiService } from '../../core/services/api.service';
-import { ElectionResponse, CreateElectionRequest } from '../../core/models';
+import { ElectionResponse, CreateElectionRequest, ElectionResultsRequest, PartyResultEntry } from '../../core/models';
+import { ElectionPartyResult } from '../../core/models/party.models';
 
 @Component({
   selector: 'app-elections',
@@ -13,76 +14,99 @@ import { ElectionResponse, CreateElectionRequest } from '../../core/models';
   styleUrl: './elections.component.scss'
 })
 export class ElectionsComponent implements OnInit {
-  allElections: ElectionResponse[] = [];
-  filteredElections: ElectionResponse[] = [];
-  error = '';
+  public elections: ElectionResponse[] = [];
+  public error: string = '';
 
-  // Filters
-  search = '';
-  filterType = '';
-  filterStatus = '';
-  page = 0;
-  pageSize = 10;
+  public search: string = '';
+  public filterType: string = '';
+  public filterStatus: string = '';
+  public page: number = 0;
+  public readonly pageSize: number = 10;
+  public totalPages: number = 0;
+  public totalElements: number = 0;
 
-  types = ['PARLIAMENTARY', 'PRESIDENTIAL', 'MAYORAL', 'MUNICIPAL_COUNCIL'];
-  statuses = ['UPCOMING', 'ONGOING', 'FINISHED'];
+  public readonly types: string[] = ['PARLIAMENTARY', 'PRESIDENTIAL', 'MAYORAL', 'MUNICIPAL_COUNCIL'];
+  public readonly statuses: string[] = ['UPCOMING', 'ONGOING', 'FINISHED'];
 
-  // Modal state
-  showModal = false;
-  editing: ElectionResponse | null = null;
-  name = '';
-  electionDate = '';
-  type = '';
-  description = '';
-  modalError = '';
-  saving = false;
-  confirmDeleteId: number | null = null;
+  public showModal: boolean = false;
+  public editing: ElectionResponse | null = null;
+  public name: string = '';
+  public electionDate: string = '';
+  public type: string = '';
+  public description: string = '';
+  public modalError: string = '';
+  public saving: boolean = false;
+  public confirmDeleteId: number | null = null;
+
+  public showResultsModal: boolean = false;
+  public resultsElectionId: number | null = null;
+  public resultsParties: ElectionPartyResult[] = [];
+  public resultsEntries: { partyId: number; partyName: string; votesCount: string; votePercentage: string }[] = [];
+  public resultsError: string = '';
+  public resultsSaving: boolean = false;
 
   constructor(private api: ApiService, private router: Router) {}
 
-  ngOnInit() { this.load(); }
+  public ngOnInit(): void { this.load(); }
 
-  load() {
-    this.api.getElections().subscribe({
-      next: (e) => { this.allElections = e; this.applyFilters(); },
-      error: () => this.error = 'Failed to load elections'
+  public load(): void {
+    this.api.getElections(this.page, this.pageSize, this.search).subscribe({
+      next: (response) => {
+        this.elections = response.elections;
+        this.totalPages = response.totalPages;
+        this.totalElements = response.totalElements;
+        this.error = '';
+      },
+      error: () => { this.error = 'Failed to load elections'; }
     });
   }
 
-  applyFilters() {
-    const q = this.search.toLowerCase();
-    this.filteredElections = this.allElections.filter(e =>
-      (!q || e.name.toLowerCase().includes(q)) &&
+  public get filteredElections(): ElectionResponse[] {
+    return this.elections.filter(e =>
       (!this.filterType || e.type === this.filterType) &&
       (!this.filterStatus || e.status?.toUpperCase() === this.filterStatus)
     );
+  }
+
+  public onSearchChange(): void {
     this.page = 0;
+    this.load();
   }
 
-  get pagedElections() {
-    return this.filteredElections.slice(this.page * this.pageSize, (this.page + 1) * this.pageSize);
+  public prevPage(): void {
+    if (this.page > 0) { this.page--; this.load(); }
   }
 
-  get totalPages() { return Math.ceil(this.filteredElections.length / this.pageSize); }
-  prevPage() { if (this.page > 0) this.page--; }
-  nextPage() { if (this.page < this.totalPages - 1) this.page++; }
+  public nextPage(): void {
+    if (this.page < this.totalPages - 1) { this.page++; this.load(); }
+  }
 
-  isPast(election: ElectionResponse): boolean {
+  public get isFirst(): boolean { return this.page === 0; }
+  public get isLast(): boolean { return this.page >= this.totalPages - 1; }
+
+  public isPast(election: ElectionResponse): boolean {
     return new Date(election.electionDate) < new Date(new Date().toDateString());
   }
 
-  viewDetails(id: number) {
+  public isResultDay(election: ElectionResponse): boolean {
+    const electionDate = new Date(election.electionDate);
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    return electionDate.toDateString() === yesterday.toDateString();
+  }
+
+  public viewDetails(id: number): void {
     this.router.navigate(['/elections', id]);
   }
 
-  openCreate() {
+  public openCreate(): void {
     this.editing = null;
     this.name = ''; this.electionDate = ''; this.type = ''; this.description = '';
     this.modalError = '';
     this.showModal = true;
   }
 
-  openEdit(election: ElectionResponse) {
+  public openEdit(election: ElectionResponse): void {
     this.editing = election;
     this.name = election.name;
     this.electionDate = election.electionDate;
@@ -92,9 +116,9 @@ export class ElectionsComponent implements OnInit {
     this.showModal = true;
   }
 
-  closeModal() { this.showModal = false; this.editing = null; }
+  public closeModal(): void { this.showModal = false; this.editing = null; }
 
-  save() {
+  public save(): void {
     this.modalError = '';
     this.saving = true;
     const request: CreateElectionRequest = {
@@ -112,12 +136,48 @@ export class ElectionsComponent implements OnInit {
     });
   }
 
-  startDelete(id: number) { this.confirmDeleteId = id; }
-  confirmDelete() {
+  public startDelete(id: number): void { this.confirmDeleteId = id; }
+  public confirmDelete(): void {
     if (this.confirmDeleteId === null) return;
     this.api.deleteElection(this.confirmDeleteId).subscribe({
       next: () => { this.confirmDeleteId = null; this.load(); }
     });
   }
-  cancelDelete() { this.confirmDeleteId = null; }
+  public cancelDelete(): void { this.confirmDeleteId = null; }
+
+  public openResults(election: ElectionResponse): void {
+    this.resultsElectionId = election.id;
+    this.resultsError = '';
+    this.resultsSaving = false;
+    this.api.getElectionById(election.id).subscribe({
+      next: (details) => {
+        this.resultsEntries = details.parties.map(p => ({
+          partyId: p.partyId,
+          partyName: p.partyName,
+          votesCount: p.votesCount != null ? String(p.votesCount) : '',
+          votePercentage: p.votePercentage != null ? String(p.votePercentage) : ''
+        }));
+        this.showResultsModal = true;
+      },
+      error: () => { this.resultsError = 'Failed to load election details'; }
+    });
+  }
+
+  public closeResults(): void { this.showResultsModal = false; this.resultsElectionId = null; }
+
+  public saveResults(): void {
+    this.resultsSaving = true;
+    this.resultsError = '';
+    const request: ElectionResultsRequest = {
+      results: this.resultsEntries.map(e => ({
+        partyId: e.partyId,
+        votesCount: e.votesCount ? Number(e.votesCount) : undefined,
+        votePercentage: e.votePercentage ? Number(e.votePercentage) : undefined
+      } as PartyResultEntry))
+    };
+    this.api.setElectionResults(this.resultsElectionId!, request).subscribe({
+      next: () => { this.resultsSaving = false; this.showResultsModal = false; this.load(); },
+      error: (err) => { this.resultsSaving = false; this.resultsError = err.error?.message || 'Failed to save results'; }
+    });
+  }
 }

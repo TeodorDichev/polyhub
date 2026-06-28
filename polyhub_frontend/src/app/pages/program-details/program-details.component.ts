@@ -17,14 +17,14 @@ import { getPoliticalPositionLabel } from '../../shared/utils/display-labels';
   styleUrl: './program-details.component.scss'
 })
 export class ProgramDetailsComponent implements OnInit {
-  program?: ProgramDetailsResponse;
+  public program?: ProgramDetailsResponse;
 
-  programMarkers: PoliticalMarker[] = [];
-  policyMarkers: PoliticalMarker[] = [];
+  public programMarkers: PoliticalMarker[] = [];
+  public policyMarkers: PoliticalMarker[] = [];
 
-  loading = false;
-  error = '';
-  readonly getPositionLabel = getPoliticalPositionLabel;
+  public loading: boolean = false;
+  public error: string = '';
+  public readonly getPositionLabel = getPoliticalPositionLabel;
 
   constructor(
     private route: ActivatedRoute,
@@ -32,13 +32,13 @@ export class ProgramDetailsComponent implements OnInit {
     private location: Location
   ) {}
 
-  goBack(): void { this.location.back(); }
+  public goBack(): void { this.location.back(); }
 
-  ngOnInit() {
+  public ngOnInit(): void {
     this.loadProgram();
   }
 
-  loadProgram() {
+  public loadProgram(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
 
     if (!id) {

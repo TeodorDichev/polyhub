@@ -28,3 +28,23 @@ export interface CreateSpecialistRequest {
   firstname: string;
   lastname: string;
 }
+
+export interface AdminUserPageResponse {
+  users: AdminUserResponse[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+  first: boolean;
+  last: boolean;
+}
+
+export interface AdminPartyPageResponse {
+  parties: AdminPartyResponse[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+  first: boolean;
+  last: boolean;
+}

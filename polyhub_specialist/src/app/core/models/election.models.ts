@@ -27,3 +27,23 @@ export interface CreateElectionRequest {
   type: string;
   description?: string;
 }
+
+export interface PartyResultEntry {
+  partyId: number;
+  votesCount?: number;
+  votePercentage?: number;
+}
+
+export interface ElectionResultsRequest {
+  results: PartyResultEntry[];
+}
+
+export interface ElectionPageResponse {
+  elections: ElectionResponse[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+  first: boolean;
+  last: boolean;
+}

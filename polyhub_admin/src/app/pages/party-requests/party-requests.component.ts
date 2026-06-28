@@ -12,68 +12,83 @@ import { AdminPartyResponse } from '../../core/models';
   styleUrl: './party-requests.component.scss'
 })
 export class PartyRequestsComponent implements OnInit {
-  allParties: AdminPartyResponse[] = [];
-  filteredParties: AdminPartyResponse[] = [];
-  error = '';
-  rejectingId: number | null = null;
-  rejectComment = '';
-  selectedParty: AdminPartyResponse | null = null;
+  public parties: AdminPartyResponse[] = [];
+  public error: string = '';
+  public rejectingId: number | null = null;
+  public rejectComment: string = '';
+  public selectedParty: AdminPartyResponse | null = null;
 
-  // Filters
-  search = '';
-  filterStatus = '';
-  page = 0;
-  pageSize = 10;
-  statuses = ['PENDING', 'APPROVED', 'REJECTED'];
+  public search: string = '';
+  public filterStatus: string = '';
+  public page: number = 0;
+  public readonly pageSize: number = 10;
+  public totalPages: number = 0;
+  public totalElements: number = 0;
+  public readonly statuses: string[] = ['PENDING', 'APPROVED', 'REJECTED'];
 
   constructor(private api: ApiService) {}
 
-  ngOnInit() { this.load(); }
+  public ngOnInit(): void {
+    this.load();
+  }
 
-  load() {
-    this.api.getAllParties().subscribe({
-      next: (parties) => { this.allParties = parties; this.applyFilters(); },
-      error: () => this.error = 'Failed to load parties'
+  public load(): void {
+    this.api.getAllParties(this.page, this.pageSize).subscribe({
+      next: (response) => {
+        this.parties = response.parties;
+        this.totalPages = response.totalPages;
+        this.totalElements = response.totalElements;
+        this.error = '';
+      },
+      error: () => { this.error = 'Failed to load parties'; }
     });
   }
 
-  applyFilters() {
+  public get filteredParties(): AdminPartyResponse[] {
     const q = this.search.toLowerCase();
-    this.filteredParties = this.allParties.filter(p =>
+    return this.parties.filter(p =>
       (!q || p.name.toLowerCase().includes(q) || p.createdByEmail.toLowerCase().includes(q)) &&
       (!this.filterStatus || p.status === this.filterStatus)
     );
-    this.page = 0;
   }
 
-  get pagedParties() {
-    return this.filteredParties.slice(this.page * this.pageSize, (this.page + 1) * this.pageSize);
+  public prevPage(): void {
+    if (this.page > 0) {
+      this.page--;
+      this.load();
+    }
   }
 
-  get totalPages() { return Math.ceil(this.filteredParties.length / this.pageSize); }
-  prevPage() { if (this.page > 0) this.page--; }
-  nextPage() { if (this.page < this.totalPages - 1) this.page++; }
+  public nextPage(): void {
+    if (this.page < this.totalPages - 1) {
+      this.page++;
+      this.load();
+    }
+  }
 
-  approve(id: number) {
+  public get isFirst(): boolean { return this.page === 0; }
+  public get isLast(): boolean { return this.page >= this.totalPages - 1; }
+
+  public approve(id: number): void {
     this.api.approveParty(id).subscribe({ next: () => this.load() });
   }
 
-  startReject(id: number) { this.rejectingId = id; this.rejectComment = ''; }
+  public startReject(id: number): void { this.rejectingId = id; this.rejectComment = ''; }
 
-  confirmReject() {
+  public confirmReject(): void {
     if (this.rejectingId === null) return;
     this.api.rejectParty(this.rejectingId, this.rejectComment).subscribe({
       next: () => { this.rejectingId = null; this.load(); }
     });
   }
 
-  cancelReject() { this.rejectingId = null; this.rejectComment = ''; }
+  public cancelReject(): void { this.rejectingId = null; this.rejectComment = ''; }
 
-  delete(id: number) {
+  public delete(id: number): void {
     if (!confirm('Are you sure you want to delete this party?')) return;
     this.api.deleteParty(id).subscribe({ next: () => this.load() });
   }
 
-  openInfo(party: AdminPartyResponse) { this.selectedParty = party; }
-  closeInfo() { this.selectedParty = null; }
+  public openInfo(party: AdminPartyResponse): void { this.selectedParty = party; }
+  public closeInfo(): void { this.selectedParty = null; }
 }

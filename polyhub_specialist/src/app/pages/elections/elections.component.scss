@@ -60,6 +60,7 @@ table {
 .btn-danger { background: var(--danger-light); color: var(--danger); }
 .btn-secondary { background: var(--bg); border: 1px solid var(--border); color: var(--text-muted); }
 .btn-info { background: #eff6ff; color: var(--accent); }
+.btn-success { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; &:hover:not(:disabled) { background: #d1fae5; } &:disabled { opacity: 0.45; cursor: not-allowed; } }
 
 .error-msg { color: var(--danger); margin-bottom: 1rem; font-size: 0.9rem; }
 
@@ -127,3 +128,71 @@ table {
 }
 
 .modal-actions { display: flex; justify-content: flex-end; gap: 0.75rem; }
+
+.results-table-wrapper {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.results-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  thead tr {
+    background: var(--bg);
+  }
+
+  th {
+    padding: 0.6rem 0.9rem;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 0.65rem 0.9rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    font-size: 0.88rem;
+    vertical-align: middle;
+
+    &:first-child {
+      font-weight: 600;
+      min-width: 140px;
+    }
+  }
+
+  tr:last-child td { border-bottom: none; }
+
+  input[type='number'] {
+    width: 100%;
+    min-width: 110px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.4rem 0.6rem;
+    font-size: 0.88rem;
+    color: var(--text);
+    background: var(--surface);
+    transition: border-color 0.15s;
+
+    &:focus {
+      outline: none;
+      border-color: #059669;
+      box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.12);
+    }
+
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button {
+      opacity: 0.5;
+    }
+  }
+}
+
+.modal.results-modal {
+  max-width: 600px;
+}

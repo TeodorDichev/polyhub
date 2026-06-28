@@ -1,5 +1,7 @@
 package bg.fmi.polyhub.controllers;
 
+import bg.fmi.polyhub.dto.admin.AdminPartyPageResponse;
+import bg.fmi.polyhub.dto.admin.AdminUserPageResponse;
 import bg.fmi.polyhub.dto.admin.PartyAdminResponse;
 import bg.fmi.polyhub.dto.admin.AdminUserResponse;
 import bg.fmi.polyhub.dto.admin.CreateSpecialistRequest;
@@ -18,10 +20,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 // after discussion, we decided to leave this controller role-based
 
@@ -36,8 +37,10 @@ public class AdminController {
     private final PartyService partyService;
 
     @GetMapping("/party-admins")
-    public List<AdminUserResponse> getAllPartyAdmins() {
-        return partyAdminService.getAllPartyAdmins();
+    public AdminUserPageResponse getAllPartyAdmins(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return partyAdminService.getAllPartyAdminsPaged(page, size);
     }
 
     @GetMapping("/party-admins/{id}")
@@ -62,8 +65,10 @@ public class AdminController {
     }
 
     @GetMapping("/specialists")
-    public List<AdminUserResponse> getAllSpecialists() {
-        return specialistService.getAllSpecialists();
+    public AdminUserPageResponse getAllSpecialists(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return specialistService.getAllSpecialistsPaged(page, size);
     }
 
     @GetMapping("/specialists/{id}")
@@ -84,8 +89,10 @@ public class AdminController {
     }
 
     @GetMapping("/parties")
-    public List<PartyAdminResponse> getAllParties() {
-        return partyService.getAllParties();
+    public AdminPartyPageResponse getAllParties(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return partyService.getAllPartiesPaged(page, size);
     }
 
     @GetMapping("/parties/{id}")

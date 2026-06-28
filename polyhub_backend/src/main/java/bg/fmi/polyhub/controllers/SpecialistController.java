@@ -2,12 +2,16 @@ package bg.fmi.polyhub.controllers;
 
 import bg.fmi.polyhub.dto.election.CreateElectionRequest;
 import bg.fmi.polyhub.dto.election.ElectionDetailsResponse;
+import bg.fmi.polyhub.dto.election.ElectionPageResponse;
 import bg.fmi.polyhub.dto.election.ElectionResponse;
+import bg.fmi.polyhub.dto.specialist.ElectionResultsRequest;
 import bg.fmi.polyhub.dto.party.PartyDetailsResponse;
+import bg.fmi.polyhub.dto.specialist.PartyForRatingPageResponse;
 import bg.fmi.polyhub.dto.specialist.PartyForRatingResponse;
 import bg.fmi.polyhub.dto.specialist.PartyRatingRequest;
 import bg.fmi.polyhub.dto.specialist.CreatePolicyRequest;
 import bg.fmi.polyhub.dto.policy.PolicySummary;
+import bg.fmi.polyhub.dto.specialist.ProgramForRatingPageResponse;
 import bg.fmi.polyhub.dto.specialist.ProgramForRatingResponse;
 import bg.fmi.polyhub.dto.specialist.ProgramRatingRequest;
 import bg.fmi.polyhub.services.ElectionService;
@@ -25,6 +29,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -42,8 +47,11 @@ public class SpecialistController {
     private final ProgramService programService;
 
     @GetMapping("/elections")
-    public List<ElectionResponse> getAllElections() {
-        return electionService.getAll();
+    public ElectionPageResponse getAllElections(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "") String search) {
+        return electionService.getAllPaged(page, size, search);
     }
 
     @PostMapping("/elections")
@@ -69,6 +77,12 @@ public class SpecialistController {
         electionService.delete(id);
     }
 
+    @PutMapping("/elections/{id}/results")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void setElectionResults(@PathVariable Long id, @RequestBody ElectionResultsRequest request) {
+        electionService.setResults(id, request);
+    }
+
     @GetMapping("/policies")
     public List<PolicySummary> getAllPolicies() {
         return policyService.getAllPolicies();
@@ -91,8 +105,10 @@ public class SpecialistController {
     }
 
     @GetMapping("/parties")
-    public List<PartyForRatingResponse> getAllParties() {
-        return partyService.getAllApprovedParties();
+    public PartyForRatingPageResponse getAllParties(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return partyService.getAllApprovedPartiesPaged(page, size);
     }
 
     @GetMapping("/parties/{id}")
@@ -106,8 +122,10 @@ public class SpecialistController {
     }
 
     @GetMapping("/programs")
-    public List<ProgramForRatingResponse> getAllPrograms() {
-        return programService.getAllPrograms();
+    public ProgramForRatingPageResponse getAllPrograms(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return programService.getAllProgramsPaged(page, size);
     }
 
     @GetMapping("/programs/{id}")

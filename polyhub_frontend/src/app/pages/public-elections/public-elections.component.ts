@@ -17,27 +17,27 @@ import type {
   styleUrl: './public-elections.component.scss'
 })
 export class PublicElectionsComponent implements OnInit, OnDestroy {
-  elections: ElectionResponse[] = [];
+  public elections: ElectionResponse[] = [];
 
-  searchControl = new FormControl('', { nonNullable: true });
+  public searchControl = new FormControl('', { nonNullable: true });
 
-  page = 0;
-  size = 5;
-  totalPages = 0;
-  totalElements = 0;
-  first = true;
-  last = true;
+  public page: number = 0;
+  public size: number = 5;
+  public totalPages: number = 0;
+  public totalElements: number = 0;
+  public first: boolean = true;
+  public last: boolean = true;
 
-  loading = false;
-  error = '';
+  public loading: boolean = false;
+  public error: string = '';
 
-  readonly pageSizeOptions = [5, 10, 15];
+  public readonly pageSizeOptions: number[] = [5, 10, 15];
 
-  private destroy$ = new Subject<void>();
+  private readonly destroy$ = new Subject<void>();
 
   constructor(private api: ApiService) {}
 
-  ngOnInit() {
+  public ngOnInit(): void {
     this.loadElections();
 
     this.searchControl.valueChanges
@@ -52,12 +52,12 @@ export class PublicElectionsComponent implements OnInit, OnDestroy {
       });
   }
 
-  ngOnDestroy() {
+  public ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
   }
 
-  loadElections() {
+  public loadElections(): void {
     this.loading = true;
     this.error = '';
 
@@ -73,13 +73,13 @@ export class PublicElectionsComponent implements OnInit, OnDestroy {
     });
   }
 
-  changePageSize(size: string) {
+  public changePageSize(size: string): void {
     this.size = Number(size);
     this.page = 0;
     this.loadElections();
   }
 
-  goToPage(page: number) {
+  public goToPage(page: number): void {
     if (page < 0 || page >= this.totalPages || page === this.page) {
       return;
     }
@@ -88,19 +88,19 @@ export class PublicElectionsComponent implements OnInit, OnDestroy {
     this.loadElections();
   }
 
-  goToPreviousPage() {
+  public goToPreviousPage(): void {
     if (!this.first) {
       this.goToPage(this.page - 1);
     }
   }
 
-  goToNextPage() {
+  public goToNextPage(): void {
     if (!this.last) {
       this.goToPage(this.page + 1);
     }
   }
 
-  get pageNumbers(): number[] {
+  public get pageNumbers(): number[] {
     if (this.totalPages <= 0) {
       return [];
     }
@@ -124,7 +124,7 @@ export class PublicElectionsComponent implements OnInit, OnDestroy {
     return pages;
   }
 
-  getStatusLabel(status: ElectionResponse['status']): string {
+  public getStatusLabel(status: ElectionResponse['status']): string {
     switch (status) {
       case 'FINISHED':
         return 'Finished';

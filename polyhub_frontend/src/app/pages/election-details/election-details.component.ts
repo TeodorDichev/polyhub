@@ -18,14 +18,13 @@ import {
   styleUrl: './election-details.component.scss'
 })
 export class ElectionDetailsComponent implements OnInit {
-  election?: ElectionDetailsResponse;
-  partyMarkers: PoliticalMarker[] = [];
+  public election?: ElectionDetailsResponse;
+  public partyMarkers: PoliticalMarker[] = [];
 
-  loading = false;
-  error = '';
-  readonly getStatusLabel = getElectionStatusLabel;
-  readonly getTypeLabel = getElectionTypeLabel;
-
+  public loading: boolean = false;
+  public error: string = '';
+  public readonly getStatusLabel = getElectionStatusLabel;
+  public readonly getTypeLabel = getElectionTypeLabel;
 
   constructor(
     private route: ActivatedRoute,
@@ -33,13 +32,13 @@ export class ElectionDetailsComponent implements OnInit {
     private location: Location
   ) {}
 
-  goBack(): void { this.location.back(); }
+  public goBack(): void { this.location.back(); }
 
-  ngOnInit() {
+  public ngOnInit(): void {
     this.loadElection();
   }
 
-  loadElection() {
+  public loadElection(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
 
     if (!id) {
@@ -63,7 +62,7 @@ export class ElectionDetailsComponent implements OnInit {
     });
   }
 
-  hasResult(): boolean {
+  public hasResult(): boolean {
     return !!this.election?.winnerPartyName;
   }
 

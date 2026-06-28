@@ -39,6 +39,16 @@ export interface PartyRatingRequest {
   specSocialAxis: number;
 }
 
+export interface PartyForRatingPageResponse {
+  parties: PartyForRatingResponse[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+  first: boolean;
+  last: boolean;
+}
+
 export interface PartyProgramSummaryResponse {
   id: number;
   title: string;

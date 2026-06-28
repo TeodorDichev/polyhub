@@ -9,6 +9,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -18,6 +20,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmailAndDeletedAtIsNull(@Email @NotBlank String email);
 
     List<User> findAllByRoleNameAndDeletedAtIsNull(RoleType roleType);
+
+    Page<User> findAllByRoleNameAndDeletedAtIsNull(RoleType roleType, Pageable pageable);
 
     Optional<User> findByIdAndDeletedAtIsNull(Long id);
 }

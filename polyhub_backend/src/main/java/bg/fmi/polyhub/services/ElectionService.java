@@ -2,18 +2,14 @@ package bg.fmi.polyhub.services;
 
 import bg.fmi.polyhub.dto.election.CreateElectionRequest;
 import bg.fmi.polyhub.dto.election.ElectionResponse;
-import bg.fmi.polyhub.dto.party.PartyResponse;
 import bg.fmi.polyhub.entities.Election;
 import bg.fmi.polyhub.entities.ElectionType;
-import bg.fmi.polyhub.entities.Party;
 import bg.fmi.polyhub.entities.PartyParticipation;
 import bg.fmi.polyhub.entities.User;
 import bg.fmi.polyhub.mappers.ElectionMapper;
-import bg.fmi.polyhub.mappers.PartyMapper;
 import bg.fmi.polyhub.repositories.ElectionRepository;
 import bg.fmi.polyhub.repositories.ElectionTypeRepository;
 import bg.fmi.polyhub.repositories.PartyParticipationRepository;
-import bg.fmi.polyhub.repositories.PartyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import bg.fmi.polyhub.dto.election.ElectionDetailsResponse;
@@ -26,6 +22,7 @@ import java.util.List;
 import static bg.fmi.polyhub.utils.ElectionStatusUtils.getStatus;
 import static bg.fmi.polyhub.utils.ElectionStatusUtils.isFinished;
 import bg.fmi.polyhub.dto.election.ElectionPageResponse;
+import bg.fmi.polyhub.dto.specialist.ElectionResultsRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -39,8 +36,6 @@ public class ElectionService {
     private final PartyParticipationRepository partyParticipationRepository;
     private final ElectionMapper electionMapper;
     private final ProgramRepository programRepository;
-    private final PartyRepository partyRepository;
-    private final PartyMapper partyMapper;
 
     public ElectionResponse create(CreateElectionRequest request) {
         ElectionType type = electionTypeRepository
@@ -62,6 +57,27 @@ public class ElectionService {
                 .stream()
                 .map(this::toResponse)
                 .toList();
+    }
+
+    public ElectionPageResponse getAllPaged(int page, int size, String search) {
+        int safePage = Math.max(page, 0);
+        int safeSize = normalizePageSize(size);
+        Pageable pageable = PageRequest.of(safePage, safeSize);
+        String normalizedSearch = search == null ? "" : search.trim();
+
+        Page<Election> electionsPage = normalizedSearch.isBlank()
+                ? electionRepository.findAllByOrderByElectionDateDesc(pageable)
+                : electionRepository.findAllByNameContainingIgnoreCaseOrderByElectionDateDesc(normalizedSearch, pageable);
+
+        return new ElectionPageResponse(
+                electionsPage.getContent().stream().map(this::toResponse).toList(),
+                electionsPage.getNumber(),
+                electionsPage.getSize(),
+                electionsPage.getTotalElements(),
+                electionsPage.getTotalPages(),
+                electionsPage.isFirst(),
+                electionsPage.isLast()
+        );
     }
 
     public ElectionPageResponse getPublicElectionsPage(
@@ -126,15 +142,6 @@ public class ElectionService {
                 .orElseThrow(() -> new RuntimeException("Election not found"));
 
         electionRepository.delete(election);
-    }
-
-    public List<PartyResponse> getPartiesForElection(Long id) {
-        List<PartyParticipation> pp = partyParticipationRepository.findAllByElection_Id(id);
-
-        return pp.stream().map(partyParticipation ->
-            toPartyResponse(partyRepository.findById(partyParticipation.getId())
-                    .orElseThrow())
-        ).toList();
     }
 
     public ElectionDetailsResponse getById(Long id) {
@@ -214,6 +221,25 @@ public class ElectionService {
         );
     }
 
+    public void setResults(Long electionId, ElectionResultsRequest request) {
+        Election election = electionRepository.findById(electionId)
+                .orElseThrow(() -> new RuntimeException("Election not found"));
+
+        LocalDate dayAfter = election.getElectionDate().plusDays(1);
+        if (!dayAfter.isEqual(LocalDate.now())) {
+            throw new RuntimeException("Results can only be set on the day after the election");
+        }
+
+        request.results().forEach(entry -> {
+            PartyParticipation participation = partyParticipationRepository
+                    .findByElection_IdAndParty_Id(electionId, entry.partyId())
+                    .orElseThrow(() -> new RuntimeException("Party not participating in this election"));
+            participation.setVotesCount(entry.votesCount());
+            participation.setVotePercentage(entry.votePercentage());
+            partyParticipationRepository.save(participation);
+        });
+    }
+
     private int normalizePageSize(int size) {
         if (size == 10 || size == 15) {
             return size;
@@ -222,8 +248,4 @@ public class ElectionService {
         return 5;
     }
 
-    private PartyResponse toPartyResponse(Party party) {
-        PartyResponse dto;
-        return partyMapper.toResponse(party);
-    }
 }

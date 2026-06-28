@@ -13,14 +13,14 @@ import { AuthService } from '../../core/services/auth.service';
   styleUrl: './main-layout.component.scss'
 })
 export class MainLayoutComponent {
-  sidebarOpen = false;
+  public sidebarOpen: boolean = false;
 
   constructor(public authService: AuthService, private api: ApiService, private router: Router) {}
 
-  toggleSidebar() { this.sidebarOpen = !this.sidebarOpen; }
-  closeSidebar() { this.sidebarOpen = false; }
+  public toggleSidebar(): void { this.sidebarOpen = !this.sidebarOpen; }
+  public closeSidebar(): void { this.sidebarOpen = false; }
 
-  logout() {
+  public logout(): void {
     this.api.logout().subscribe({
       next: () => { this.authService.clearUser(); this.router.navigate(['/login']); },
       error: () => { this.authService.clearUser(); this.router.navigate(['/login']); }

@@ -28,6 +28,16 @@ export interface ProgramRatingRequest {
   specSocialAxis: number;
 }
 
+export interface ProgramForRatingPageResponse {
+  programs: ProgramForRatingResponse[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+  first: boolean;
+  last: boolean;
+}
+
 export interface ProgramPolicyDetailsResponse {
   id: number;
   name: string;

@@ -16,24 +16,24 @@ import { SubmitPartyModalComponent } from '../sumbit-party-modal/submit-party-mo
   styleUrl: './my-submission.component.scss'
 })
 export class MySubmissionComponent implements OnInit {
-  party: PartyResponse | null = null;
-  error = '';
-  showResubmitModal = false;
+  public party: PartyResponse | null = null;
+  public error: string = '';
+  public showResubmitModal: boolean = false;
 
   constructor(private api: ApiService, public authService: AuthService) {}
 
-  ngOnInit() {
+  public ngOnInit(): void {
     this.api.getMyParty().subscribe({
-      next: (party) => this.party = party,
-      error: () => this.error = 'No submission found'
+      next: (party) => { this.party = party; },
+      error: () => { this.error = 'No submission found'; }
     });
   }
 
-  onResubmitClosed() {
+  public onResubmitClosed(): void {
     this.showResubmitModal = false;
   }
 
-  onResubmitted() {
+  public onResubmitted(): void {
     this.showResubmitModal = false;
     this.api.getMyParty().subscribe({
       next: (party) => {

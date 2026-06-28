@@ -8,8 +8,12 @@ import bg.fmi.polyhub.dto.program.ProgramDetailsResponse;
 import bg.fmi.polyhub.dto.program.ProgramPolicyDetailsResponse;
 import bg.fmi.polyhub.dto.program.ProgramResponse;
 import bg.fmi.polyhub.dto.program.ProgramSuggestion;
+import bg.fmi.polyhub.dto.specialist.ProgramForRatingPageResponse;
 import bg.fmi.polyhub.dto.specialist.ProgramForRatingResponse;
 import bg.fmi.polyhub.dto.specialist.ProgramRatingRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import bg.fmi.polyhub.entities.Election;
 import bg.fmi.polyhub.entities.Party;
 import bg.fmi.polyhub.entities.PartyParticipation;
@@ -180,15 +184,30 @@ public class ProgramService {
         return programMapper.toDetailsResponse(program, policies);
     }
 
-    public List<ProgramForRatingResponse> getAllPrograms() {
-        return programRepository.findAll()
-                .stream()
+    public ProgramForRatingPageResponse getAllProgramsPaged(int page, int size) {
+        Page<Program> programsPage = programRepository.findAll(
+                PageRequest.of(Math.max(page, 0), normalizePageSize(size), Sort.by("lastEditAt").descending())
+        );
+        List<ProgramForRatingResponse> items = programsPage.getContent().stream()
                 .filter(p -> {
                     User owner = p.getParty().getCreatedBy();
                     return owner.getDeletedAt() == null && owner.getSuspendedOn() == null;
                 })
                 .map(this::toRatingResponse)
                 .toList();
+        return new ProgramForRatingPageResponse(
+                items,
+                programsPage.getNumber(),
+                programsPage.getSize(),
+                programsPage.getTotalElements(),
+                programsPage.getTotalPages(),
+                programsPage.isFirst(),
+                programsPage.isLast()
+        );
+    }
+
+    private int normalizePageSize(int size) {
+        return (size == 10 || size == 15 || size == 25) ? size : 10;
     }
 
     public ProgramForRatingResponse getProgram(Long id) {

@@ -10,32 +10,32 @@ export interface LoggedUser {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  currentUser = signal<LoggedUser | null>(null);
-  partyStatus = signal<string | null>(null); // null = no party yet
-  loading = signal<boolean>(true);
+  public readonly currentUser = signal<LoggedUser | null>(null);
+  public readonly partyStatus = signal<string | null>(null);
+  public readonly loading = signal<boolean>(true);
 
-  isLoggedIn() {
+  public isLoggedIn(): boolean {
     return this.currentUser() !== null;
   }
 
-  setUser(user: LoggedUser) {
+  public setUser(user: LoggedUser): void {
     this.currentUser.set(user);
   }
 
-  clearUser() {
+  public clearUser(): void {
     this.currentUser.set(null);
     this.partyStatus.set(null);
   }
 
-  setPartyStatus(status: string | null) {
+  public setPartyStatus(status: string | null): void {
     this.partyStatus.set(status);
   }
 
-  hasNoParty() {
+  public hasNoParty(): boolean {
     return this.partyStatus() === null;
   }
 
-  hasApprovedParty() {
+  public hasApprovedParty(): boolean {
     return this.partyStatus() === 'APPROVED';
   }
 }

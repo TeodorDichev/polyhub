@@ -12,54 +12,74 @@ import { AdminUserResponse } from '../../core/models';
   styleUrl: './party-admins.component.scss'
 })
 export class PartyAdminsComponent implements OnInit {
-  allUsers: AdminUserResponse[] = [];
-  filteredUsers: AdminUserResponse[] = [];
-  error = '';
-  selectedUser: AdminUserResponse | null = null;
+  public users: AdminUserResponse[] = [];
+  public error: string = '';
+  public selectedUser: AdminUserResponse | null = null;
 
-  // Filters
-  search = '';
-  filterStatus = '';
-  page = 0;
-  pageSize = 10;
+  public search: string = '';
+  public filterStatus: string = '';
+  public page: number = 0;
+  public readonly pageSize: number = 10;
+  public totalPages: number = 0;
+  public totalElements: number = 0;
 
   constructor(private api: ApiService) {}
 
-  ngOnInit() { this.load(); }
+  public ngOnInit(): void {
+    this.load();
+  }
 
-  load() {
-    this.api.getAllPartyAdmins().subscribe({
-      next: (users) => { this.allUsers = users; this.applyFilters(); },
-      error: () => this.error = 'Failed to load party admins'
+  public load(): void {
+    this.api.getAllPartyAdmins(this.page, this.pageSize).subscribe({
+      next: (response) => {
+        this.users = response.users;
+        this.totalPages = response.totalPages;
+        this.totalElements = response.totalElements;
+        this.error = '';
+      },
+      error: () => { this.error = 'Failed to load party admins'; }
     });
   }
 
-  applyFilters() {
+  public get filteredUsers(): AdminUserResponse[] {
     const q = this.search.toLowerCase();
-    this.filteredUsers = this.allUsers.filter(u =>
+    return this.users.filter(u =>
       (!q || `${u.firstname} ${u.lastname}`.toLowerCase().includes(q) || u.email.toLowerCase().includes(q)) &&
       (!this.filterStatus ||
         (this.filterStatus === 'suspended' ? !!u.suspendedOn : !u.suspendedOn))
     );
-    this.page = 0;
   }
 
-  get pagedUsers() {
-    return this.filteredUsers.slice(this.page * this.pageSize, (this.page + 1) * this.pageSize);
+  public prevPage(): void {
+    if (this.page > 0) {
+      this.page--;
+      this.load();
+    }
   }
 
-  get totalPages() { return Math.ceil(this.filteredUsers.length / this.pageSize); }
-  prevPage() { if (this.page > 0) this.page--; }
-  nextPage() { if (this.page < this.totalPages - 1) this.page++; }
+  public nextPage(): void {
+    if (this.page < this.totalPages - 1) {
+      this.page++;
+      this.load();
+    }
+  }
 
-  suspend(id: number) { this.api.suspendPartyAdmin(id).subscribe({ next: () => this.load() }); }
-  unsuspend(id: number) { this.api.unsuspendPartyAdmin(id).subscribe({ next: () => this.load() }); }
+  public get isFirst(): boolean { return this.page === 0; }
+  public get isLast(): boolean { return this.page >= this.totalPages - 1; }
 
-  delete(id: number) {
+  public suspend(id: number): void {
+    this.api.suspendPartyAdmin(id).subscribe({ next: () => this.load() });
+  }
+
+  public unsuspend(id: number): void {
+    this.api.unsuspendPartyAdmin(id).subscribe({ next: () => this.load() });
+  }
+
+  public delete(id: number): void {
     if (!confirm('Delete this party admin?')) return;
     this.api.deletePartyAdmin(id).subscribe({ next: () => this.load() });
   }
 
-  openInfo(user: AdminUserResponse) { this.selectedUser = user; }
-  closeInfo() { this.selectedUser = null; }
+  public openInfo(user: AdminUserResponse): void { this.selectedUser = user; }
+  public closeInfo(): void { this.selectedUser = null; }
 }

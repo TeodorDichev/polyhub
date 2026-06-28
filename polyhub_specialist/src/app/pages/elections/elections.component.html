@@ -8,12 +8,12 @@
 }
 
 <div class="table-controls">
-  <input class="search-input" type="text" [(ngModel)]="search" (ngModelChange)="applyFilters()" placeholder="Search by name..." />
-  <select [(ngModel)]="filterType" (ngModelChange)="applyFilters()">
+  <input class="search-input" type="text" [(ngModel)]="search" (ngModelChange)="onSearchChange()" placeholder="Search by name..." />
+  <select [(ngModel)]="filterType">
     <option value="">All types</option>
     @for (t of types; track t) { <option [value]="t">{{ t }}</option> }
   </select>
-  <select [(ngModel)]="filterStatus" (ngModelChange)="applyFilters()">
+  <select [(ngModel)]="filterStatus">
     <option value="">All statuses</option>
     @for (s of statuses; track s) { <option [value]="s">{{ s }}</option> }
   </select>
@@ -54,6 +54,46 @@
   </div>
 }
 
+@if (showResultsModal) {
+  <div class="modal-backdrop" (click)="closeResults()">
+    <div class="modal results-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Set Election Results</h3>
+        <button class="close-btn" (click)="closeResults()">✕</button>
+      </div>
+      @if (resultsError) { <div class="error-msg">{{ resultsError }}</div> }
+      @if (resultsEntries.length === 0) {
+        <p>No participating parties found.</p>
+      } @else {
+        <div class="results-table-wrapper">
+          <table class="results-table">
+            <thead>
+              <tr>
+                <th>Party</th>
+                <th>Votes Count</th>
+                <th>Vote % (0-100)</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (entry of resultsEntries; track entry.partyId) {
+                <tr>
+                  <td>{{ entry.partyName }}</td>
+                  <td><input type="number" min="0" [(ngModel)]="entry.votesCount" placeholder="e.g. 120000" /></td>
+                  <td><input type="number" min="0" max="100" step="0.01" [(ngModel)]="entry.votePercentage" placeholder="e.g. 34.50" /></td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+      <div class="modal-actions">
+        <button class="btn-secondary" (click)="closeResults()">Cancel</button>
+        <button class="btn-primary" (click)="saveResults()" [disabled]="resultsSaving || resultsEntries.length === 0">{{ resultsSaving ? 'Saving...' : 'Save Results' }}</button>
+      </div>
+    </div>
+  </div>
+}
+
 @if (confirmDeleteId !== null) {
   <div class="modal-backdrop" (click)="cancelDelete()">
     <div class="modal" (click)="$event.stopPropagation()">
@@ -82,7 +122,7 @@
       </tr>
     </thead>
     <tbody>
-      @for (election of pagedElections; track election.id) {
+      @for (election of filteredElections; track election.id) {
         <tr>
           <td>{{ election.name }}</td>
           <td><span class="badge">{{ election.type }}</span></td>
@@ -91,6 +131,7 @@
           <td class="actions">
             <button class="btn-info" (click)="viewDetails(election.id)">View</button>
             <button class="btn-secondary" (click)="openEdit(election)" [disabled]="isPast(election)" [title]="isPast(election) ? 'Cannot edit past elections' : ''">Edit</button>
+            <button class="btn-success" (click)="openResults(election)" [disabled]="!isResultDay(election)" [title]="!isResultDay(election) ? 'Only available the day after the election ends' : 'Set election results'">Results</button>
             <button class="btn-danger" (click)="startDelete(election.id)">Delete</button>
           </td>
         </tr>

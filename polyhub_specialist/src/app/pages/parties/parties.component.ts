@@ -14,70 +14,74 @@ import { PoliticalPlaneComponent, PoliticalPoint } from '../../shared/political-
   styleUrl: './parties.component.scss'
 })
 export class PartiesComponent implements OnInit {
-  allParties: PartyForRatingResponse[] = [];
-  filteredParties: PartyForRatingResponse[] = [];
-  error = '';
+  public parties: PartyForRatingResponse[] = [];
+  public error: string = '';
 
-  // Filters
-  search = '';
-  filterRated = '';
-  page = 0;
-  pageSize = 10;
+  public search: string = '';
+  public filterRated: string = '';
+  public page: number = 0;
+  public readonly pageSize: number = 10;
+  public totalPages: number = 0;
+  public totalElements: number = 0;
 
-  // Info modal
-  infoParty: PartyForRatingResponse | null = null;
-
-  // Rate modal
-  ratingParty: PartyForRatingResponse | null = null;
-  hasReadParty = false;
-  ratingPoint: PoliticalPoint = { x: 0, y: 0 };
-  ratingError = '';
-  saving = false;
+  public infoParty: PartyForRatingResponse | null = null;
+  public ratingParty: PartyForRatingResponse | null = null;
+  public hasReadParty: boolean = false;
+  public ratingPoint: PoliticalPoint = { x: 0, y: 0 };
+  public ratingError: string = '';
+  public saving: boolean = false;
 
   constructor(private api: ApiService, private router: Router) {}
 
-  ngOnInit() { this.load(); }
+  public ngOnInit(): void { this.load(); }
 
-  load() {
-    this.api.getPartiesForRating().subscribe({
-      next: (parties) => { this.allParties = parties; this.applyFilters(); },
-      error: () => this.error = 'Failed to load parties'
+  public load(): void {
+    this.api.getPartiesForRating(this.page, this.pageSize).subscribe({
+      next: (response) => {
+        this.parties = response.parties;
+        this.totalPages = response.totalPages;
+        this.totalElements = response.totalElements;
+        this.error = '';
+      },
+      error: () => { this.error = 'Failed to load parties'; }
     });
   }
 
-  applyFilters() {
+  public get filteredParties(): PartyForRatingResponse[] {
     const q = this.search.toLowerCase();
-    this.filteredParties = this.allParties.filter(p =>
+    return this.parties.filter(p =>
       (!q || p.name.toLowerCase().includes(q) || (p.motto ?? '').toLowerCase().includes(q)) &&
       (!this.filterRated || (this.filterRated === 'rated' ? p.rated : !p.rated))
     );
-    this.page = 0;
   }
 
-  get pagedParties() {
-    return this.filteredParties.slice(this.page * this.pageSize, (this.page + 1) * this.pageSize);
+  public prevPage(): void {
+    if (this.page > 0) { this.page--; this.load(); }
   }
 
-  get totalPages() { return Math.ceil(this.filteredParties.length / this.pageSize); }
-  prevPage() { if (this.page > 0) this.page--; }
-  nextPage() { if (this.page < this.totalPages - 1) this.page++; }
+  public nextPage(): void {
+    if (this.page < this.totalPages - 1) { this.page++; this.load(); }
+  }
 
-  viewDetails(id: number) { this.router.navigate(['/parties', id]); }
+  public get isFirst(): boolean { return this.page === 0; }
+  public get isLast(): boolean { return this.page >= this.totalPages - 1; }
 
-  openInfo(party: PartyForRatingResponse) { this.infoParty = party; }
-  closeInfo() { this.infoParty = null; }
+  public viewDetails(id: number): void { this.router.navigate(['/parties', id]); }
 
-  openRate(party: PartyForRatingResponse) {
+  public openInfo(party: PartyForRatingResponse): void { this.infoParty = party; }
+  public closeInfo(): void { this.infoParty = null; }
+
+  public openRate(party: PartyForRatingResponse): void {
     this.ratingParty = party;
     this.hasReadParty = false;
     this.ratingPoint = { x: party.specEconomicAxis ?? 0, y: party.specSocialAxis ?? 0 };
     this.ratingError = '';
   }
 
-  closeRate() { this.ratingParty = null; }
-  confirmRead() { this.hasReadParty = true; }
+  public closeRate(): void { this.ratingParty = null; }
+  public confirmRead(): void { this.hasReadParty = true; }
 
-  saveRating() {
+  public saveRating(): void {
     if (!this.ratingParty) return;
     this.ratingError = '';
     this.saving = true;

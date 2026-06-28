@@ -13,14 +13,14 @@ import { AuthService } from '../../core/services/auth.service';
   styleUrl: './login.component.scss'
 })
 export class LoginComponent {
-  email = '';
-  password = '';
-  error = '';
-  loading = false;
+  public email: string = '';
+  public password: string = '';
+  public error: string = '';
+  public loading: boolean = false;
 
   constructor(private api: ApiService, private authService: AuthService, private router: Router) {}
 
-  onSubmit() {
+  public onSubmit(): void {
     this.error = '';
     this.loading = true;
     this.api.login({ email: this.email, password: this.password }).subscribe({
@@ -42,7 +42,7 @@ export class LoginComponent {
     });
   }
 
-  private handleAccessDenied() {
+  private handleAccessDenied(): void {
     this.loading = false;
     this.error = 'Access denied. Admin accounts only.';
     this.authService.clearUser();

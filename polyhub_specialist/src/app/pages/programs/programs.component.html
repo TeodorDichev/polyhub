@@ -7,8 +7,8 @@
 }
 
 <div class="table-controls">
-  <input class="search-input" type="text" [(ngModel)]="search" (ngModelChange)="applyFilters()" placeholder="Search by title, party or election..." />
-  <select [(ngModel)]="filterRated" (ngModelChange)="applyFilters()">
+  <input class="search-input" type="text" [(ngModel)]="search" placeholder="Search by title, party or election..." />
+  <select [(ngModel)]="filterRated">
     <option value="">All</option>
     <option value="rated">Rated</option>
     <option value="unrated">Not Rated</option>
@@ -28,7 +28,7 @@
       </tr>
     </thead>
     <tbody>
-      @for (program of pagedPrograms; track program.programId) {
+      @for (program of filteredPrograms; track program.programId) {
         <tr>
           <td>{{ program.partyName }}</td>
           <td>{{ program.title }}</td>

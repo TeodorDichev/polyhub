@@ -10,9 +10,9 @@ export interface AdminUser {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  currentUser = signal<AdminUser | null>(null);
+  public readonly currentUser = signal<AdminUser | null>(null);
 
-  isLoggedIn() { return this.currentUser() !== null; }
-  setUser(user: AdminUser) { this.currentUser.set(user); }
-  clearUser() { this.currentUser.set(null); }
+  public isLoggedIn(): boolean { return this.currentUser() !== null; }
+  public setUser(user: AdminUser): void { this.currentUser.set(user); }
+  public clearUser(): void { this.currentUser.set(null); }
 }

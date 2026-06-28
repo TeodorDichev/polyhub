@@ -14,67 +14,72 @@ import { PoliticalPlaneComponent, PoliticalPoint } from '../../shared/political-
   styleUrl: './programs.component.scss'
 })
 export class ProgramsComponent implements OnInit {
-  allPrograms: ProgramForRatingResponse[] = [];
-  filteredPrograms: ProgramForRatingResponse[] = [];
-  error = '';
+  public programs: ProgramForRatingResponse[] = [];
+  public error: string = '';
 
-  // Filters
-  search = '';
-  filterRated = '';
-  page = 0;
-  pageSize = 10;
+  public search: string = '';
+  public filterRated: string = '';
+  public page: number = 0;
+  public readonly pageSize: number = 10;
+  public totalPages: number = 0;
+  public totalElements: number = 0;
 
-  // Detail/rate modal
-  selectedProgram: ProgramForRatingResponse | null = null;
-  hasReadProgram = false;
-  ratingPoint: PoliticalPoint = { x: 0, y: 0 };
-  ratingError = '';
-  saving = false;
+  public selectedProgram: ProgramForRatingResponse | null = null;
+  public hasReadProgram: boolean = false;
+  public ratingPoint: PoliticalPoint = { x: 0, y: 0 };
+  public ratingError: string = '';
+  public saving: boolean = false;
 
-  // Tooltip state
-  hoveredPolicyId: number | null = null;
+  public hoveredPolicyId: number | null = null;
 
   constructor(private api: ApiService, private router: Router) {}
 
-  ngOnInit() { this.load(); }
+  public ngOnInit(): void { this.load(); }
 
-  load() {
-    this.api.getProgramsForRating().subscribe({
-      next: (programs) => { this.allPrograms = programs; this.applyFilters(); },
-      error: () => this.error = 'Failed to load programs'
+  public load(): void {
+    this.api.getProgramsForRating(this.page, this.pageSize).subscribe({
+      next: (response) => {
+        this.programs = response.programs;
+        this.totalPages = response.totalPages;
+        this.totalElements = response.totalElements;
+        this.error = '';
+      },
+      error: () => { this.error = 'Failed to load programs'; }
     });
   }
 
-  applyFilters() {
+  public get filteredPrograms(): ProgramForRatingResponse[] {
     const q = this.search.toLowerCase();
-    this.filteredPrograms = this.allPrograms.filter(p =>
+    return this.programs.filter(p =>
       (!q || p.title.toLowerCase().includes(q) || p.partyName.toLowerCase().includes(q) || p.electionName.toLowerCase().includes(q)) &&
       (!this.filterRated || (this.filterRated === 'rated' ? p.rated : !p.rated))
     );
-    this.page = 0;
   }
 
-  get pagedPrograms() {
-    return this.filteredPrograms.slice(this.page * this.pageSize, (this.page + 1) * this.pageSize);
+  public prevPage(): void {
+    if (this.page > 0) { this.page--; this.load(); }
   }
 
-  get totalPages() { return Math.ceil(this.filteredPrograms.length / this.pageSize); }
-  prevPage() { if (this.page > 0) this.page--; }
-  nextPage() { if (this.page < this.totalPages - 1) this.page++; }
+  public nextPage(): void {
+    if (this.page < this.totalPages - 1) { this.page++; this.load(); }
+  }
 
-  viewDetails(id: number) { this.router.navigate(['/programs', id]); }
+  public get isFirst(): boolean { return this.page === 0; }
+  public get isLast(): boolean { return this.page >= this.totalPages - 1; }
 
-  openDetail(program: ProgramForRatingResponse) {
+  public viewDetails(id: number): void { this.router.navigate(['/programs', id]); }
+
+  public openDetail(program: ProgramForRatingResponse): void {
     this.selectedProgram = program;
     this.hasReadProgram = false;
     this.ratingPoint = { x: program.specEconomicAxis ?? 0, y: program.specSocialAxis ?? 0 };
     this.ratingError = '';
   }
 
-  closeDetail() { this.selectedProgram = null; }
-  confirmRead() { this.hasReadProgram = true; }
+  public closeDetail(): void { this.selectedProgram = null; }
+  public confirmRead(): void { this.hasReadProgram = true; }
 
-  saveRating() {
+  public saveRating(): void {
     if (!this.selectedProgram) return;
     this.ratingError = '';
     this.saving = true;

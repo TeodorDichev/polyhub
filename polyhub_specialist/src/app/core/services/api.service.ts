@@ -1,18 +1,22 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import {
   LoginRequest,
   SpecialistUser,
   ElectionResponse,
   ElectionDetailsResponse,
+  ElectionPageResponse,
+  ElectionResultsRequest,
   CreateElectionRequest,
   PolicySummary,
   CreatePolicyRequest,
   PartyForRatingResponse,
+  PartyForRatingPageResponse,
   PartyRatingRequest,
   PartyDetailsResponse,
   ProgramForRatingResponse,
+  ProgramForRatingPageResponse,
   ProgramRatingRequest,
   ProgramDetailsResponse,
 } from '../models';
@@ -20,7 +24,7 @@ import {
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
-  private base = 'http://localhost:8080';
+  private readonly base = 'http://localhost:8080';
 
   constructor(private http: HttpClient) {}
 
@@ -36,8 +40,9 @@ export class ApiService {
     return this.http.get<SpecialistUser>(`${this.base}/auth/me`, { withCredentials: true });
   }
 
-  getElections(): Observable<ElectionResponse[]> {
-    return this.http.get<ElectionResponse[]>(`${this.base}/specialist/elections`, { withCredentials: true });
+  getElections(page: number = 0, size: number = 10, search: string = ''): Observable<ElectionPageResponse> {
+    const params = new HttpParams().set('page', page).set('size', size).set('search', search);
+    return this.http.get<ElectionPageResponse>(`${this.base}/specialist/elections`, { params, withCredentials: true });
   }
 
   createElection(data: CreateElectionRequest): Observable<ElectionResponse> {
@@ -50,6 +55,10 @@ export class ApiService {
 
   deleteElection(id: number): Observable<void> {
     return this.http.delete<void>(`${this.base}/specialist/elections/${id}`, { withCredentials: true });
+  }
+
+  setElectionResults(id: number, data: ElectionResultsRequest): Observable<void> {
+    return this.http.put<void>(`${this.base}/specialist/elections/${id}/results`, data, { withCredentials: true });
   }
 
   getPolicies(): Observable<PolicySummary[]> {
@@ -80,16 +89,18 @@ export class ApiService {
     return this.http.get<ProgramDetailsResponse>(`${this.base}/programs/details/${id}`, { withCredentials: true });
   }
 
-  getPartiesForRating(): Observable<PartyForRatingResponse[]> {
-    return this.http.get<PartyForRatingResponse[]>(`${this.base}/specialist/parties`, { withCredentials: true });
+  getPartiesForRating(page: number = 0, size: number = 10): Observable<PartyForRatingPageResponse> {
+    const params = new HttpParams().set('page', page).set('size', size);
+    return this.http.get<PartyForRatingPageResponse>(`${this.base}/specialist/parties`, { params, withCredentials: true });
   }
 
   rateParty(id: number, data: PartyRatingRequest): Observable<PartyForRatingResponse> {
     return this.http.put<PartyForRatingResponse>(`${this.base}/specialist/parties/${id}/rate`, data, { withCredentials: true });
   }
 
-  getProgramsForRating(): Observable<ProgramForRatingResponse[]> {
-    return this.http.get<ProgramForRatingResponse[]>(`${this.base}/specialist/programs`, { withCredentials: true });
+  getProgramsForRating(page: number = 0, size: number = 10): Observable<ProgramForRatingPageResponse> {
+    const params = new HttpParams().set('page', page).set('size', size);
+    return this.http.get<ProgramForRatingPageResponse>(`${this.base}/specialist/programs`, { params, withCredentials: true });
   }
 
   getProgramForRating(id: number): Observable<ProgramForRatingResponse> {

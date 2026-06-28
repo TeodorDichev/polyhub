@@ -17,6 +17,8 @@ public interface PartyRepository extends JpaRepository<Party, Long> {
 
     List<Party> findAllByDeletedAtIsNull();
 
+    Page<Party> findAllByDeletedAtIsNull(Pageable pageable);
+
     Optional<Party> findByIdAndDeletedAtIsNull(Long id);
 
     Page<Party> findAllByDeletedAtIsNullAndStatus_Name(

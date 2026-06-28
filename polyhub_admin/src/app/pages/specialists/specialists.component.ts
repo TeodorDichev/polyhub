@@ -12,60 +12,75 @@ import { AdminUserResponse } from '../../core/models';
   styleUrl: './specialists.component.scss'
 })
 export class SpecialistsComponent implements OnInit {
-  allSpecialists: AdminUserResponse[] = [];
-  filteredSpecialists: AdminUserResponse[] = [];
-  error = '';
-  showCreateModal = false;
+  public specialists: AdminUserResponse[] = [];
+  public error: string = '';
+  public showCreateModal: boolean = false;
 
-  email = '';
-  password = '';
-  firstname = '';
-  lastname = '';
-  createError = '';
-  creating = false;
+  public email: string = '';
+  public password: string = '';
+  public firstname: string = '';
+  public lastname: string = '';
+  public createError: string = '';
+  public creating: boolean = false;
 
-  // Filters
-  search = '';
-  page = 0;
-  pageSize = 10;
+  public search: string = '';
+  public page: number = 0;
+  public readonly pageSize: number = 10;
+  public totalPages: number = 0;
+  public totalElements: number = 0;
 
-  selectedSpecialist: AdminUserResponse | null = null;
+  public selectedSpecialist: AdminUserResponse | null = null;
 
   constructor(private api: ApiService) {}
 
-  ngOnInit() { this.load(); }
+  public ngOnInit(): void {
+    this.load();
+  }
 
-  load() {
-    this.api.getAllSpecialists().subscribe({
-      next: (s) => { this.allSpecialists = s; this.applyFilters(); },
-      error: () => this.error = 'Failed to load specialists'
+  public load(): void {
+    this.api.getAllSpecialists(this.page, this.pageSize).subscribe({
+      next: (response) => {
+        this.specialists = response.users;
+        this.totalPages = response.totalPages;
+        this.totalElements = response.totalElements;
+        this.error = '';
+      },
+      error: () => { this.error = 'Failed to load specialists'; }
     });
   }
 
-  applyFilters() {
+  public get filteredSpecialists(): AdminUserResponse[] {
     const q = this.search.toLowerCase();
-    this.filteredSpecialists = this.allSpecialists.filter(s =>
+    return this.specialists.filter(s =>
       !q || `${s.firstname} ${s.lastname}`.toLowerCase().includes(q) || s.email.toLowerCase().includes(q)
     );
-    this.page = 0;
   }
 
-  get pagedSpecialists() {
-    return this.filteredSpecialists.slice(this.page * this.pageSize, (this.page + 1) * this.pageSize);
+  public prevPage(): void {
+    if (this.page > 0) {
+      this.page--;
+      this.load();
+    }
   }
 
-  get totalPages() { return Math.ceil(this.filteredSpecialists.length / this.pageSize); }
-  prevPage() { if (this.page > 0) this.page--; }
-  nextPage() { if (this.page < this.totalPages - 1) this.page++; }
+  public nextPage(): void {
+    if (this.page < this.totalPages - 1) {
+      this.page++;
+      this.load();
+    }
+  }
 
-  openCreate() {
+  public get isFirst(): boolean { return this.page === 0; }
+  public get isLast(): boolean { return this.page >= this.totalPages - 1; }
+
+  public openCreate(): void {
     this.email = ''; this.password = '';
     this.firstname = ''; this.lastname = '';
     this.createError = '';
     this.showCreateModal = true;
   }
 
-  confirmCreate() {
+  public confirmCreate(): void {
     this.createError = '';
     this.creating = true;
     this.api.createSpecialist({
@@ -77,10 +92,10 @@ export class SpecialistsComponent implements OnInit {
     });
   }
 
-  openInfo(s: AdminUserResponse) { this.selectedSpecialist = s; }
-  closeInfo() { this.selectedSpecialist = null; }
+  public openInfo(s: AdminUserResponse): void { this.selectedSpecialist = s; }
+  public closeInfo(): void { this.selectedSpecialist = null; }
 
-  delete(id: number) {
+  public delete(id: number): void {
     if (!confirm('Delete this specialist?')) return;
     this.api.deleteSpecialist(id).subscribe({ next: () => this.load() });
   }

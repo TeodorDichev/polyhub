@@ -7,8 +7,8 @@
 }
 
 <div class="table-controls">
-  <input class="search-input" type="text" [(ngModel)]="search" (ngModelChange)="applyFilters()" placeholder="Search by name or email..." />
-  <select [(ngModel)]="filterStatus" (ngModelChange)="applyFilters()">
+  <input class="search-input" type="text" [(ngModel)]="search" placeholder="Search by name or email..." />
+  <select [(ngModel)]="filterStatus">
     <option value="">All</option>
     <option value="active">Active</option>
     <option value="suspended">Suspended</option>
@@ -26,7 +26,7 @@
       </tr>
     </thead>
     <tbody>
-      @for (user of pagedUsers; track user.id) {
+      @for (user of filteredUsers; track user.id) {
         <tr>
           <td>{{ user.firstname }} {{ user.lastname }}</td>
           <td>{{ user.email }}</td>

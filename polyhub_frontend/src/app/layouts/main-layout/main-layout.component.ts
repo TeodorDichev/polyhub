@@ -13,7 +13,7 @@ import { AuthService } from '../../core/services/auth.service';
   styleUrl: './main-layout.component.scss'
 })
 export class MainLayoutComponent {
-  sidebarOpen = false;
+  public sidebarOpen: boolean = false;
 
   constructor(
     public authService: AuthService,
@@ -21,22 +21,21 @@ export class MainLayoutComponent {
     private router: Router
   ) {}
 
-  toggleSidebar() {
+  public toggleSidebar(): void {
     this.sidebarOpen = !this.sidebarOpen;
   }
 
-  closeSidebar() {
+  public closeSidebar(): void {
     this.sidebarOpen = false;
   }
 
-  logout() {
+  public logout(): void {
     this.api.logout().subscribe({
       next: () => {
         this.authService.clearUser();
         this.router.navigate(['/']);
       },
       error: () => {
-        // clear user anyway even if request fails
         this.authService.clearUser();
         this.router.navigate(['/']);
       }

@@ -8,7 +8,7 @@
 }
 
 <div class="table-controls">
-  <input class="search-input" type="text" [(ngModel)]="search" (ngModelChange)="applyFilters()" placeholder="Search by name or email..." />
+  <input class="search-input" type="text" [(ngModel)]="search" placeholder="Search by name or email..." />
 </div>
 
 @if (showCreateModal) {
@@ -50,7 +50,7 @@
       </tr>
     </thead>
     <tbody>
-      @for (s of pagedSpecialists; track s.id) {
+      @for (s of filteredSpecialists; track s.id) {
         <tr>
           <td>{{ s.firstname }} {{ s.lastname }}</td>
           <td>{{ s.email }}</td>

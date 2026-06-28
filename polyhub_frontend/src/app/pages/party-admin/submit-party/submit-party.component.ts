@@ -12,22 +12,22 @@ import { SubmitPartyModalComponent } from '../sumbit-party-modal/submit-party-mo
   styleUrl: './submit-party.component.scss'
 })
 export class SubmitPartyComponent implements OnInit {
-  showModal = true;
+  public showModal: boolean = true;
 
   constructor(private authService: AuthService, private router: Router) {}
 
-  ngOnInit() {
+  public ngOnInit(): void {
     const status = this.authService.partyStatus();
     if (status === 'APPROVED' || status === 'PENDING') {
       this.router.navigate(['/dashboard']);
     }
   }
 
-  onModalClosed() {
+  public onModalClosed(): void {
     this.router.navigate(['/dashboard']);
   }
 
-  onPartySubmitted() {
+  public onPartySubmitted(): void {
     this.router.navigate(['/dashboard']);
   }
 }
